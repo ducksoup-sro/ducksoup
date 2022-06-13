@@ -5,7 +5,7 @@
 ## What is DuckSoup?
 DuckSoup is a C# packet filter for v188 Silkroad Online. The main focus is on quality, maintainability and stability. The base is fully written by myself with some help of friends and google. The only part I got inspired from was the PacketHandler part which has some links to Chernobyls PacketHandler.
 
-Why is DuckSoup so special? DuckSoup does not use `.NET Framework`. It uses `.NET Core` which is by far more porefull, advanced and it can be used on Linux for some extra performance and security! Also DuckSoup is developed under the concept "quality over quantity".
+Why is DuckSoup so special? It uses `.NET 6.0` which is by far more porefull, advanced and it can be used on Linux for some extra performance and security! Also DuckSoup is developed under the concept "quality over quantity".
 
 ## Motivation
 Since florian0 released [SRO_DevKit](https://gitlab.com/florian0/sro_devkit) as a client addition, Devsome released [Silkroad Laravel](https://github.com/Devsome/silkroad-laravel) as a website for Silkroad so I thought it would be time to release a public, open source filter.  
