@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <RootNamespace>DuckSoup</RootNamespace>
+        <ProductVersion>2.0.0</ProductVersion>
+        <LangVersion>10</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\API\API.csproj" />
+        <ProjectReference Include="..\PacketLibrary\PacketLibrary.csproj" />
+        <ProjectReference Include="..\SilkroadSecurityAPI\SilkroadSecurityAPI.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="McMaster.NETCore.Plugins" Version="1.4.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+        <PackageReference Include="Quartz" Version="3.3.2" />
+        <PackageReference Include="Quartz.Jobs" Version="3.3.2" />
+        <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="log4net.config">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+</Project>

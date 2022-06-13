@@ -1,0 +1,63 @@
+﻿using System.Data.Entity;
+using System.Linq;
+using API;
+using API.Command;
+using API.Server;
+using API.ServiceFactory;
+
+namespace DuckSoup.Library.Commands.Server
+{
+    public class ServerStartCommand : Command
+    {
+        private readonly IServerManager _serverManager;
+
+        public ServerStartCommand() : base("start", "start <id>", "Starts a server", new []{"create, load"})
+        {
+            _serverManager = ServiceFactory.Load<IServerManager>(typeof(IServerManager));
+        }
+
+        public override void Execute(string[]? args)
+        {
+            if (args.Length == 0)
+            {
+                ExecuteHelpCommand();
+                return;
+            }
+
+            int id;
+            var isNumber = int.TryParse(args[0], out id);
+            if (isNumber == false)
+            {
+                ExecuteHelpCommand();
+                return; 
+            }
+
+            IAsyncServer server = null;
+            foreach (var asyncServer in _serverManager.Servers.Where(asyncServer => asyncServer.Service.ServiceId == id))
+            {
+                server = asyncServer;
+            }
+
+            if (server != null)
+            {
+                server.Start();
+                Global.Logger.InfoFormat("Server with the ID {0} started", id);
+                return;
+            }
+
+            using var service = new API.Database.DuckSoup.DuckSoup();
+            var services = service.Services.Where(s => s.ServiceId == id).Include(b => b.LocalMachine)
+                .Include(b => b.RemoteMachine).Include(b => b.SpoofMachine).ToList();
+
+            if (services.Count == 0)
+            {
+                Global.Logger.InfoFormat("Server with the ID {0} was not found", id);
+                return;
+            }
+            
+            _serverManager.AddServer(services.First());
+            _serverManager.Start(services.First());
+            Global.Logger.InfoFormat("Server with the ID {0} was started", id);
+        }
+    }
+}
