@@ -49,25 +49,25 @@ public class CLIENT_AGENT_CHAT_REQUEST : IPacketStructure
         return response;
     }
 
-    public static async Task<Packet> of(ChatType chatType, byte chatIndex, string receiver, string message)
+    public static Packet of(ChatType chatType, byte chatIndex, string receiver, string message)
     {
-        return await Task.Run(() => new CLIENT_AGENT_CHAT_REQUEST
+        return new CLIENT_AGENT_CHAT_REQUEST
         {
             ChatType = chatType,
             ChatIndex = chatIndex,
             Receiver = receiver,
             Message = message
-        }.Build());
+        }.Build();
     }
     
-    public static async Task<Packet> of(ChatType chatType, byte chatIndex, string message)
+    public static Packet of(ChatType chatType, byte chatIndex, string message)
     {
-        return await Task.Run(() => new CLIENT_AGENT_CHAT_REQUEST
+        return new CLIENT_AGENT_CHAT_REQUEST
         {
             ChatType = chatType,
             ChatIndex = chatIndex,
             Message = message
-        }.Build());
+        }.Build();
     }
 }
 

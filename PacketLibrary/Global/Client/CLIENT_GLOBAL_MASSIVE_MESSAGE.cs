@@ -22,7 +22,7 @@ public class CLIENT_GLOBAL_MASSIVE_MESSAGE : IPacketStructure
         throw new NotImplementedException();
     }
 
-    public static async Task<Packet> of()
+    public static Packet of()
     {
         throw new NotImplementedException();
     }

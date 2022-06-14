@@ -21,7 +21,7 @@ public class CLIENT_ITEM_MALL_WEB : IPacketStructure
         throw new NotImplementedException();
     }
 
-    public static async Task<Packet> of()
+    public static Packet of()
     {
         throw new NotImplementedException();
     }

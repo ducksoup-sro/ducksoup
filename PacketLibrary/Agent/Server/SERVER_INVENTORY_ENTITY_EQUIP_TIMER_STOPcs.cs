@@ -28,7 +28,7 @@ public class SERVER_INVENTORY_ENTITY_EQUIP_TIMER_STOP : IPacketStructure
         throw new NotImplementedException();
     }
     
-    public static async Task<Packet> of()
+    public static Packet of()
     {
         throw new NotImplementedException();
     }

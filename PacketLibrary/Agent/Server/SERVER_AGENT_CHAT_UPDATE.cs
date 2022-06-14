@@ -82,33 +82,33 @@ public class SERVER_AGENT_CHAT_UPDATE : IPacketStructure
         return response;
     }
 
-    public static async Task<Packet> of(ChatType chatType, uint senderUniqueId, string message)
+    public static Packet of(ChatType chatType, uint senderUniqueId, string message)
     {
-        return await Task.Run(() => new SERVER_AGENT_CHAT_UPDATE
+        return new SERVER_AGENT_CHAT_UPDATE
         {
             ChatType = chatType,
             SenderUniqueId = senderUniqueId,
             Message = message
-        }.Build());
+        }.Build();
     }
     
-    public static async Task<Packet> of(ChatType chatType, string senderName, string message)
+    public static Packet of(ChatType chatType, string senderName, string message)
     {
-        return await Task.Run(() => new SERVER_AGENT_CHAT_UPDATE
+        return new SERVER_AGENT_CHAT_UPDATE
         {
             ChatType = chatType,
             SenderName = senderName,
             Message = message
-        }.Build());
+        }.Build();
     }
     
-    public static async Task<Packet> of(ChatType chatType, string message)
+    public static Packet of(ChatType chatType, string message)
     {
-        return await Task.Run(() => new SERVER_AGENT_CHAT_UPDATE
+        return new SERVER_AGENT_CHAT_UPDATE
         {
             ChatType = chatType,
             Message = message
-        }.Build());
+        }.Build();
     }
 }
 

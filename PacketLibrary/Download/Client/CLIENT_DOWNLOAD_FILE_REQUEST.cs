@@ -33,12 +33,12 @@ public class CLIENT_DOWNLOAD_FILE_REQUEST : IPacketStructure
         return response;
     }
 
-    public static async Task<Packet> of(uint id, uint unk2)
+    public static Packet of(uint id, uint unk2)
     {
-        return await Task.Run(() => new CLIENT_DOWNLOAD_FILE_REQUEST
+        return new CLIENT_DOWNLOAD_FILE_REQUEST
         {
             Id = id,
             Unk2 = unk2
-        }.Build());
+        }.Build();
     }
 }

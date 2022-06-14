@@ -21,7 +21,7 @@ public class AGENT_CAS_CLIENT : IPacketStructure
         throw new NotImplementedException();
     }
 
-    public static async Task<Packet> of()
+    public static Packet of()
     {
         throw new NotImplementedException();
     }

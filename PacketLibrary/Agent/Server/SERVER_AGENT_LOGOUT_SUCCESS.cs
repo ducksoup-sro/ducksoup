@@ -26,9 +26,9 @@ public class SERVER_AGENT_LOGOUT_SUCCESS : IPacketStructure
         return response;
     }
 
-    public static async Task<Packet> of()
+    public static Packet of()
     {
-        return await Task.Run(() => new SERVER_AGENT_LOGOUT_SUCCESS().Build());
+        return new SERVER_AGENT_LOGOUT_SUCCESS().Build();
     }
 }
 

@@ -3,6 +3,7 @@ using SilkroadSecurityAPI;
 
 namespace PacketLibrary.Gateway.Server;
 
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/GATEWAY_SHARD_LIST#response
 public class SERVER_GATEWAY_SHARD_LIST_RESPONSE : IPacketStructure
 {
     public static ushort MsgId => 0xA101;
@@ -21,7 +22,7 @@ public class SERVER_GATEWAY_SHARD_LIST_RESPONSE : IPacketStructure
         throw new NotImplementedException();
     }
 
-    public static async Task<Packet> of()
+    public static Packet of()
     {
         throw new NotImplementedException();
     }

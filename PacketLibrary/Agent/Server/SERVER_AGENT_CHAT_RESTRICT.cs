@@ -29,12 +29,11 @@ public class SERVER_AGENT_CHAT_RESTRICT : IPacketStructure
         return response;
     }
 
-    public static async Task<Packet> of(byte restriction)
+    public static Packet of(byte restriction)
     {
-        return await Task.Run(() =>
-            new SERVER_AGENT_CHAT_RESTRICT
-            {
-                Restriction = restriction
-            }.Build());
+        return new SERVER_AGENT_CHAT_RESTRICT
+        {
+            Restriction = restriction
+        }.Build();
     }
 }

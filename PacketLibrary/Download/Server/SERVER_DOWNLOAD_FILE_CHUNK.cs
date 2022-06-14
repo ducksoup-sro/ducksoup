@@ -29,11 +29,11 @@ public class SERVER_DOWNLOAD_FILE_CHUNK : IPacketStructure
         return response;
     }
 
-    public static async Task<Packet> of(byte[] data)
+    public static Packet of(byte[] data)
     {
-        return await Task.Run(() => new SERVER_DOWNLOAD_FILE_CHUNK
+        return new SERVER_DOWNLOAD_FILE_CHUNK
         {
             Data = data
-        }.Build());
+        }.Build();
     }
 }

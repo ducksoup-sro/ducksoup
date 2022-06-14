@@ -40,20 +40,20 @@ public class SERVER_AGENT_LOGOUT_CANCEL_RESPONSE : IPacketStructure
         return response;
     }
 
-    public static async Task<Packet> of(byte result)
+    public static Packet of(byte result)
     {
-        return await Task.Run(() => new SERVER_AGENT_LOGOUT_CANCEL_RESPONSE
+        return new SERVER_AGENT_LOGOUT_CANCEL_RESPONSE
         {
             Result = result,
-        }.Build());
+        }.Build();
     }
 
-    public static async Task<Packet> of(LogoutErrorCode logoutErrorCode)
+    public static Packet of(LogoutErrorCode logoutErrorCode)
     {
-        return await Task.Run(() => new SERVER_AGENT_LOGOUT_CANCEL_RESPONSE
+        return new SERVER_AGENT_LOGOUT_CANCEL_RESPONSE
         {
             Result = 0x2,
             LogoutErrorCode = logoutErrorCode
-        }.Build());
+        }.Build();
     }
 }

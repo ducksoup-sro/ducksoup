@@ -21,7 +21,7 @@ public class CLIENT_FRIEND_GROUP : IPacketStructure
         throw new NotImplementedException();
     }
 
-    public static async Task<Packet> of()
+    public static Packet of()
     {
         throw new NotImplementedException();
     }

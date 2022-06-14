@@ -21,7 +21,7 @@ public class AGENT_COMMUNITY_FRIEND_RESPONSE : IPacketStructure
         throw new NotImplementedException();
     }
 
-    public static async Task<Packet> of()
+    public static Packet of()
     {
         throw new NotImplementedException();
     }

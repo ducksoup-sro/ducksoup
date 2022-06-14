@@ -10,6 +10,9 @@
     <ItemGroup>
         <Folder Include="Enums\Download" />
         <Folder Include="Global" />
+        <Folder Include="Objects\Agent" />
+        <Folder Include="Objects\Download" />
+        <Folder Include="Objects\Global" />
     </ItemGroup>
 
     <ItemGroup>

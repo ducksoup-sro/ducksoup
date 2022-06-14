@@ -14,7 +14,7 @@ public class CLIENT_AGENT_LOGOUT_REQUEST : IPacketStructure
     public PacketDirection ToDirection => PacketDirection.Server;
 
     public LogoutMode LogoutMode { get; set; }
-    
+
     public Task Read(Packet packet)
     {
         LogoutMode = (LogoutMode) packet.ReadUInt8();
@@ -30,12 +30,11 @@ public class CLIENT_AGENT_LOGOUT_REQUEST : IPacketStructure
         return response;
     }
 
-    public static async Task<Packet> of(LogoutMode logoutMode)
+    public static Packet of(LogoutMode logoutMode)
     {
-        return await Task.Run(() => new CLIENT_AGENT_LOGOUT_REQUEST()
+        return new CLIENT_AGENT_LOGOUT_REQUEST()
         {
             LogoutMode = logoutMode,
-        }.Build());
+        }.Build();
     }
 }
-

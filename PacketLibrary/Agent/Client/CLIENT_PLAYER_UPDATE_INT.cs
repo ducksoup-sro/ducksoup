@@ -21,7 +21,7 @@ public class CLIENT_PLAYER_UPDATE_INT : IPacketStructure
         throw new NotImplementedException();
     }
 
-    public static async Task<Packet> of()
+    public static Packet of()
     {
         throw new NotImplementedException();
     }

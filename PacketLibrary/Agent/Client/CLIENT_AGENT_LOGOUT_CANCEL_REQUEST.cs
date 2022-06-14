@@ -26,8 +26,8 @@ public class CLIENT_AGENT_LOGOUT_CANCEL_REQUEST : IPacketStructure
         return response;
     }
 
-    public static async Task<Packet> of()
+    public static Packet of()
     {
-        return await Task.Run(() => new CLIENT_AGENT_LOGOUT_CANCEL_REQUEST().Build());
+        return new CLIENT_AGENT_LOGOUT_CANCEL_REQUEST().Build();
     }
 }

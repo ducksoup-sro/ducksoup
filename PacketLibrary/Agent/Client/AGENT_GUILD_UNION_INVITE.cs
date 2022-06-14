@@ -21,7 +21,7 @@ public class AGENT_GUILD_UNION_INVITE : IPacketStructure
         throw new NotImplementedException();
     }
 
-    public static async Task<Packet> of()
+    public static Packet of()
     {
         throw new NotImplementedException();
     }

@@ -21,7 +21,7 @@ public class CLIENT_GLOBAL_MODULE_IDENTIFICATION : IPacketStructure
         throw new NotImplementedException();
     }
 
-    public static async Task<Packet> of()
+    public static Packet of()
     {
         throw new NotImplementedException();
     }

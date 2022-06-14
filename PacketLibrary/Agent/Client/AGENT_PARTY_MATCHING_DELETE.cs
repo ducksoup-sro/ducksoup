@@ -21,7 +21,7 @@ public class AGENT_PARTY_MATCHING_DELETE : IPacketStructure
         throw new NotImplementedException();
     }
 
-    public static async Task<Packet> of()
+    public static Packet of()
     {
         throw new NotImplementedException();
     }

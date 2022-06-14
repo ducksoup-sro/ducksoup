@@ -21,7 +21,7 @@ public class CLIENT_GATEWAY_SHARD_LIST_REQUEST : IPacketStructure
         throw new NotImplementedException();
     }
 
-    public static async Task<Packet> of()
+    public static Packet of()
     {
         throw new NotImplementedException();
     }

@@ -51,23 +51,23 @@ public class SERVER_AGENT_LOGOUT_RESPONSE : IPacketStructure
         return response;
     }
 
-    public static async Task<Packet> of(byte countdown, LogoutMode logoutMode)
+    public static Packet of(byte countdown, LogoutMode logoutMode)
     {
-        return await Task.Run(() => new SERVER_AGENT_LOGOUT_RESPONSE
+        return new SERVER_AGENT_LOGOUT_RESPONSE
         {
             Result  = 0x1,
             Countdown = countdown,
             LogoutMode = logoutMode
-        }.Build());
+        }.Build();
     }
     
-    public static async Task<Packet> of(LogoutErrorCode logoutErrorCode)
+    public static Packet of(LogoutErrorCode logoutErrorCode)
     {
-        return await Task.Run(() => new SERVER_AGENT_LOGOUT_RESPONSE
+        return new SERVER_AGENT_LOGOUT_RESPONSE
         {
             Result  = 0x2,
             LogoutErrorCode = logoutErrorCode
-        }.Build());
+        }.Build();
     }
 }
 

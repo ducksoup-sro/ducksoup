@@ -29,11 +29,11 @@ public class SERVER_DOWNLOAD_FILE_COMPLETE : IPacketStructure
         return response;
     }
 
-    public static async Task<Packet> of(byte result)
+    public static Packet of(byte result)
     {
-        return await Task.Run(() => new SERVER_DOWNLOAD_FILE_COMPLETE
+        return new SERVER_DOWNLOAD_FILE_COMPLETE
         {
             Result = result
-        }.Build());
+        }.Build();
     }
 }

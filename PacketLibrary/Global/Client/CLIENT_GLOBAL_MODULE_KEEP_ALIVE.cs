@@ -21,7 +21,7 @@ public class CLIENT_GLOBAL_MODULE_KEEP_ALIVE : IPacketStructure
         throw new NotImplementedException();
     }
 
-    public static async Task<Packet> of()
+    public static Packet of()
     {
         throw new NotImplementedException();
     }
