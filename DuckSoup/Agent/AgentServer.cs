@@ -13,6 +13,7 @@ using API.ServiceFactory;
 using API.Session;
 using DuckSoup.Library.Server;
 using PacketLibrary;
+using PacketLibrary.Agent.Client;
 using SilkroadSecurityAPI;
 
 #endregion
@@ -623,6 +624,7 @@ public class AgentServer : AsyncServer
 
         return new PacketResult();
     }
+
     private async Task<PacketResult> AGENT_MOVEMENT_SERVER(Packet packet, ISession session)
     {
         var target = packet.ReadUInt32(); // Unique ID from player
@@ -665,25 +667,32 @@ public class AgentServer : AsyncServer
 
     private async Task<PacketResult> AGENT_ENVIRONMENT_CELESTIAL_POSITION(Packet packet, ISession session)
     {
+        session.CharScreen = false;
         //.CharacterData.UniqueCharId = packet.ReadUInt32();
         return new PacketResult();
     }
 
     private async Task<PacketResult> CLIENT_AGENT_CHARACTER_SELECTION_ACTION_REQUEST(Packet packet, ISession session)
     {
-        if (session.CharScreen)
+        if (!session.CharScreen)
         {
-            Global.Logger.WarnFormat("EXPLOIT - {0} tried to use SHARD_CRASH_EXPLOIT - {1:X}", session.SessionData.Charname,
+            Global.Logger.WarnFormat("Client {0}({1}) attempted to send 0x7007 outside char screen!", session.SessionData.Charname,
                 packet.Opcode);
             return new PacketResult(PacketResultType.Disconnect);
         }
 
-        if (session.UserLoggedIn)
-            session.CharScreen = true;
+        await new CLIENT_AGENT_CHARACTER_SELECTION_ACTION_REQUEST().Read(packet);
+        if (packet.RemainingRead() != 0)
+        {
+            Global.Logger.WarnFormat("Client {0}({1}) attempted to crash SHARD_MANAGER!", session.SessionData.Charname,
+                packet.Opcode);
+            return new PacketResult(PacketResultType.Disconnect);
+        }
+        
         
         return new PacketResult();
     }
-    
+
     private async Task<PacketResult> CLIENT_EXPLOIT_GSCRASH(Packet packet, ISession session)
     {
         Global.Logger.WarnFormat("EXPLOIT - {0} tried to use GS_CRASH_EXPLOIT - {1:X}", session.SessionData.Charname,
@@ -810,6 +819,9 @@ public class AgentServer : AsyncServer
     {
         if (packet.ReadUInt8() == 1)
             session.UserLoggedIn = true;
+
+        if (session.UserLoggedIn)
+            session.CharScreen = true;
 
         return new PacketResult();
     }
