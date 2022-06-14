@@ -3,27 +3,31 @@ using SilkroadSecurityAPI;
 
 namespace PacketLibrary.Agent.Client;
 
-public class AGENT_LOGOUT : IPacketStructure
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_LOGOUT_CANCEL
+public class CLIENT_AGENT_LOGOUT_CANCEL_REQUEST : IPacketStructure
 {
-    public static ushort MsgId => 0x7005;
+    public static ushort MsgId => 0x7006;
     public static bool Encrypted => false;
     public static bool Massive => false;
     public PacketDirection FromDirection => PacketDirection.Client;
     public PacketDirection ToDirection => PacketDirection.Server;
 
+    // empty
+
     public Task Read(Packet packet)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
     public Packet Build()
     {
-        throw new NotImplementedException();
+        var response = new Packet(MsgId, Encrypted, Massive);
+
+        return response;
     }
 
     public static async Task<Packet> of()
     {
-        throw new NotImplementedException();
+        return await Task.Run(() => new CLIENT_AGENT_LOGOUT_CANCEL_REQUEST().Build());
     }
 }
-

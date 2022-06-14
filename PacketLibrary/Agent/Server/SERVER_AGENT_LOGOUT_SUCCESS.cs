@@ -3,27 +3,32 @@ using SilkroadSecurityAPI;
 
 namespace PacketLibrary.Agent.Server;
 
-public class Onb006 : IPacketStructure
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_LOGUT_SUCCESS
+public class SERVER_AGENT_LOGOUT_SUCCESS : IPacketStructure
 {
-    public static ushort MsgId => 0xb006;
+    public static ushort MsgId => 0x300a;
     public static bool Encrypted => false;
     public static bool Massive => false;
     public PacketDirection FromDirection => PacketDirection.Server;
     public PacketDirection ToDirection => PacketDirection.Client;
+    
+    // empty
 
     public Task Read(Packet packet)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
     public Packet Build()
     {
-        throw new NotImplementedException();
+        var response = new Packet(MsgId, Encrypted, Massive);
+
+        return response;
     }
 
     public static async Task<Packet> of()
     {
-        throw new NotImplementedException();
+        return await Task.Run(() => new SERVER_AGENT_LOGOUT_SUCCESS().Build());
     }
 }
 

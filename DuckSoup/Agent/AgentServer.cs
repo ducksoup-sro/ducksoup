@@ -715,6 +715,7 @@ public class AgentServer : AsyncServer
             return new PacketResult(PacketResultType.Disconnect);
         }
 
+        var logoutMode = packet.ReadUInt8();
         if (packet.ReadUInt8() > 2)
         {
             Global.Logger.WarnFormat("EXPLOIT - {0} tried to use AS_CRASH_EXPLOIT - {1:X} at 3",
