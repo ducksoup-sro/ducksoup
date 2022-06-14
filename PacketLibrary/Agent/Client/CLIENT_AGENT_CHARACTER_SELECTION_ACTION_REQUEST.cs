@@ -4,6 +4,7 @@ using SilkroadSecurityAPI;
 
 namespace PacketLibrary.Agent.Client;
 
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_CHARACTER_SELECTION_ACTION
 public class CLIENT_AGENT_CHARACTER_SELECTION_ACTION_REQUEST : IPacketStructure
 {
     public static ushort MsgId => 0x7007;
