@@ -75,6 +75,7 @@ public class AgentServer : AsyncServer
             AGENT_MAGICOPTION_GRANT); // Avatar Exploit - 0x34A9 - https://www.elitepvpers.com/forum/sro-pserver-guides-releases/3991992-release-invincible-avatar-magopt-exploit-3.html
         PacketHandler.RegisterClientHandler(0x7005,
             AGENT_LOGOUT); // [x] Crash Exploit - 0x7005 - https://www.elitepvpers.com/forum/sro-pserver-guides-releases/4232366-release-disconnect-players-exploit-found-iwa.html
+        PacketHandler.RegisterClientHandler(0x7007, CLIENT_AGENT_CHARACTER_SELECTION_ACTION_REQUEST); // same as above
         PacketHandler.RegisterClientHandler(0x70A7,
             CLIENT_PLAYER_BERSERK); // Zerk Exploit - 0x70A7 - https://www.elitepvpers.com/forum/sro-pserver-guides-releases/3991992-release-invincible-avatar-magopt-exploit-3.html
         PacketHandler.RegisterClientHandler(0x70A2,
@@ -668,6 +669,21 @@ public class AgentServer : AsyncServer
         return new PacketResult();
     }
 
+    private async Task<PacketResult> CLIENT_AGENT_CHARACTER_SELECTION_ACTION_REQUEST(Packet packet, ISession session)
+    {
+        if (session.CharScreen)
+        {
+            Global.Logger.WarnFormat("EXPLOIT - {0} tried to use SHARD_CRASH_EXPLOIT - {1:X}", session.SessionData.Charname,
+                packet.Opcode);
+            return new PacketResult(PacketResultType.Disconnect);
+        }
+
+        if (session.UserLoggedIn)
+            session.CharScreen = true;
+        
+        return new PacketResult();
+    }
+    
     private async Task<PacketResult> CLIENT_EXPLOIT_GSCRASH(Packet packet, ISession session)
     {
         Global.Logger.WarnFormat("EXPLOIT - {0} tried to use GS_CRASH_EXPLOIT - {1:X}", session.SessionData.Charname,
@@ -794,9 +810,6 @@ public class AgentServer : AsyncServer
     {
         if (packet.ReadUInt8() == 1)
             session.UserLoggedIn = true;
-
-        if (session.UserLoggedIn)
-            session.CharScreen = true;
 
         return new PacketResult();
     }
