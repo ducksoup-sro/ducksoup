@@ -3,6 +3,7 @@ using SilkroadSecurityAPI;
 
 namespace PacketLibrary.Gateway.Client;
 
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/GATEWAY_NOTICE#request
 public class CLIENT_GATEWAY_NOTICE_REQUEST : IPacketStructure
 {
     public static ushort MsgId => 0x6104;
@@ -11,19 +12,29 @@ public class CLIENT_GATEWAY_NOTICE_REQUEST : IPacketStructure
     public PacketDirection FromDirection => PacketDirection.Client;
     public PacketDirection ToDirection => PacketDirection.Server;
 
+    public byte ContentID { get; set; }
+    
     public Task Read(Packet packet)
     {
-        throw new NotImplementedException();
+        ContentID = packet.ReadUInt8(); // 1   byte    Content.ID
+
+        return Task.CompletedTask;
     }
 
     public Packet Build()
     {
-        throw new NotImplementedException();
+        var response = new Packet(MsgId, Encrypted, Massive);
+        response.WriteUInt8(ContentID);
+
+        return response;
     }
 
-    public static Packet of()
+    public static Packet of(byte contentId)
     {
-        throw new NotImplementedException();
+        return new CLIENT_GATEWAY_NOTICE_REQUEST
+        {
+            ContentID = contentId
+        }.Build();
     }
 }
 

@@ -18,7 +18,8 @@ public class SERVER_GATEWAY_PATCH_RESPONSE : IPacketStructure
     public PatchErrorCode ErrorCode { get; set; }
     public HostAndPort DownloadServer { get; set; }
     public uint CurVersion { get; set; }
-    
+    public List<DownloadFile> Files = new();
+
     public Task Read(Packet packet)
     {
         Result = packet.ReadUInt8(); // 1	byte	result
@@ -32,18 +33,10 @@ public class SERVER_GATEWAY_PATCH_RESPONSE : IPacketStructure
 		
                 while(true)
                 {
-                    // TODO
-                    // 1	bool hasEntries
-                    // if(!hasEntries)
-                    //     break;
-			// 
-                    // 4	uint	file.ID
-                    // 2	ushort	file.Name.Length			
-                    //     *	string	file.Name
-                    // 2	ushort	file.Path.Length
-                    //     *	string	file.Path
-                    // 4	uint	file.Length //in bytes
-                    // 1	bool	file.ToBePacked //into pk2
+                    var hasEntries = packet.ReadBool(); // 1	bool hasEntries
+                    if(!hasEntries)
+                        break;
+                    Files.Add(new DownloadFile(packet));
                 }		
             }
         }
@@ -53,7 +46,26 @@ public class SERVER_GATEWAY_PATCH_RESPONSE : IPacketStructure
 
     public Packet Build()
     {
-        throw new NotImplementedException();
+        var response = new Packet(MsgId, Encrypted, Massive);
+        response.WriteUInt8(Result); 
+        if(Result == 0x02)
+        {
+            response.WriteUInt8(ErrorCode); 
+            if(ErrorCode == PatchErrorCode.Update)
+            {
+                DownloadServer.build(response);
+                response.WriteUInt32(CurVersion); 
+		
+                foreach (var downloadFile in Files)
+                {
+                    response.WriteBool(true);
+                    downloadFile.build(response);
+                }
+                response.WriteBool(false);
+            }
+        }
+        
+        return response;
     }
 
     public static Packet of()

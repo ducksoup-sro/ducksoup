@@ -39,9 +39,22 @@ public class SERVER_GATEWAY_NOTICE_RESPONSE : IPacketStructure
         return response;
     }
 
-    public static Packet of()
+    public static Packet of(List<Notice> notices)
     {
-        throw new NotImplementedException();
+        return new SERVER_GATEWAY_NOTICE_RESPONSE()
+        {
+            Count = (byte) notices.Count,
+            Notices = notices
+        }.Build();
+    }
+    
+    public static Packet of(Notice notice)
+    {
+        return new SERVER_GATEWAY_NOTICE_RESPONSE()
+        {
+            Count = 1,
+            Notices = new List<Notice> {notice}
+        }.Build();
     }
 }
 

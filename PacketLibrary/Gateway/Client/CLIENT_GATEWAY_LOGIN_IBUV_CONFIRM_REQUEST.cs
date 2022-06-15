@@ -13,17 +13,18 @@ public class CLIENT_GATEWAY_LOGIN_IBUV_CONFIRM_REQUEST : IPacketStructure
 
     public Task Read(Packet packet)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
     public Packet Build()
     {
-        throw new NotImplementedException();
+        var response = new Packet(MsgId, Encrypted, Massive);
+        return response;    
     }
 
     public static Packet of()
     {
-        throw new NotImplementedException();
+        return new CLIENT_GATEWAY_LOGIN_IBUV_CONFIRM_REQUEST().Build();
     }
 }
 
