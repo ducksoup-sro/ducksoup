@@ -254,7 +254,6 @@ public class DefaultPacketlist
         0x7478, //CLIENT_HONOR_RANK
         0x9001, //CLIENT_HWID_PACKET
         0x2114, //CLIENT_ICON_REQUEST
-        0x6100, //CLIENT_ID_RESPONSE
         0x34c5, //CLIENT_INGAME_SUCCESS
         0x7559, //CLIENT_ITEM_BOX_LOG
         0x7565, //CLIENT_ITEM_MALL_WEB
