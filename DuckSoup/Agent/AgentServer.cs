@@ -724,7 +724,7 @@ public class AgentServer : AsyncServer
 
     private async Task<PacketResult> AGENT_LOGOUT(Packet packet, ISession session)
     {
-        if (!session.CharScreen)
+        if (session.CharScreen)
         {
             Global.Logger.WarnFormat("EXPLOIT - {0} tried to use AS_CRASH_EXPLOIT - {1:X} at 1",
                 session.SessionData.Charname,
@@ -741,7 +741,7 @@ public class AgentServer : AsyncServer
         }
 
         var logoutMode = packet.ReadUInt8();
-        if (packet.ReadUInt8() > 2)
+        if (logoutMode > 2)
         {
             Global.Logger.WarnFormat("EXPLOIT - {0} tried to use AS_CRASH_EXPLOIT - {1:X} at 3",
                 session.SessionData.Charname,
