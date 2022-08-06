@@ -66,13 +66,14 @@ public sealed class Session : ISession
         if (_exit) return;
         _exit = true;
 
+        // removes the session from the session list - the function has a contains check
+        AsyncServer.RemoveSession(this);
+        
         _clientTcpClient?.Close();
         _clientTcpClient = null;
         _serverTcpClient?.Close();
         _serverTcpClient = null;
         SessionData?.Dispose();
-        // removes the session from the session list - the function has a contains check
-        AsyncServer.RemoveSession(this);
     }
 
     public async Task SendToClient(Packet packet)
