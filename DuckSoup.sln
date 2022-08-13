@@ -16,8 +16,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.DatabaseCommands", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Event.Example", "Event.Example\Event.Example.csproj", "{6D865A33-180F-4D71-9A39-34F37D87DC44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.TypeIdResearch", "Plugin.TypeIdResearch\Plugin.TypeIdResearch.csproj", "{3A894586-A4C9-4916-B14D-26B8F59C6DDD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,5 +58,9 @@ Global
 		{3A894586-A4C9-4916-B14D-26B8F59C6DDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A894586-A4C9-4916-B14D-26B8F59C6DDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A894586-A4C9-4916-B14D-26B8F59C6DDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDA7AB4B-E1BD-47EF-BE55-36982BDFC934}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDA7AB4B-E1BD-47EF-BE55-36982BDFC934}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDA7AB4B-E1BD-47EF-BE55-36982BDFC934}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDA7AB4B-E1BD-47EF-BE55-36982BDFC934}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
