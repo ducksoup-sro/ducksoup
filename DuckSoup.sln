@@ -8,12 +8,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacketLibrary", "PacketLibr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{5C61BC65-1F15-4B59-9527-5ECD7960B655}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.AutoNotice", "Plugin.AutoNotice\Plugin.AutoNotice.csproj", "{8663F38F-BE24-42FA-A3D6-CFE214816D7D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.ReplaceCaptcha", "Plugin.ReplaceCaptcha\Plugin.ReplaceCaptcha.csproj", "{301075D4-6F98-4878-87C9-F30CA139A3E3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.DatabaseCommands", "Plugin.DatabaseCommands\Plugin.DatabaseCommands.csproj", "{44668C59-C30E-4CAC-BAA9-D90E376EDEB4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Event.Example", "Event.Example\Event.Example.csproj", "{6D865A33-180F-4D71-9A39-34F37D87DC44}"
 EndProject
 Global

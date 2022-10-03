@@ -16,3 +16,4 @@ global.json
 DuckSoup.sln.DotSettings
 DuckSoup.sln.DotSettings.user
 Plugin.TypeIdResearch
+Plugin.AgentPacketChecker
