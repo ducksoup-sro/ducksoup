@@ -5,6 +5,15 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>API</RootNamespace>
+        <PackageId>DuckSoup.API</PackageId>
+        <Title>DuckSoup API</Title>
+        <Authors>b0ykoe</Authors>
+        <Description>DuckSoup API</Description>
+        <Copyright>DON'T BE A DICK PUBLIC LICENSE </Copyright>
+        <PackageProjectUrl>https://github.com/b0ykoe/ducksoup</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/b0ykoe/ducksoup/blob/main/LICENSE.txt</PackageLicenseUrl>
+        <PackageIcon>DuckSoup.png</PackageIcon>
+        <RepositoryUrl>https://github.com/b0ykoe/ducksoup</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
@@ -15,6 +24,13 @@
 
     <ItemGroup>
         <ProjectReference Include="..\SilkroadSecurityAPI\SilkroadSecurityAPI.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="DuckSoup.png">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
     </ItemGroup>
 
 </Project>
