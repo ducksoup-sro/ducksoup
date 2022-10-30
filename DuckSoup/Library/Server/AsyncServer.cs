@@ -105,7 +105,7 @@ public class AsyncServer : IAsyncServer
                 tcpClient.Client.RemoteEndPoint as IPEndPoint);
 
         // creates a new session and starts it
-        var clientSession = new Session.Session(tcpClient, this);
+        using var clientSession = new Session.Session(tcpClient, this);
         AddSession(clientSession);
         await clientSession.Start();
     }
