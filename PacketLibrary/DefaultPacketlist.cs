@@ -201,13 +201,11 @@ public class DefaultPacketlist
         0x705B, //AGENT_TELEPORT_CANCEL
 
         // ATHENA Filter
-        0xA100, //CLIENT_VERSION
         0x703E, //CLIENT_REPAIR
         0x7150, //CLIENT_ALCHEMY
         0x7155, //CLIENT_ALCHEMY_CREATE_STONE
         0x7151, //CLIENT_ALCHEMY_STONE
         0x7024, //CLIENT_ANGLE_MOVE
-        0x6323, //CLIENT_CAPTCHA_ANSWER
         0x706a, //CLIENT_CHANGE_PARTY_NAME
         0x7001, //CLIENT_CHAR_SELECT
         0x7007, //CLIENT_CHARACTER_SCREEN
@@ -233,7 +231,6 @@ public class DefaultPacketlist
         0x7304, //CLIENT_FRIEND_REMOVAL
         0x7118, //CLIENT_GACHA_PLAY
         0x3053, //CLIENT_GETUP
-        0x2001, //CLIENT_GLOBAL_RESPONSE
         0x7010, //CLIENT_GM
         0x7420, //CLIENT_GPET_SETTINGS
         0x70ea, //CLIENT_GUIDE
@@ -249,8 +246,6 @@ public class DefaultPacketlist
         0x7256, //CLIENT_GUILD_TITLE_SET
         0x7103, //CLIENT_GUILD_TRANSFER
         0x7114, //CLIENT_GUILD_WAR_GOLD
-        0x5000, //CLIENT_HEADER1
-        0x9000, //CLIENT_HEADER2
         0x7478, //CLIENT_HONOR_RANK
         0x9001, //CLIENT_HWID_PACKET
         0x2114, //CLIENT_ICON_REQUEST
@@ -265,7 +260,6 @@ public class DefaultPacketlist
         0x7006, //CLIENT_LEAVE_CANCEL
         0x70e2, //CLIENT_LEAVE_JOB
         0x7005, //CLIENT_LEAVE_REQUEST
-        0x6102, //CLIENT_LOGIN
         0x7074, //CLIENT_MAINACTION
         0x70e3, //CLIENT_MAKE_ALIAS
         0x70a2, //CLIENT_MASTERY_UP
@@ -280,7 +274,6 @@ public class DefaultPacketlist
         0x7061, //CLIENT_PARTY_LEAVE
         0x3080, //CLIENT_PARTY_REQUEST
         0x706c, //CLIENT_PARTYMATCHING_LIST_REQUEST
-        0x6106, //CLIENT_PATCH_RESPONSE1
         0x70c5, //CLIENT_PET_MOVEMENT
         0x7117, //CLIENT_PET_RENAME
         0x70c6, //CLIENT_PET_TERMINATE
@@ -298,14 +291,12 @@ public class DefaultPacketlist
         0x7516, //CLIENT_PVP
         0x7402, //CLIENT_QUESTMARK
         0x70e4, //CLIENT_RANKING_LISTS
-        0x6104, //CLIENT_REQUEST_NEWS
         0x7060, //CLIENT_REQUEST_PARTY
         0x750e, //CLIENT_REQUEST_WEATHER
         0x7158, //CLIENT_SAVE_BAR
         0x7611, //CLIENT_SAVE_INFO
         0x7059, //CLIENT_SAVE_PLACE
         0x7045, //CLIENT_SELECT_OBJECT
-        0x6101, //CLIENT_SERVERLIST_REQUEST
         0x704f, //CLIENT_SIT
         0x70a1, //CLIENT_SKILL_UP
         0x3012, //CLIENT_SPAWN_SUCCESS
@@ -380,6 +371,7 @@ public class DefaultPacketlist
     // merged list of both lists above, its shorter!
     public static Dictionary<ushort, string> AgentClientWhitelistFull = new()
     {
+        {CLIENT_GLOBAL_MODULE_KEEP_ALIVE.MsgId, "CLIENT_GLOBAL_MODULE_KEEP_ALIVE (Empty)"},
         {On7021.MsgId, "?? - MOVEMENT PACKET"},
         {AGENT_AUTH.MsgId, "AGENT_AUTH"},
         {AGENT_ACADEMY_CREATE.MsgId, "AGENT_ACADEMY_CREATE"},

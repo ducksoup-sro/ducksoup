@@ -40,6 +40,12 @@ public class SharedObjects : ISharedObjects
                 {
                     foreach (var msgId in DefaultPacketlist.DownloadClientWhitelist)
                     {
+                        if (!DefaultPacketlist.DownloadClientWhitelistFull.ContainsKey(msgId))
+                        {
+                            Global.Logger.DebugFormat("Download: Packet 0x{0:X2} not found", msgId);
+                            continue;
+                        }
+                        
                         context.Whitelist.AddOrUpdate(new Whitelist()
                         {
                             MsgId = msgId, Comment = DefaultPacketlist.DownloadClientWhitelistFull[msgId],
@@ -48,6 +54,12 @@ public class SharedObjects : ISharedObjects
                     }
                     foreach (var msgId in DefaultPacketlist.GatewayClientWhitelist)
                     {
+                        if (!DefaultPacketlist.GatewayClientWhitelistFull.ContainsKey(msgId))
+                        {
+                            Global.Logger.DebugFormat("Gateway: Packet 0x{0:X2} not found", msgId);
+                            continue;
+                        }
+                        
                         context.Whitelist.AddOrUpdate(new Whitelist()
                         {
                             MsgId = msgId, Comment = DefaultPacketlist.GatewayClientWhitelistFull[msgId],
@@ -56,6 +68,12 @@ public class SharedObjects : ISharedObjects
                     }
                     foreach (var msgId in DefaultPacketlist.AgentClientWhitelist)
                     {
+                        if (!DefaultPacketlist.AgentClientWhitelistFull.ContainsKey(msgId))
+                        {
+                            Global.Logger.DebugFormat("Agent: Packet 0x{0:X2} not found", msgId);
+                            continue;
+                        }
+                        
                         context.Whitelist.AddOrUpdate(new Whitelist()
                         {
                             MsgId = msgId, Comment = DefaultPacketlist.AgentClientWhitelistFull[msgId],
