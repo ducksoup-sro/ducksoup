@@ -4,7 +4,7 @@ namespace API.Party;
 
 public interface IPartyMatchEntry
 {
-    IParty Party { get; init; }
+    IParty? Party { get; set; }
     int MatchId { get; init; }   
     PartyEnums.PartyPurposeType PurposeType { get; set; }
     byte LevelMin { get; set; }

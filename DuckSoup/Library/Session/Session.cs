@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -60,6 +61,9 @@ public sealed class Session : ISession
     {
         var partyManager = ServiceFactory.Load<IPartyManager>(typeof(IPartyManager));
         var party = partyManager.getParty(this);
+        
+        partyManager.removePartyMatchEntry(partyManager.getPartyMatchEntries()
+                .First(entry => entry.Party?.Leader.SessionData.JID == SessionData.JID).MatchId);
 
         if (party != null && party.Members.Count == 1)
         {

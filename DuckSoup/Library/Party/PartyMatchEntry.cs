@@ -5,7 +5,7 @@ namespace DuckSoup.Library.Party;
 
 public class PartyMatchEntry : IPartyMatchEntry
 {
-    public IParty Party { get; init; }
+    public IParty Party { get; set; }
     public int MatchId { get; init; }
     public PartyEnums.PartyPurposeType PurposeType { get; set; }
     public byte LevelMin { get; set; }
