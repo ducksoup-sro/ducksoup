@@ -76,21 +76,6 @@
         Unk08 = 0x80000000
     }
 
-    public enum PartyPurpose : byte
-    {
-        Hunting = 0,
-        Quest = 1,
-        Trader = 2,
-        Thief = 3
-    }
-
-    public enum PartySetup : byte
-    {
-        ExpShared = 1,
-        ItemShared = 2,
-        AnyoneCanInvite = 4
-    }
-
     public enum CharacterAction : byte
     {
         CommonAttack = 1,

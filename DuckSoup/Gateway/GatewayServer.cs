@@ -1,5 +1,6 @@
 #region
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -58,6 +59,13 @@ namespace DuckSoup.Gateway
                 PacketHandler = new PacketHandler(temp3, temp4);
             }
 
+            // ping
+            PacketHandler.RegisterClientHandler(0x2002, async (packet, session) =>
+            {
+                session.LastPing = DateTime.Now;
+                return new PacketResult();
+            });
+            
             PacketHandler.RegisterModuleHandler(0xA102,
                 SERVER_GATEWAY_LOGIN_RESPONSE); // Automatically redirect to the AgentServer
             PacketHandler.RegisterModuleHandler(0xA100,
@@ -87,7 +95,7 @@ namespace DuckSoup.Gateway
         {
             foreach (var gatewaySession in SharedObjects.GatewaySessions)
             {
-                gatewaySession.Dispose();
+                gatewaySession.Stop();
             }
 
             SharedObjects = null;
@@ -198,7 +206,7 @@ namespace DuckSoup.Gateway
             Task.Run(async () =>
             {
                 await Task.Delay(2000);
-                session.Dispose();
+                session.Stop();
             });
             return new PacketResult(redirectPacket, PacketResultType.Override);
         }

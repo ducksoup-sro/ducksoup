@@ -17,27 +17,6 @@ public class SessionData : ISessionData
         _extraData = new Dictionary<string, object>();
     }
 
-    public void Dispose()
-    {
-        LastSnowshieldUsage = null;
-        JID = null;
-        Charid = null;
-        Charname = null;
-        UniqueCharId = 0;
-        LatestRegionId = null;
-        SectorX = null;
-        SectorY = null;
-        PositionX = null;
-        PositionY = null;
-        PositionZ = null;
-        PvpState = null;
-        InCombat = null;
-        ScrollingType = null;
-        GameStateType = null;
-        JobType = null;
-        PartyMatchingId = null;
-    }
-
     public long? LastSnowshieldUsage { get; set; }
     public int? JID { get; set; }
     public int? Charid { get; set; }

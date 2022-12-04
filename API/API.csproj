@@ -15,6 +15,8 @@
         <PackageIcon>DuckSoup.png</PackageIcon>
         <RepositoryUrl>https://github.com/b0ykoe/ducksoup</RepositoryUrl>
         <LangVersion>11</LangVersion>
+        <Version>1.1.0</Version>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <ItemGroup>

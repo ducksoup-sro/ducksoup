@@ -3,9 +3,10 @@ using SilkroadSecurityAPI;
 
 namespace PacketLibrary.Agent.Client;
 
-public class AGENT_PARTY_MATCHING_JOIN : IPacketStructure
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_LEAVE
+public class CLIENT_AGENT_PARTY_LEAVE : IPacketStructure
 {
-    public static ushort MsgId => 0x706D;
+    public static ushort MsgId => 0x7061;
     public static bool Encrypted => false;
     public static bool Massive => false;
     public PacketDirection FromDirection => PacketDirection.Client;
@@ -13,17 +14,18 @@ public class AGENT_PARTY_MATCHING_JOIN : IPacketStructure
 
     public Task Read(Packet packet)
     {
-        throw new NotImplementedException();
+        // Empty
+        return Task.CompletedTask;
     }
 
     public Packet Build()
     {
-        throw new NotImplementedException();
+        var response = new Packet(MsgId, Encrypted, Massive);
+        return response;    
     }
 
     public static Packet of()
     {
-        throw new NotImplementedException();
+        return new CLIENT_AGENT_PARTY_LEAVE().Build();
     }
 }
-

@@ -6,7 +6,9 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using API;
+using API.Party;
 using API.Server;
+using API.ServiceFactory;
 using API.Session;
 using log4net;
 using SilkroadSecurityAPI;
@@ -49,13 +51,21 @@ public sealed class Session : ISession
     public int ClientId { get; set; }
     public string ClientIp { get; set; }
 
-    public void Dispose()
+    public void Stop()
     {
-        Dispose("Unknown reason");
+        Stop("Unknown reason");
     }
     
-    public void Dispose(string reason)
+    public void Stop(string reason)
     {
+        var partyManager = ServiceFactory.Load<IPartyManager>(typeof(IPartyManager));
+        var party = partyManager.getParty(this);
+
+        if (party != null && party.Members.Count == 1)
+        {
+            partyManager.removeParty(this);
+        }
+        
         if (SharedObjects.DebugLevel >= DebugLevel.Connections)
             _logger.InfoFormat("{0} - Stop Session - {1} ({2}) - {3}",
                 AsyncServer.Service.Name, ClientId,
@@ -73,7 +83,6 @@ public sealed class Session : ISession
         _clientTcpClient = null;
         _serverTcpClient?.Close();
         _serverTcpClient = null;
-        SessionData?.Dispose();
     }
 
     public async Task SendToClient(Packet packet)
@@ -90,7 +99,7 @@ public sealed class Session : ISession
         }
         catch (Exception)
         {
-            Dispose("send to client");
+            Stop("send to client");
         }
     }
 
@@ -108,7 +117,7 @@ public sealed class Session : ISession
         }
         catch (Exception)
         {
-            Dispose("send to server");
+            Stop("send to server");
         }
     }
 
@@ -135,7 +144,7 @@ public sealed class Session : ISession
         {
             Thread.Sleep(500);
             if (_serverTcpClient is not {Connected: true} || _clientTcpClient is not {Connected: true})
-                Dispose("500 ms");
+                Stop("500 ms");
 
             return Task.CompletedTask;
         });
@@ -170,7 +179,7 @@ public sealed class Session : ISession
 
             if (recvCount == 0)
             {
-                Dispose("receive count 0");
+                Stop("receive count 0");
                 return;
             }
 
@@ -213,7 +222,7 @@ public sealed class Session : ISession
                             "{0} - Client {1}({2}) exceedet the byte limit: {3} (maximum: {4} - Last check {5} seconds ago)",
                             AsyncServer.Service.Name, ClientId, ClientIp,
                             _packetSize, maxBytesPerTime, lastCheckDiff);
-                    Dispose("byte limit");
+                    Stop("byte limit");
                 }
                 else if (lastCheckDiff > 1)
                 {
@@ -240,7 +249,7 @@ public sealed class Session : ISession
                     case PacketResultType.Block:
                         break;
                     case PacketResultType.Disconnect:
-                        Dispose("receive from client disconnect");
+                        Stop("receive from client disconnect");
                         break;
                     case PacketResultType.Nothing:
                         _serverSecurity.Send(packet);
@@ -255,7 +264,7 @@ public sealed class Session : ISession
         }
         catch (Exception e)
         {
-            Dispose("receive from client catch " + e?.Message +  "\n"+ e?.InnerException?.Message);
+            Stop("receive from client catch " + e?.Message +  "\n"+ e?.InnerException?.Message);
         }
     }
 
@@ -268,7 +277,7 @@ public sealed class Session : ISession
             var recvCount = await _serverTcpClient.GetStream().ReadAsync(serverBufferMemory);
             if (recvCount == 0)
             {
-                Dispose("receive from server disconnect");
+                Stop("receive from server disconnect");
                 return;
             }
 
@@ -307,7 +316,7 @@ public sealed class Session : ISession
                     case PacketResultType.Block:
                         break;
                     case PacketResultType.Disconnect:
-                        Dispose("receive from server disconnect");
+                        Stop("receive from server disconnect");
                         break;
                     case PacketResultType.Nothing:
                         _clientSecurity.Send(packet);
@@ -322,7 +331,7 @@ public sealed class Session : ISession
         }
         catch (Exception e)
         {
-            Dispose("receive from server catch " + e?.Message +  "\n"+ e?.InnerException?.Message);
+            Stop("receive from server catch " + e?.Message +  "\n"+ e?.InnerException?.Message);
         }
     }
 
@@ -341,7 +350,7 @@ public sealed class Session : ISession
         }
         catch (Exception)
         {
-            Dispose("transfer to client catch");
+            Stop("transfer to client catch");
         }
     }
 
@@ -362,7 +371,7 @@ public sealed class Session : ISession
         }
         catch (Exception)
         {
-            Dispose("transfer to server catch");
+            Stop("transfer to server catch");
         }
     }
 
@@ -384,6 +393,9 @@ public sealed class Session : ISession
     // Packet Flooding
     private int _packetSize;
     private DateTime _lastPacketReset;
+    
+    // timer
+    public DateTime LastPing { get; set; } = DateTime.Now;
 
     // False Packets
     public bool CharnameSent { get; set; } = false;

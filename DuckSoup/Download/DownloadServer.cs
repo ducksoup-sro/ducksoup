@@ -1,9 +1,11 @@
 #region
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using API;
 using API.Database.DuckSoup;
+using API.Server;
 using API.ServiceFactory;
 using API.Session;
 using DuckSoup.Library.Server;
@@ -49,6 +51,13 @@ namespace DuckSoup.Download
             }
 
             PacketHandler = new PacketHandler(temp3, temp4);
+            
+            // ping
+            PacketHandler.RegisterClientHandler(0x2002, async (packet, session) =>
+            {
+                session.LastPing = DateTime.Now;
+                return new PacketResult();
+            });
         }
 
         private ISharedObjects SharedObjects { get; set; }
@@ -73,7 +82,7 @@ namespace DuckSoup.Download
             foreach (var downloadSession in SharedObjects
                          .DownloadSessions)
             {
-                downloadSession.Dispose();
+                downloadSession.Stop();
             }
 
             SharedObjects = null;

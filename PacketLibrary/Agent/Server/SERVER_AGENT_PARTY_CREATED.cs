@@ -3,9 +3,10 @@ using SilkroadSecurityAPI;
 
 namespace PacketLibrary.Agent.Server;
 
-public class OnB06D : IPacketStructure
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_CREATED
+public class SERVER_AGENT_PARTY_CREATED : IPacketStructure
 {
-    public static ushort MsgId => 0xB06D;
+    public static ushort MsgId => 0x3865;
     public static bool Encrypted => false;
     public static bool Massive => false;
     public PacketDirection FromDirection => PacketDirection.Server;

@@ -3,7 +3,7 @@ using SilkroadSecurityAPI;
 
 namespace API.Session;
 
-public interface ISession : IDisposable
+public interface ISession
 {
     IAsyncServer AsyncServer { get; init; }
     int ClientId { get; set; }
@@ -13,7 +13,10 @@ public interface ISession : IDisposable
     Task SendToServer(Packet packet);
     Task SendNotice(string message);
     Task Start();
+    void Stop();
+    void Stop(string reason);
 
+    
     #region Features
 
     string Hwid { get; set; }
@@ -31,6 +34,8 @@ public interface ISession : IDisposable
     bool CharnameSent { get; set; }
     bool CharScreen { get; set; }
     bool UserLoggedIn { get; set; }
+    
+    DateTime LastPing { get; set; }
 
     #endregion
 }

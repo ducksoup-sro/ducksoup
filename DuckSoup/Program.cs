@@ -12,6 +12,7 @@ using API.ServiceFactory;
 using DuckSoup.Library;
 using DuckSoup.Library.Commands;
 using DuckSoup.Library.Event;
+using DuckSoup.Library.Party;
 using DuckSoup.Library.Plugins;
 using DuckSoup.Library.Server;
 using DuckSoup.Library.Settings;
@@ -50,6 +51,7 @@ public static class Program
             return;
 
         var sharedObjects = new SharedObjects();
+        var partyManager = new PartyManager();
         var serverManager = new ServerManager();
         var commandManager = new CommandManager();
         var pluginManager = new PluginManager();

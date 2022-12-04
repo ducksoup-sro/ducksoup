@@ -4,7 +4,7 @@
 
 namespace API.Session
 {
-    public interface ISessionData : IDisposable
+    public interface ISessionData
     {
         long? LastSnowshieldUsage { get; set; }
         int? JID { get; set; }
