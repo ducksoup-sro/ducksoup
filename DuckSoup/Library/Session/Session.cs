@@ -61,15 +61,18 @@ public sealed class Session : ISession
     {
         var partyManager = ServiceFactory.Load<IPartyManager>(typeof(IPartyManager));
         var party = partyManager.getParty(this);
-        
-        partyManager.removePartyMatchEntry(partyManager.getPartyMatchEntries()
-                .First(entry => entry.Party?.Leader.SessionData.JID == SessionData.JID).MatchId);
 
+        var entry = partyManager.getPartyMatchEntries()
+            .FirstOrDefault(entry => entry.Party?.Leader.SessionData.JID == SessionData.JID);
+        if(entry != null) {
+            partyManager.removePartyMatchEntry(entry.MatchId);
+        }
+        
         if (party != null && party.Members.Count == 1)
         {
             partyManager.removeParty(this);
         }
-        
+
         if (SharedObjects.DebugLevel >= DebugLevel.Connections)
             _logger.InfoFormat("{0} - Stop Session - {1} ({2}) - {3}",
                 AsyncServer.Service.Name, ClientId,
@@ -82,7 +85,7 @@ public sealed class Session : ISession
 
         // removes the session from the session list - the function has a contains check
         AsyncServer.RemoveSession(this);
-        
+
         _clientTcpClient?.Close();
         _clientTcpClient = null;
         _serverTcpClient?.Close();
