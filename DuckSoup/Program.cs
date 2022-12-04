@@ -54,10 +54,10 @@ public static class Program
         var sharedObjects = new SharedObjects();
         var partyManager = new PartyManager();
         var serverManager = new ServerManager();
+        var webserverManager = new WebserverManager();
         var commandManager = new CommandManager();
         var pluginManager = new PluginManager();
         var eventManager = new EventManager();
-        var webserverManager = new WebserverManager();
 
         // Make sure we start the command loop in order to not exit the application
         ServiceFactory.Load<ICommandManager>(typeof(ICommandManager)).StartCommandLoop();

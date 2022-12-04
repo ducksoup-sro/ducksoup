@@ -18,7 +18,7 @@ public class WebserverManager : IWebserverManager
     public WebserverManager()
     {
         ServiceFactory.Register<IWebserverManager>(typeof(IWebserverManager), this);
-        Start("0.0.0.0", 9000);
+        Start("127.0.0.1", 9000);
     }
 
     public void Start(string hostname, int port)
