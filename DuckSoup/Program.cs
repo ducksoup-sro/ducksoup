@@ -16,6 +16,7 @@ using DuckSoup.Library.Party;
 using DuckSoup.Library.Plugins;
 using DuckSoup.Library.Server;
 using DuckSoup.Library.Settings;
+using DuckSoup.Library.Webserver;
 using log4net;
 using log4net.Config;
 
@@ -56,6 +57,7 @@ public static class Program
         var commandManager = new CommandManager();
         var pluginManager = new PluginManager();
         var eventManager = new EventManager();
+        var webserverManager = new WebserverManager();
 
         // Make sure we start the command loop in order to not exit the application
         ServiceFactory.Load<ICommandManager>(typeof(ICommandManager)).StartCommandLoop();

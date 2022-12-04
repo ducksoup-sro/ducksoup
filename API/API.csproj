@@ -15,7 +15,7 @@
         <PackageIcon>DuckSoup.png</PackageIcon>
         <RepositoryUrl>https://github.com/b0ykoe/ducksoup</RepositoryUrl>
         <LangVersion>11</LangVersion>
-        <Version>1.1.0</Version>
+        <Version>1.2.0</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
@@ -23,6 +23,7 @@
         <PackageReference Include="EntityFramework" Version="6.4.4" />
         <PackageReference Include="log4net" Version="2.0.14" />
         <PackageReference Include="McMaster.NETCore.Plugins" Version="1.4.0" />
+        <PackageReference Include="Watson" Version="4.3.5" />
     </ItemGroup>
 
     <ItemGroup>
