@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API;
+using API.Database;
 using API.ServiceFactory;
 using API.Webserver;
 using WatsonWebserver;
@@ -18,13 +19,14 @@ public class WebserverManager : IWebserverManager
     public WebserverManager()
     {
         ServiceFactory.Register<IWebserverManager>(typeof(IWebserverManager), this);
-        Start("127.0.0.1", 9000);
+        
+        Start(DatabaseHelper.GetSettingOrDefault("WebserverHost", "*"), int.Parse(DatabaseHelper.GetSettingOrDefault("WebserverPort", "9000")));
     }
 
     public void Start(string hostname, int port)
     {
         _protectedRoutes = new List<string>();
-        _server = new WatsonWebserver.Server(hostname, port, false, DefaultRoute);
+        _server = new WatsonWebserver.Server("*", port, false, DefaultRoute);
         _server.Routes.PreRouting = PreRoutingHandler;
         _server?.Start();
         Global.Logger.InfoFormat("Webserver on http://{0}:{1} started", hostname, port);
