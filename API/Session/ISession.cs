@@ -15,10 +15,12 @@ public interface ISession
     Task Start();
     void Stop();
     void Stop(string reason);
-
     
     #region Features
 
+    ITimerManager TimerManager { get; set; }
+    ICountdownManager CountdownManager { get; set; }
+    ISpawnInfo SpawnInfo { get; init; }
     string Hwid { get; set; }
     bool CharacterGameReady { get; set; }
     bool FirstSpawn { get; set; }

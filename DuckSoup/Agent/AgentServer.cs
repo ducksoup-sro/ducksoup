@@ -3,7 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using API;
 using API.Database.DuckSoup;
@@ -11,11 +13,11 @@ using API.Database.SRO_VT_SHARD;
 using API.Server;
 using API.ServiceFactory;
 using API.Session;
+using DuckSoup.Library.Objects.Spawn;
 using DuckSoup.Library.Party;
 using DuckSoup.Library.Server;
 using PacketLibrary;
 using PacketLibrary.Agent.Client;
-using PacketLibrary.Agent.Server;
 using SilkroadSecurityAPI;
 
 #endregion
@@ -66,14 +68,14 @@ public class AgentServer : AsyncServer
         }
 
         var partyManagerHandlers = new PartyManagerHandlers(PacketHandler);
-        
+
         // ping
-        PacketHandler.RegisterClientHandler(0x2002, async (packet, session) =>
+        PacketHandler.RegisterClientHandler(0x2002, async (_, session) =>
         {
             session.LastPing = DateTime.Now;
             return new PacketResult();
         });
-        
+
         // Register all handlers here
         // Mainly Exploits
         PacketHandler.RegisterClientHandler(0x7001,
@@ -99,12 +101,209 @@ public class AgentServer : AsyncServer
 
         // Mainly Data / Information
         PacketHandler.RegisterModuleHandler(0x3013, SERVER_AGENT_CHARACTER_DATA); // Character Spawn Packet
+
+        // Test Stuff
+        PacketHandler.RegisterModuleHandler(0x3015, EntitySingleSpawnResponse);
+        PacketHandler.RegisterModuleHandler(0x3016, EntitySingleDespawnResponse); // not needed right now
+        PacketHandler.RegisterModuleHandler(0x3017, EntityGroupSpawnBeginResponse);
+        PacketHandler.RegisterModuleHandler(0x3018, EntityGroupSpawnEndResponse);
+        PacketHandler.RegisterModuleHandler(0x3019, EntityGroupSpawnDataResponse);
+
         PacketHandler.RegisterClientHandler(0x3012, AGENT_GAME_READY); // GameReady true
         PacketHandler.RegisterClientHandler(0x705A, AGENT_TELEPORT_USE); // GameReady false
         PacketHandler.RegisterModuleHandler(0x3020, AGENT_ENVIRONMENT_CELESTIAL_POSITION); // CharacterUniqueId
         PacketHandler.RegisterModuleHandler(0x30BF, SERVER_ENTITY_STATE_UPDATE);
         PacketHandler.RegisterModuleHandler(0xB021, AGENT_MOVEMENT_SERVER);
+
+        PacketHandler.RegisterClientHandler(0x7025, async (packet, session) =>
+        {
+            var req = new CLIENT_AGENT_CHAT_REQUEST();
+            await req.Read(packet);
+
+            // if (req.Message.StartsWith(".start"))
+            // {
+            //     var time = int.Parse(req.Message.Split()[1]);
+            //     try
+            //     {
+            //         session.TimerManager.Start(time, (_, _) => { session.SendNotice("test over"); });
+            //     }
+            //     catch (Exception e)
+            //     {
+            //         Global.Logger.Info(e.ToString());
+            //     }
+            // }
+            //
+            // if (req.Message.ToLower().Equals(".stop"))
+            // {
+            //     session.TimerManager.Stop();
+            // }
+
+            return new PacketResult();
+        });
     }
+
+    private async Task<PacketResult> EntitySingleDespawnResponse(Packet packet, ISession session)
+    {
+        var uniqueId = packet.ReadUInt32();
+        return new PacketResult();
+    }
+
+    private async Task<PacketResult> EntityGroupSpawnEndResponse(Packet packet, ISession session)
+    {
+        var pck = session.SpawnInfo.GetPacket();
+        pck.ToReadOnly();
+
+        for (var i = 0; i < session.SpawnInfo.GetAmount(); i++)
+        {
+            switch (session.SpawnInfo.GetSpawnInfoType())
+            {
+                case SpawnInfoType.Spawn: //Spawn
+                    ParseSpawn(session, pck, true);
+                    break;
+                case SpawnInfoType.Despawn: //Despawn
+                    var uniqueId = pck.ReadUInt32();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        session.SpawnInfo.Clear();
+
+        return new PacketResult();
+    }
+
+    private async Task<PacketResult> EntitySingleSpawnResponse(Packet packet, ISession session)
+    {
+        ParseSpawn(session, packet);
+        return new PacketResult();
+    }
+
+    private async Task<PacketResult> EntityGroupSpawnDataResponse(Packet packet, ISession session)
+    {
+        if (session.SpawnInfo.GetSpawnInfoType() == null || session.SpawnInfo.GetAmount() == null || session.SpawnInfo.GetPacket() == null)
+        {
+            return new PacketResult();
+        }
+
+        session.SpawnInfo.GetPacket()?.WriteUInt8Array(packet.GetBytes());
+
+        return new PacketResult();
+    }
+
+    private async Task<PacketResult> EntityGroupSpawnBeginResponse(Packet packet, ISession session)
+    {
+        session.SpawnInfo.Read(packet);
+        return new PacketResult();
+    }
+
+    public void ParseSpawn(ISession session, Packet packet, bool isGroup = false)
+    {
+        // Credits: Mostly taken from RSBot https://github.com/SDClowen/RSBot/
+        var refObjId = packet.ReadUInt32();
+
+        if (refObjId == uint.MaxValue)
+        {
+            return;
+        }
+
+        // ghidra(isro client): FUN_009dd970 maybe flowers?
+        if (refObjId == 0xfffffffe)
+        {
+            packet.ReadUInt32();
+            packet.ReadUInt32();
+        }
+
+        var obj = SharedObjects.RefObjCommon[(int) refObjId];
+
+        if (obj == null)
+        {
+            return;
+        }
+
+        switch (obj.TypeID1)
+        {
+            case 1:
+                switch (obj.TypeID2)
+                {
+                    case 1:
+                    {
+                        var spawnedPlayer = new SpawnedPlayer(refObjId);
+                        spawnedPlayer.Deserialize(packet);
+                        var spawnedPlayerSession = SharedObjects.AgentSessions.FirstOrDefault(c =>
+                            c.SessionData.UniqueCharId == spawnedPlayer.UniqueId);
+                        if (spawnedPlayerSession == null)
+                        {
+                            break;
+                        }
+                        if (spawnedPlayerSession.TimerManager.IsStarted() &&
+                            spawnedPlayerSession.TimerManager.IsBroadcast())
+                        {
+                            Task.Run(() =>
+                            {
+                                Thread.Sleep(100);
+                                spawnedPlayerSession.TimerManager.Send(session);
+                            });
+                        }
+                        
+                    }
+                        break;
+                    case 2:
+                        switch (obj.TypeID3)
+                        {
+                            case 1:
+                            {
+                                var spawnedMonster = new SpawnedMonster(refObjId);
+                                spawnedMonster.Deserialize(packet);
+                            }
+                                break;
+                            case 3:
+                            {
+                                var spawnedCos = new SpawnedCos(refObjId);
+                                spawnedCos.Deserialize(packet);
+                            }
+                                break;
+
+                            case 5:
+                            {
+                                var spawnedFortressStructure = new SpawnedFortressStructure(refObjId);
+                                spawnedFortressStructure.Deserialize(packet);
+                            }
+                                break;
+
+                            default:
+                            {
+                                var spawnedNpc = new SpawnedNpcNpc(refObjId);
+                                spawnedNpc.ParseBionicDetails(packet);
+                                spawnedNpc.Deserialize(packet);
+                            }
+                                break;
+                        }
+                        break;
+                }
+                break;
+            case 3:
+                var spawnedItem = SpawnedItem.FromPacket(packet, refObjId);
+                break;
+
+            case 4:
+                var spawnedPortal = SpawnedPortal.FromPacket(packet, refObjId);
+                break;
+        }
+
+        if (!isGroup)
+        {
+            if (obj.TypeID1 == 1 || obj.TypeID1 == 4)
+            {
+                packet.ReadUInt8(); // 1 = Normal, 3 = Spawning, 4 = Running
+            }
+            else if (obj.TypeID1 == 3)
+            {
+                packet.ReadUInt8(); // DropSource
+                packet.ReadUInt32(); // DropUID
+            }
+        }
+    }
+
 
     private ISharedObjects SharedObjects { get; set; }
 
@@ -172,23 +371,59 @@ public class AgentServer : AsyncServer
 
         var updateType = packet.ReadUInt8();
         var updateState = packet.ReadUInt8();
+
         switch (updateType)
         {
-            case 0: // LifeState
+            case 0:
+                session.SessionData.State.LifeState = (LifeState) updateState;
+                if ((LifeState) updateState == LifeState.Dead && session.CountdownManager.IsStopOnDead() &&
+                    session.CountdownManager.IsStarted())
+                {
+                    session.CountdownManager.Stop();
+                }
+
+                if (session.TimerManager.IsStarted())
+                {
+                    session.TimerManager.Stop();
+                }
+
                 break;
-            case 1: // MotionState
+            case 1:
+                var motionState = (MotionState) updateState;
+                session.SessionData.State.MotionState = motionState;
+
+                session.SessionData.State.MovementType = motionState switch
+                {
+                    MotionState.Walking => MovementType.Walking,
+                    MotionState.Running => MovementType.Running,
+                    MotionState.StandUp => throw new ArgumentOutOfRangeException(),
+                    MotionState.Sitting => throw new ArgumentOutOfRangeException(),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
                 break;
             case 4:
-                session.SessionData.GameStateType = (GameState) updateState;
+                session.SessionData.State.BodyState = (BodyState) updateState;
                 break;
+
             case 7:
-                session.SessionData.PvpState = (PvpState) updateState;
+                session.SessionData.State.PvpState = (PvpState) updateState;
                 break;
             case 8:
-                session.SessionData.InCombat = updateState == 1;
+                session.SessionData.State.BattleState = (BattleState) updateState;
+                if ((BattleState) updateState == BattleState.InBattle && session.TimerManager.IsStarted() && session.TimerManager.IsStopOnBattle())
+                {
+                    session.TimerManager.Stop();
+                }
+
                 break;
             case 11:
-                session.SessionData.ScrollingType = (Scrolling) updateState;
+                session.SessionData.State.ScrollState = (ScrollState) updateState;
+                break;
+
+            default:
+                Global.Logger.ErrorFormat("{0} - EntityUpdate: Unknown update type {1} - State: {2}",
+                    session.SessionData.Charname, updateType, updateState);
                 break;
         }
 
@@ -558,13 +793,14 @@ public class AgentServer : AsyncServer
         }
 
         //State
-        var lifeState = packet.ReadUInt8(); // 1   byte    State.LifeState         //1 = Alive, 2 = Dead
+        session.SessionData.State.LifeState =
+            (LifeState) packet.ReadUInt8(); // 1   byte    State.LifeState         //1 = Alive, 2 = Dead
         packet.ReadUInt8(); // 1   byte    State.unkByte0
-        var stateMotionState =
-            packet.ReadUInt8(); // 1   byte    State.MotionState       //0 = None, 2 = Walking, 3 = Running, 4 = Sitting
-        session.SessionData.GameStateType =
-            (GameState) packet
-                .ReadUInt8(); // 1   byte    State.Status            //0 = None, 1 = Hwan, 2 = Untouchable, 3 = GameMasterInvincible, 5 = GameMasterInvisible, 5 = ?, 6 = Stealth, 7 = Invisible
+        session.SessionData.State.MotionState =
+            (MotionState) packet
+                .ReadUInt8(); // 1   byte    State.MotionState       //0 = None, 2 = Walking, 3 = Running, 4 = Sitting
+        session.SessionData.State.BodyState = (BodyState) packet
+            .ReadUInt8(); // 1   byte    State.Status            //0 = None, 1 = Hwan, 2 = Untouchable, 3 = GameMasterInvincible, 5 = GameMasterInvisible, 5 = ?, 6 = Stealth, 7 = Invisible
         var stateWalkSpeed = packet.ReadFloat(); // 4   float   State.WalkSpeed
         var stateRunSpeed = packet.ReadFloat(); // 4   float   State.RunSpeed
         var stateHwanSpeed = packet.ReadFloat(); // 4   float   State.HwanSpeed
@@ -593,10 +829,10 @@ public class AgentServer : AsyncServer
         var jobExp = packet.ReadUInt32(); // 4   uint    JobExp
         var jobContribution = packet.ReadUInt32(); // 4   uint    JobContribution
         var jobReward = packet.ReadUInt32(); // 4   uint    JobReward
-        session.SessionData.PvpState =
+        session.SessionData.State.PvpState =
             (PvpState) packet.ReadUInt8(); // 1   byte    PVPState                //0 = White, 1 = Purple, 2 = Red
         var transportFlag = packet.ReadUInt8(); // 1   byte    TransportFlag
-        session.SessionData.InCombat = packet.ReadBool(); // 1   byte    InCombat
+        session.SessionData.State.BattleState = (BattleState) packet.ReadUInt8(); // 1   byte    InCombat
         if (transportFlag == 1)
         {
             var transportUniqueId = packet.ReadUInt32(); // 4   uint    Transport.UniqueID
@@ -641,6 +877,11 @@ public class AgentServer : AsyncServer
 
         if (target != session.SessionData.UniqueCharId) return new PacketResult();
 
+        if (session.TimerManager.IsStarted() && session.TimerManager.IsStopOnMove())
+        {
+            session.TimerManager.Stop();
+        }
+        
         // sky = 0, ground = 1
         var groundClick = packet.ReadUInt8(); //sky or ground click
         if (groundClick == 0x00) return new PacketResult();
@@ -665,6 +906,15 @@ public class AgentServer : AsyncServer
     private async Task<PacketResult> AGENT_TELEPORT_USE(Packet packet, ISession session)
     {
         session.CharacterGameReady = false;
+        if (session.CountdownManager.IsStarted() && session.CountdownManager.IsStopOnTeleport())
+        {
+            session.CountdownManager.Stop();
+        }
+
+        if (session.TimerManager.IsStarted())
+        {
+            session.TimerManager.Stop();
+        }
         return new PacketResult();
     }
 
@@ -672,6 +922,47 @@ public class AgentServer : AsyncServer
     {
         // fix to not crash on autonotice
         session.CharacterGameReady = true;
+
+        if (session.CountdownManager.IsStarted())
+        {
+            if (!session.CountdownManager.IsStopOnTeleport())
+            {
+                session.CountdownManager.Resend();
+            }
+            else
+            {
+                session.CountdownManager.Stop();
+            }
+        }
+
+        if (session.TimerManager.IsStarted())
+        {
+            session.TimerManager.Stop();
+        }
+
+        Task.Run(() =>
+        {
+            Thread.Sleep(1000);
+            foreach (var agentSession in SharedObjects.AgentSessions)
+            {
+                if (!agentSession.CharacterGameReady)
+                {
+                    continue;
+                }
+
+                if (agentSession.SessionData.Charid == session.SessionData.Charid)
+                {
+                    continue;
+                }
+
+                if (agentSession.TimerManager.IsStarted() && agentSession.TimerManager.IsBroadcast())
+                {
+                    agentSession.TimerManager.Send(session);
+                }
+            }
+        });
+
+
         return new PacketResult();
     }
 

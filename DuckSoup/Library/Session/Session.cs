@@ -33,6 +33,7 @@ public sealed class Session : ISession
 
     public Session(TcpClient clientTcpClient, IAsyncServer asyncServer)
     {
+        SpawnInfo = new SpawnInfo();
         SessionData = new SessionData();
         AsyncServer = asyncServer;
         _clientTcpClient = clientTcpClient;
@@ -86,6 +87,11 @@ public sealed class Session : ISession
         // removes the session from the session list - the function has a contains check
         AsyncServer.RemoveSession(this);
 
+        TimerManager?.Stop();
+        TimerManager = null;
+        CountdownManager?.Stop();
+        CountdownManager = null;
+        
         _clientTcpClient?.Close();
         _clientTcpClient = null;
         _serverTcpClient?.Close();
@@ -146,6 +152,9 @@ public sealed class Session : ISession
         _serverTcpClient = new TcpClient();
         await _serverTcpClient.ConnectAsync(AsyncServer.RemoteEndPoint.Address, AsyncServer.RemoteEndPoint.Port);
 
+        TimerManager = new TimerManager(this);
+        CountdownManager = new CountdownManager(this);
+        
         // Just making sure to disconnect clients that have fucked up
         _ = Task.Factory.StartNew(() =>
         {
@@ -338,7 +347,7 @@ public sealed class Session : ISession
         }
         catch (Exception e)
         {
-            Stop("receive from server catch " + e?.Message +  "\n"+ e?.InnerException?.Message);
+            Stop("receive from server catch " + e.Message +  "\n"+ e.InnerException?.Message);
         }
     }
 
@@ -385,6 +394,9 @@ public sealed class Session : ISession
 
     #region Features
 
+    public ITimerManager TimerManager { get; set; }
+    public ICountdownManager CountdownManager { get; set; }
+    public ISpawnInfo SpawnInfo { get; init; }
     public string Hwid { get; set; }
     public bool CharacterGameReady { get; set; } = false;
     public bool FirstSpawn { get; set; } = false;
