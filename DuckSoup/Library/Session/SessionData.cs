@@ -15,8 +15,10 @@ public class SessionData : ISessionData
     public SessionData()
     {
         _extraData = new Dictionary<string, object>();
+        State = new State();
     }
 
+    public IState State { get; }
     public long? LastSnowshieldUsage { get; set; }
     public int? JID { get; set; }
     public int? Charid { get; set; }
@@ -28,10 +30,6 @@ public class SessionData : ISessionData
     public float? PositionX { get; set; }
     public float? PositionY { get; set; }
     public float? PositionZ { get; set; }
-    public PvpState? PvpState { get; set; }
-    public bool? InCombat { get; set; }
-    public Scrolling? ScrollingType { get; set; }
-    public GameState? GameStateType { get; set; }
     public Job? JobType { get; set; }
     public uint? PartyMatchingId { get; set; }
 

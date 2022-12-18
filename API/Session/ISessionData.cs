@@ -6,6 +6,7 @@ namespace API.Session
 {
     public interface ISessionData
     {
+        IState State { get; }
         long? LastSnowshieldUsage { get; set; }
         int? JID { get; set; }
         int? Charid { get; set; }
@@ -17,10 +18,6 @@ namespace API.Session
         float? PositionX { get; set; }
         float? PositionY { get; set; }
         float? PositionZ { get; set; }
-        PvpState? PvpState { get; set; }
-        bool? InCombat { get; set; }
-        Scrolling? ScrollingType { get; set; }
-        GameState? GameStateType { get; set; }
         Job? JobType { get; set; }
         uint? PartyMatchingId { get; set; }
         public object this[string field] { get; set; }
