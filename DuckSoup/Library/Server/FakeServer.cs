@@ -30,10 +30,9 @@ public class FakeServer : TcpServer, IFakeServer
         Log.Information("{0} - SecurityType: {1}", Service.Name,
             Service.SecurityType);
         Log.Information("{0} - Setting up Socket..", Service.Name);
-        Log.Information("{0} - Server bound to {1}", Service.Name,
-            Service.BindPort);
-        Log.Information("{0} - Redirecting Sessions to {1}", Service.Name,
-            Service.RemoteMachine_Machine.Address);
+        Log.Information("{0} - Redirecting Sessions from {1}:{2} to {3}:{4}", Service.Name,
+                Service.LocalMachine_Machine.Address, Service.BindPort,
+                Service.RemoteMachine_Machine.Address, Service.RemotePort);
     }
 
     public Service Service { get; }

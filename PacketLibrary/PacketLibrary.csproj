@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <LangVersion>11</LangVersion>
+        <LangVersion>latestmajor</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>DuckSoup.PacketLibrary</PackageId>
         <Title>DuckSoup PacketLibrary</Title>
@@ -49,9 +49,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="LanguageExt.Core" Version="4.4.6"/>
-        <PackageReference Include="Serilog" Version="3.1.0-dev-02071"/>
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.2.0-dev-00918"/>
+        <PackageReference Include="LanguageExt.Core" Version="4.4.7" />
+        <PackageReference Include="Serilog" Version="3.1.0-dev-02083" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="5.0.0-dev-00923" />
     </ItemGroup>
 
 </Project>
