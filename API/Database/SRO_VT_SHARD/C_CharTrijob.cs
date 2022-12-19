@@ -25,9 +25,7 @@ namespace API.Database.SRO_VT_SHARD
         public int Contribution { get; set; }
 
         public int Reward { get; set; }
-
-        public long PaydContribution { get; set; }
-
+        
         public virtual C_Char C_Char { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
