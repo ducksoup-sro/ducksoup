@@ -2,6 +2,8 @@
 
 #endregion
 
+using API.Objects.Cos;
+
 namespace API.Session
 {
     public interface ISessionData
@@ -20,6 +22,14 @@ namespace API.Session
         float? PositionZ { get; set; }
         Job? JobType { get; set; }
         uint? PartyMatchingId { get; set; }
+        ITransport? Transport { get; set; }
+        IJobTransport? JobTransport { get; set; }
+        IGrowth? Growth { get; set; }
+        IAbility? AbilityPet { get; set; }
+        IFellow? Fellow { get; set; }
+        ICos? Vehicle { get; set; }
+        bool OnTransport { get; set; }
+        uint TransportUniqueId { get; set; }
         public object this[string field] { get; set; }
     }
 }

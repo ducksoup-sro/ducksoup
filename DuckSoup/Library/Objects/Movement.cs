@@ -1,9 +1,8 @@
 ﻿using API;
 using API.Session;
-using DuckSoup.Library.Objects;
 using SilkroadSecurityAPI;
 
-namespace DuckSoup.Library.Session;
+namespace DuckSoup.Library.Objects;
 
 // https://github.com/SDClowen/RSBot/
 public class Movement : IMovement

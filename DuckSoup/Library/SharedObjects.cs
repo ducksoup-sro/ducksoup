@@ -99,6 +99,7 @@ public class SharedObjects : ISharedObjects
         public Dictionary<int, C_RefObjCommon> RefObjCommon { get; private set; }
         public Dictionary<int, C_RefObjItem> RefObjItem { get; private set; }
         public Dictionary<int, C_RefObjStruct> RefObjStruct { get; private set; }
+        public Dictionary<byte, C_RefLevel> RefLevel { get; private set; }
         public Dictionary<int, C_RefSkill> RefSkill { get; private set; }
 
         public void Dispose()
@@ -108,7 +109,12 @@ public class SharedObjects : ISharedObjects
             GatewaySessions = null;
 
             Notice = null;
+            RefObjChar = null;
+            RefObjCharExtraSkill = null;
             RefObjCommon = null;
+            RefObjItem = null;
+            RefObjStruct = null;
+            RefLevel = null;
             RefSkill = null;
         }
 
@@ -126,6 +132,7 @@ public class SharedObjects : ISharedObjects
                 RefObjCommon = db.C_RefObjCommon.ToDictionary(x => x.ID);
                 RefObjItem = db.C_RefObjItem.ToDictionary(x => x.ID);
                 RefObjStruct = db.C_RefObjStruct.ToDictionary(x => x.ID);
+                RefLevel = db.C_RefLevel.ToDictionary(x => x.Lvl);
             }
 
             if (DebugLevel < DebugLevel.Info) return;
@@ -135,6 +142,7 @@ public class SharedObjects : ISharedObjects
             Global.Logger.InfoFormat("{0} - {1} Common loaded.", ServerName, RefObjCommon.Count);
             Global.Logger.InfoFormat("{0} - {1} Items loaded.", ServerName, RefObjItem.Count);
             Global.Logger.InfoFormat("{0} - {1} Structs loaded.", ServerName, RefObjStruct.Count);
+            Global.Logger.InfoFormat("{0} - {1} Levels loaded.", ServerName, RefLevel.Count);
         }
 
         private void LoadSkills()

@@ -1,11 +1,10 @@
 ﻿using API;
-using DuckSoup.Library.Session;
 using SilkroadSecurityAPI;
 
 namespace DuckSoup.Library.Objects.Spawn;
 
 // https://github.com/SDClowen/RSBot/
-public class SpawnedBionic : SpawnedEntity
+public class SpawnedBionic : SpawnedEntity, ISpawnedBionic
 {
     public bool AttackingPlayer { get; private set; }
     public bool HasHealth => Health > 0;
@@ -19,11 +18,12 @@ public class SpawnedBionic : SpawnedEntity
         if (RefObjChar != null)
             Health = RefObjChar.MaxHP;
     }
-    internal void ParseBionicDetails(Packet packet)
+
+    public void ParseBionicDetails(Packet packet)
     {
         UniqueId = packet.ReadUInt32();
 
-        var movement = Movement.FromPacket(packet);
+        var movement = Objects.Movement.FromPacket(packet);
         State.Deserialize(packet);
     }
 }

@@ -3,16 +3,18 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using API;
 using API.Database.DuckSoup;
 using API.Database.SRO_VT_SHARD;
+using API.Objects.Cos;
 using API.Server;
 using API.ServiceFactory;
 using API.Session;
+using DuckSoup.Library.Objects.Cos;
+using DuckSoup.Library.Objects.Inventory;
 using DuckSoup.Library.Objects.Spawn;
 using DuckSoup.Library.Party;
 using DuckSoup.Library.Server;
@@ -101,6 +103,9 @@ public class AgentServer : AsyncServer
 
         // Mainly Data / Information
         PacketHandler.RegisterModuleHandler(0x3013, SERVER_AGENT_CHARACTER_DATA); // Character Spawn Packet
+        PacketHandler.RegisterModuleHandler(0x30C8, SERVER_AGENT_COS_INFO);
+        PacketHandler.RegisterModuleHandler(0x30C9, SERVER_AGENT_COS_UPDATE);
+        PacketHandler.RegisterModuleHandler(0xB0CB, SERVER_AGENT_COS_UPDATE_RIDESTATE);
 
         // Test Stuff
         PacketHandler.RegisterModuleHandler(0x3015, EntitySingleSpawnResponse);
@@ -142,6 +147,249 @@ public class AgentServer : AsyncServer
         });
     }
 
+    private async Task<PacketResult> SERVER_AGENT_COS_UPDATE_RIDESTATE(Packet packet, ISession session)
+    {
+        if (packet.ReadUInt8() != 0x01)
+            return new PacketResult();
+
+        var ownerUniqueId = packet.ReadUInt32();
+        var isMounted = packet.ReadBool();
+        var cosUniqueId = packet.ReadUInt32();
+
+        if (ownerUniqueId == session.SessionData.UniqueCharId)
+        {
+            if (!isMounted)
+            {
+                session.SessionData.Vehicle = null;
+                session.SessionData.Transport = null;
+
+                return new PacketResult();
+            }
+
+            if (cosUniqueId == session.SessionData.Transport?.UniqueId)
+                session.SessionData.Vehicle = session.SessionData.Transport;
+
+            if (cosUniqueId == session.SessionData.JobTransport?.UniqueId)
+                session.SessionData.Vehicle = session.SessionData.JobTransport;
+
+            // Vsro private servers uses the attack pet like pet2
+            if (cosUniqueId == session.SessionData.Growth?.UniqueId)
+                session.SessionData.Vehicle = session.SessionData.Growth;
+
+            if (cosUniqueId == session.SessionData.Fellow?.UniqueId)
+                session.SessionData.Vehicle = session.SessionData.Fellow;
+            
+            session.SessionData.OnTransport = isMounted;
+            session.SessionData.TransportUniqueId = cosUniqueId;
+        }
+        
+        
+        return new PacketResult();
+    }
+
+    private async Task<PacketResult> SERVER_AGENT_COS_UPDATE(Packet packet, ISession session)
+    {
+        var uniqueId = packet.ReadUInt32();;
+        var type = packet.ReadUInt8();
+        var refLevel = SharedObjects.RefLevel;
+        
+        if (session.SessionData.Growth?.UniqueId == uniqueId)
+        {
+            switch (type)
+            {
+                case 1:
+                    session.SessionData.Growth = null;
+                    break;
+                case 2: // update inventory
+                    break;
+                case 3:
+                    var experience = packet.ReadInt64();
+                    var source = packet.ReadUInt32();;
+                    if (source == session.SessionData.Growth.UniqueId)
+                        return new PacketResult();
+
+                    session.SessionData.Growth.Experience += experience;
+
+                    var iLevel = session.SessionData.Growth.Level;
+                    while (session.SessionData.Growth.Experience > refLevel.First(c => c.Key == iLevel).Value.Exp_C)
+                    {
+                        session.SessionData.Growth.Experience -= refLevel.First(c => c.Key == iLevel).Value.Exp_C;
+                        iLevel++;
+                    }
+
+                    if (session.SessionData.Growth.Level < iLevel)
+                    {
+                        session.SessionData.Growth.Level = iLevel;
+                    }
+                    break;
+                case 4:
+                    session.SessionData.Growth.CurrentHungerPoints = packet.ReadUInt16();
+                    break;
+                case 5:
+                    session.SessionData.Growth.Name = packet.ReadAscii();
+                    break;
+                case 7:
+                    session.SessionData.Growth.Id = packet.ReadUInt32();;
+                    var record = session.SessionData.Growth.RefObjChar;
+                    if (record != null)
+                        session.SessionData.Growth.Health = session.SessionData.Growth.MaxHealth = record.MaxHP;
+                    break;
+                default:
+                    break;
+            }
+        }
+        else if (session.SessionData.Fellow?.UniqueId == uniqueId)
+        {
+            switch (type)
+            {
+                case 1:
+                    session.SessionData.Fellow = null;
+                    break;
+                case 2: // update inventory
+                    break;
+                case 3:
+                    var experience = packet.ReadInt64();
+                    var source = packet.ReadUInt32();;
+                    if (source == session.SessionData.Fellow.UniqueId)
+                        return new PacketResult();
+
+                    session.SessionData.Fellow.Experience += experience;
+
+                    var iLevel = session.SessionData.Fellow.Level;
+                    while (session.SessionData.Fellow.Experience > refLevel.First(c => c.Key == iLevel).Value.Exp_C)
+                    {
+                        session.SessionData.Fellow.Experience -= refLevel.First(c => c.Key == iLevel).Value.Exp_C;
+                        iLevel++;
+                    }
+
+                    if (session.SessionData.Fellow.Level < iLevel)
+                    {
+                        session.SessionData.Fellow.Level = iLevel;
+                        session.SessionData.Fellow.MaxHealth = session.SessionData.Fellow.Health;
+                    }
+                    break;
+                case 4:
+                    session.SessionData.Fellow.Satiety = packet.ReadUInt16();
+                    break;
+                case 5:
+                    session.SessionData.Fellow.Name = packet.ReadAscii();
+                    break;
+                case 7:
+                    session.SessionData.Fellow.Id = packet.ReadUInt32();;
+                    var record = session.SessionData.Fellow.RefObjChar;
+                    if (record != null)
+                        session.SessionData.Fellow.Health = session.SessionData.Fellow.MaxHealth = record.MaxHP;
+                    break;
+                default:
+                    break;
+            }
+        }
+        else if (session.SessionData.AbilityPet?.UniqueId == uniqueId)
+        {
+            switch (type)
+            {
+                case 1:
+                    session.SessionData.AbilityPet = null;
+                    break;
+                case 2:
+                    session.SessionData.AbilityPet.Inventory.Deserialize(packet);
+                    break;
+                case 5:
+                    session.SessionData.AbilityPet.Name = packet.ReadAscii();
+                    break;
+            }
+        }
+        else if (session.SessionData.Transport?.UniqueId == uniqueId)
+        {
+            session.SessionData.Transport = null;
+        }
+        else if (session.SessionData.JobTransport?.UniqueId == uniqueId)
+        {
+            switch (type)
+            {
+                case 1:
+                    session.SessionData.JobTransport = null;
+                    break;
+                case 2:
+                    session.SessionData.JobTransport.Inventory.Deserialize(packet);
+                    break;
+            }
+        }
+
+        return new PacketResult();
+    }
+
+    private async Task<PacketResult> SERVER_AGENT_COS_INFO(Packet packet, ISession session)
+    {
+        var uniqueId = packet.ReadUInt32();
+        var objectId = packet.ReadUInt32();
+
+        var objCommon = SharedObjects.RefObjCommon.First(c => c.Value.ID == objectId).Value;
+        var objChar = SharedObjects.RefObjChar.First(c => c.Value.ID == objCommon.Link).Value;
+        if (objCommon.TypeID2 == 2 && objCommon.TypeID3 == 3)
+        {
+            var hp = packet.ReadInt32();
+            var maxHp = packet.ReadInt32();
+            maxHp = maxHp != 0 && maxHp != 200 ? maxHp : objChar.MaxHP;
+
+            switch (objCommon.TypeID4)
+            {
+                case 1:
+                    session.SessionData.Transport = new Transport
+                    {
+                        Id = objectId,
+                        UniqueId = uniqueId,
+                        Health = hp,
+                        MaxHealth = maxHp,
+                    };
+                    break;
+                case 2:
+                    session.SessionData.JobTransport = new JobTransport
+                    {
+                        Id = objectId,
+                        UniqueId = uniqueId,
+                        Health = hp,
+                        MaxHealth = maxHp,
+                        Inventory = new InventoryItemCollection(packet),
+                        OwnerUniqueId = packet.ReadUInt32()
+                    };
+                    break;
+                case 3:
+                    session.SessionData.Growth = new Growth
+                    {
+                        Id = objectId,
+                        UniqueId = uniqueId,
+                        Health = hp,
+                        MaxHealth = maxHp,
+                    };
+                    session.SessionData.Growth.Deserialize(packet);
+                    break;
+                case 4:
+                    session.SessionData.AbilityPet = new Ability
+                    {
+                        Id = objectId,
+                        UniqueId = uniqueId,
+                        Health = hp,
+                        MaxHealth = maxHp,
+                    };
+                    session.SessionData.AbilityPet.Deserialize(packet);
+                    break;
+                case 9:
+                    session.SessionData.Fellow = new Fellow
+                    {
+                        Id = objectId,
+                        UniqueId = uniqueId,
+                        Health = hp,
+                        MaxHealth = maxHp,
+                    };
+                    session.SessionData.Fellow.Deserialize(packet);
+                    break;
+            }
+        }
+
+        return new PacketResult();
+    }
+
     private async Task<PacketResult> EntitySingleDespawnResponse(Packet packet, ISession session)
     {
         var uniqueId = packet.ReadUInt32();
@@ -167,6 +415,7 @@ public class AgentServer : AsyncServer
                     throw new ArgumentOutOfRangeException();
             }
         }
+
         session.SpawnInfo.Clear();
 
         return new PacketResult();
@@ -180,7 +429,8 @@ public class AgentServer : AsyncServer
 
     private async Task<PacketResult> EntityGroupSpawnDataResponse(Packet packet, ISession session)
     {
-        if (session.SpawnInfo.GetSpawnInfoType() == null || session.SpawnInfo.GetAmount() == null || session.SpawnInfo.GetPacket() == null)
+        if (session.SpawnInfo.GetSpawnInfoType() == null || session.SpawnInfo.GetAmount() == null ||
+            session.SpawnInfo.GetPacket() == null)
         {
             return new PacketResult();
         }
@@ -235,6 +485,7 @@ public class AgentServer : AsyncServer
                         {
                             break;
                         }
+
                         if (spawnedPlayerSession.TimerManager.IsStarted() &&
                             spawnedPlayerSession.TimerManager.IsBroadcast())
                         {
@@ -244,7 +495,6 @@ public class AgentServer : AsyncServer
                                 spawnedPlayerSession.TimerManager.Send(session);
                             });
                         }
-                        
                     }
                         break;
                     case 2:
@@ -278,8 +528,10 @@ public class AgentServer : AsyncServer
                             }
                                 break;
                         }
+
                         break;
                 }
+
                 break;
             case 3:
                 var spawnedItem = SpawnedItem.FromPacket(packet, refObjId);
@@ -303,7 +555,6 @@ public class AgentServer : AsyncServer
             }
         }
     }
-
 
     private ISharedObjects SharedObjects { get; set; }
 
@@ -411,7 +662,8 @@ public class AgentServer : AsyncServer
                 break;
             case 8:
                 session.SessionData.State.BattleState = (BattleState) updateState;
-                if ((BattleState) updateState == BattleState.InBattle && session.TimerManager.IsStarted() && session.TimerManager.IsStopOnBattle())
+                if ((BattleState) updateState == BattleState.InBattle && session.TimerManager.IsStarted() &&
+                    session.TimerManager.IsStopOnBattle())
                 {
                     session.TimerManager.Stop();
                 }
@@ -831,11 +1083,11 @@ public class AgentServer : AsyncServer
         var jobReward = packet.ReadUInt32(); // 4   uint    JobReward
         session.SessionData.State.PvpState =
             (PvpState) packet.ReadUInt8(); // 1   byte    PVPState                //0 = White, 1 = Purple, 2 = Red
-        var transportFlag = packet.ReadUInt8(); // 1   byte    TransportFlag
+        session.SessionData.OnTransport = packet.ReadBool(); // 1   byte    TransportFlag
         session.SessionData.State.BattleState = (BattleState) packet.ReadUInt8(); // 1   byte    InCombat
-        if (transportFlag == 1)
+        if (session.SessionData.OnTransport)
         {
-            var transportUniqueId = packet.ReadUInt32(); // 4   uint    Transport.UniqueID
+            session.SessionData.TransportUniqueId = packet.ReadUInt32(); // 4   uint    Transport.UniqueID
         }
 
         var pvpFlag =
@@ -881,7 +1133,7 @@ public class AgentServer : AsyncServer
         {
             session.TimerManager.Stop();
         }
-        
+
         // sky = 0, ground = 1
         var groundClick = packet.ReadUInt8(); //sky or ground click
         if (groundClick == 0x00) return new PacketResult();
@@ -915,6 +1167,7 @@ public class AgentServer : AsyncServer
         {
             session.TimerManager.Stop();
         }
+
         return new PacketResult();
     }
 

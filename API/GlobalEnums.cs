@@ -230,4 +230,56 @@
         InPeace = 0,
         InBattle = 1,
     }
+    
+    public enum CosCommand : byte
+    {
+        Move = 1,
+        Attack = 2,
+        Pickup = 8,
+        Follow = 9,
+        Charm = 11,
+    }
+    
+    [Flags]
+    public enum ItemUpdateFlag : byte
+    {
+        RefObjID = 1,
+        OptLevel = 2,
+        Unknown = 3, // ???
+        Variance = 4,
+        Quanity = 8,
+        Durability = 16,
+        MagParams = 32,
+        State = 64,
+    }
+    
+    public enum BindingOptionType : byte
+    {
+        Socket = 1,
+        AdvancedElixir = 2
+    }
+    public enum InventoryItemState
+    {
+        Inactive = 1,
+        Summoned = 2,
+        Active = 3,
+        Dead = 4
+    }
+    
+    public enum ItemAttributeGroup
+    {
+        Durability,
+        PhysicalSpecialize,
+        MagicalSpecialize,
+        HitRatio,
+        PhysicalDamage,
+        MagicalDamage,
+        Critical,
+        BlockRatio,
+        EvasionRatio,
+        PhysicalDefense,
+        MagicalDefense,
+        PhysicalAbsorbRatio,
+        MagicalAbsorbRatio
+    }
 }

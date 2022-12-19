@@ -13,6 +13,4 @@ public interface IMovement
     IPosition Source { get; set; }
     bool HasAngle { get; set; }
     float Angle { get; set; }
-    public static abstract IMovement MotionFromPacket(Packet packet);
-    public static abstract IMovement FromPacket(Packet packet);
 }
