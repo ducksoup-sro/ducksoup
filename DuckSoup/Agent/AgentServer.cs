@@ -125,23 +125,36 @@ public class AgentServer : AsyncServer
             var req = new CLIENT_AGENT_CHAT_REQUEST();
             await req.Read(packet);
 
-            // if (req.Message.StartsWith(".start"))
-            // {
-            //     var time = int.Parse(req.Message.Split()[1]);
-            //     try
-            //     {
-            //         session.TimerManager.Start(time, (_, _) => { session.SendNotice("test over"); });
-            //     }
-            //     catch (Exception e)
-            //     {
-            //         Global.Logger.Info(e.ToString());
-            //     }
-            // }
-            //
-            // if (req.Message.ToLower().Equals(".stop"))
-            // {
-            //     session.TimerManager.Stop();
-            // }
+            if (req.Message.StartsWith(".start"))
+            {
+                var time = int.Parse(req.Message.Split()[1]);
+                try
+                {
+                    session.TimerManager.Start(time, (_, _) => { session.SendNotice("test over"); });
+                }
+                catch (Exception e)
+                {
+                    Global.Logger.Info(e.ToString());
+                }
+            }
+            
+            if (req.Message.StartsWith(".test"))
+            {
+                var time = int.Parse(req.Message.Split()[1]);
+                try
+                {
+                    session.TimerManager.Start(time, true, true, false, (_, _) => { session.SendNotice("test22 over"); });
+                }
+                catch (Exception e)
+                {
+                    Global.Logger.Info(e.ToString());
+                }
+            }
+            
+            if (req.Message.ToLower().Equals(".stop"))
+            {
+                session.TimerManager.Stop();
+            }
 
             return new PacketResult();
         });
@@ -1127,33 +1140,42 @@ public class AgentServer : AsyncServer
     {
         var target = packet.ReadUInt32(); // Unique ID from player
 
-        if (target != session.SessionData.UniqueCharId) return new PacketResult();
-
-        if (session.TimerManager.IsStarted() && session.TimerManager.IsStopOnMove())
+        if (target == session.SessionData.UniqueCharId || (session.SessionData.Vehicle != null && session.SessionData.Vehicle.UniqueId == target))
         {
-            session.TimerManager.Stop();
-        }
+            if (session.TimerManager.IsStarted() && session.TimerManager.IsStopOnMove() && target == session.SessionData.UniqueCharId)
+            {
+                session.TimerManager.Stop();
+            }
 
-        // sky = 0, ground = 1
-        var groundClick = packet.ReadUInt8(); //sky or ground click
-        if (groundClick == 0x00) return new PacketResult();
+            if (session.TimerManager.IsStarted() && session.TimerManager.IsStopOnVehicleMove() &&
+                session.SessionData.Vehicle != null && session.SessionData.Vehicle.UniqueId == target)
+            {
+                session.TimerManager.Stop();
+            }
 
-        session.SessionData.LatestRegionId = packet.ReadUInt16(); // Region ID
-        if (session.SessionData.LatestRegionId >= short.MaxValue)
-        {
-            var x = packet.ReadUInt32();
-            var y = packet.ReadUInt32();
-            var z = packet.ReadUInt32();
-        }
-        else
-        {
-            session.SessionData.PositionX = packet.ReadUInt16();
-            session.SessionData.PositionY = packet.ReadUInt16();
-            session.SessionData.PositionZ = packet.ReadUInt16();
+            // sky = 0, ground = 1
+            var groundClick = packet.ReadUInt8(); //sky or ground click
+            if (groundClick == 0x00) return new PacketResult();
+
+            session.SessionData.LatestRegionId = packet.ReadUInt16(); // Region ID
+            if (session.SessionData.LatestRegionId >= short.MaxValue)
+            {
+                var x = packet.ReadUInt32();
+                var y = packet.ReadUInt32();
+                var z = packet.ReadUInt32();
+            }
+            else
+            {
+                session.SessionData.PositionX = packet.ReadUInt16();
+                session.SessionData.PositionY = packet.ReadUInt16();
+                session.SessionData.PositionZ = packet.ReadUInt16();
+            }
+
+            return new PacketResult();
         }
 
         return new PacketResult();
-    }
+    } 
 
     private async Task<PacketResult> AGENT_TELEPORT_USE(Packet packet, ISession session)
     {

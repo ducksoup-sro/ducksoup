@@ -13,6 +13,7 @@ public class TimerManager : ITimerManager
     private bool _broadcast;
     private bool _stopOnBattle;
     private bool _stopOnMove;
+    private bool _stopOnVehicleMoveMove;
     private Timer _timer;
     private DateTime? _started;
     private int _timerInterval;
@@ -23,24 +24,25 @@ public class TimerManager : ITimerManager
         _session = session;
         _stopOnBattle = true;
         _stopOnMove = true;
+        _stopOnVehicleMoveMove = true;
     }
 
     public void Start(int timeInSeconds, ElapsedEventHandler elapsedEventHandler)
     {
-        Start(timeInSeconds, true, true, elapsedEventHandler);
+        Start(timeInSeconds, true, true, true, elapsedEventHandler);
     }
     
-    public void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, ElapsedEventHandler elapsedEventHandler)
+    public void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, bool stopOnVehicleMove, ElapsedEventHandler elapsedEventHandler)
     {
-        Start(timeInSeconds, stopOnBattle, stopOnMove, true, elapsedEventHandler);
+        Start(timeInSeconds, stopOnBattle, stopOnMove,  stopOnVehicleMove, true, elapsedEventHandler);
     }
     
-    public void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, bool broadcast, ElapsedEventHandler elapsedEventHandler)
+    public void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, bool stopOnVehicleMove,bool broadcast, ElapsedEventHandler elapsedEventHandler)
     {
-        Start(timeInSeconds, stopOnBattle, stopOnMove, broadcast, true, elapsedEventHandler);
+        Start(timeInSeconds, stopOnBattle, stopOnMove, stopOnVehicleMove, broadcast, true, elapsedEventHandler);
     }
 
-    public void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, bool broadcast, bool stopOldTimer, ElapsedEventHandler elapsedEventHandler)
+    public void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, bool stopOnVehicleMove,bool broadcast, bool stopOldTimer, ElapsedEventHandler elapsedEventHandler)
     {
         if(stopOldTimer && IsStarted()) {
             Stop();
@@ -50,6 +52,7 @@ public class TimerManager : ITimerManager
 
         _stopOnBattle = stopOnBattle;
         _stopOnMove = stopOnMove;
+        _stopOnVehicleMoveMove = stopOnVehicleMove;
         _broadcast = broadcast;
         _timerInterval = timeInSeconds;
         _timer = new Timer();
@@ -86,6 +89,7 @@ public class TimerManager : ITimerManager
         _broadcast = true;
         _stopOnBattle = true;
         _stopOnMove = true;
+        _stopOnVehicleMoveMove = true;
         
         var packet = CreateStopPacket();
 
@@ -150,6 +154,11 @@ public class TimerManager : ITimerManager
     public bool IsStopOnMove()
     {
         return _stopOnMove;
+    }
+    
+    public bool IsStopOnVehicleMove()
+    {
+        return _stopOnVehicleMoveMove;
     }
     
     public TimeSpan leftTime()
