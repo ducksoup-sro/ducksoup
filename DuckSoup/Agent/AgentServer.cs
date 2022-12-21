@@ -72,7 +72,7 @@ public class AgentServer : AsyncServer
         var partyManagerHandlers = new PartyManagerHandlers(PacketHandler);
 
         // ping
-        PacketHandler.RegisterClientHandler(0x2002, async (_, session) =>
+        PacketHandler.RegisterClientHandler(0x2002, async (_, session, _) =>
         {
             session.LastPing = DateTime.Now;
             return new PacketResult();
@@ -119,48 +119,9 @@ public class AgentServer : AsyncServer
         PacketHandler.RegisterModuleHandler(0x3020, AGENT_ENVIRONMENT_CELESTIAL_POSITION); // CharacterUniqueId
         PacketHandler.RegisterModuleHandler(0x30BF, SERVER_ENTITY_STATE_UPDATE);
         PacketHandler.RegisterModuleHandler(0xB021, AGENT_MOVEMENT_SERVER);
-
-        PacketHandler.RegisterClientHandler(0x7025, async (packet, session) =>
-        {
-            var req = new CLIENT_AGENT_CHAT_REQUEST();
-            await req.Read(packet);
-
-            if (req.Message.StartsWith(".start"))
-            {
-                var time = int.Parse(req.Message.Split()[1]);
-                try
-                {
-                    session.TimerManager.Start(time, (_, _) => { session.SendNotice("test over"); });
-                }
-                catch (Exception e)
-                {
-                    Global.Logger.Info(e.ToString());
-                }
-            }
-            
-            if (req.Message.StartsWith(".test"))
-            {
-                var time = int.Parse(req.Message.Split()[1]);
-                try
-                {
-                    session.TimerManager.Start(time, true, true, false, (_, _) => { session.SendNotice("test22 over"); });
-                }
-                catch (Exception e)
-                {
-                    Global.Logger.Info(e.ToString());
-                }
-            }
-            
-            if (req.Message.ToLower().Equals(".stop"))
-            {
-                session.TimerManager.Stop();
-            }
-
-            return new PacketResult();
-        });
     }
 
-    private async Task<PacketResult> SERVER_AGENT_COS_UPDATE_RIDESTATE(Packet packet, ISession session)
+    private async Task<PacketResult> SERVER_AGENT_COS_UPDATE_RIDESTATE(Packet packet, ISession session, object obj)
     {
         if (packet.ReadUInt8() != 0x01)
             return new PacketResult();
@@ -191,21 +152,22 @@ public class AgentServer : AsyncServer
 
             if (cosUniqueId == session.SessionData.Fellow?.UniqueId)
                 session.SessionData.Vehicle = session.SessionData.Fellow;
-            
+
             session.SessionData.OnTransport = isMounted;
             session.SessionData.TransportUniqueId = cosUniqueId;
         }
-        
-        
+
+
         return new PacketResult();
     }
 
-    private async Task<PacketResult> SERVER_AGENT_COS_UPDATE(Packet packet, ISession session)
+    private async Task<PacketResult> SERVER_AGENT_COS_UPDATE(Packet packet, ISession session, object obj)
     {
-        var uniqueId = packet.ReadUInt32();;
+        var uniqueId = packet.ReadUInt32();
+        ;
         var type = packet.ReadUInt8();
         var refLevel = SharedObjects.RefLevel;
-        
+
         if (session.SessionData.Growth?.UniqueId == uniqueId)
         {
             switch (type)
@@ -217,7 +179,8 @@ public class AgentServer : AsyncServer
                     break;
                 case 3:
                     var experience = packet.ReadInt64();
-                    var source = packet.ReadUInt32();;
+                    var source = packet.ReadUInt32();
+                    ;
                     if (source == session.SessionData.Growth.UniqueId)
                         return new PacketResult();
 
@@ -234,6 +197,7 @@ public class AgentServer : AsyncServer
                     {
                         session.SessionData.Growth.Level = iLevel;
                     }
+
                     break;
                 case 4:
                     session.SessionData.Growth.CurrentHungerPoints = packet.ReadUInt16();
@@ -242,7 +206,8 @@ public class AgentServer : AsyncServer
                     session.SessionData.Growth.Name = packet.ReadAscii();
                     break;
                 case 7:
-                    session.SessionData.Growth.Id = packet.ReadUInt32();;
+                    session.SessionData.Growth.Id = packet.ReadUInt32();
+                    ;
                     var record = session.SessionData.Growth.RefObjChar;
                     if (record != null)
                         session.SessionData.Growth.Health = session.SessionData.Growth.MaxHealth = record.MaxHP;
@@ -262,7 +227,8 @@ public class AgentServer : AsyncServer
                     break;
                 case 3:
                     var experience = packet.ReadInt64();
-                    var source = packet.ReadUInt32();;
+                    var source = packet.ReadUInt32();
+                    ;
                     if (source == session.SessionData.Fellow.UniqueId)
                         return new PacketResult();
 
@@ -280,6 +246,7 @@ public class AgentServer : AsyncServer
                         session.SessionData.Fellow.Level = iLevel;
                         session.SessionData.Fellow.MaxHealth = session.SessionData.Fellow.Health;
                     }
+
                     break;
                 case 4:
                     session.SessionData.Fellow.Satiety = packet.ReadUInt16();
@@ -288,7 +255,8 @@ public class AgentServer : AsyncServer
                     session.SessionData.Fellow.Name = packet.ReadAscii();
                     break;
                 case 7:
-                    session.SessionData.Fellow.Id = packet.ReadUInt32();;
+                    session.SessionData.Fellow.Id = packet.ReadUInt32();
+                    ;
                     var record = session.SessionData.Fellow.RefObjChar;
                     if (record != null)
                         session.SessionData.Fellow.Health = session.SessionData.Fellow.MaxHealth = record.MaxHP;
@@ -332,7 +300,7 @@ public class AgentServer : AsyncServer
         return new PacketResult();
     }
 
-    private async Task<PacketResult> SERVER_AGENT_COS_INFO(Packet packet, ISession session)
+    private async Task<PacketResult> SERVER_AGENT_COS_INFO(Packet packet, ISession session, object obj)
     {
         var uniqueId = packet.ReadUInt32();
         var objectId = packet.ReadUInt32();
@@ -403,13 +371,13 @@ public class AgentServer : AsyncServer
         return new PacketResult();
     }
 
-    private async Task<PacketResult> EntitySingleDespawnResponse(Packet packet, ISession session)
+    private async Task<PacketResult> EntitySingleDespawnResponse(Packet packet, ISession session, object obj)
     {
         var uniqueId = packet.ReadUInt32();
         return new PacketResult();
     }
 
-    private async Task<PacketResult> EntityGroupSpawnEndResponse(Packet packet, ISession session)
+    private async Task<PacketResult> EntityGroupSpawnEndResponse(Packet packet, ISession session, object obj)
     {
         var pck = session.SpawnInfo.GetPacket();
         pck.ToReadOnly();
@@ -434,13 +402,13 @@ public class AgentServer : AsyncServer
         return new PacketResult();
     }
 
-    private async Task<PacketResult> EntitySingleSpawnResponse(Packet packet, ISession session)
+    private async Task<PacketResult> EntitySingleSpawnResponse(Packet packet, ISession session, object obj)
     {
         ParseSpawn(session, packet);
         return new PacketResult();
     }
 
-    private async Task<PacketResult> EntityGroupSpawnDataResponse(Packet packet, ISession session)
+    private async Task<PacketResult> EntityGroupSpawnDataResponse(Packet packet, ISession session, object obj)
     {
         if (session.SpawnInfo.GetSpawnInfoType() == null || session.SpawnInfo.GetAmount() == null ||
             session.SpawnInfo.GetPacket() == null)
@@ -453,7 +421,7 @@ public class AgentServer : AsyncServer
         return new PacketResult();
     }
 
-    private async Task<PacketResult> EntityGroupSpawnBeginResponse(Packet packet, ISession session)
+    private async Task<PacketResult> EntityGroupSpawnBeginResponse(Packet packet, ISession session, object obj)
     {
         session.SpawnInfo.Read(packet);
         return new PacketResult();
@@ -600,7 +568,7 @@ public class AgentServer : AsyncServer
         base.Dispose();
     }
 
-    private async Task<PacketResult> CLIENT_CHARACTER_ACTION_REQUEST(Packet packet, ISession session)
+    private async Task<PacketResult> CLIENT_CHARACTER_ACTION_REQUEST(Packet packet, ISession session, object obj)
     {
         var unk1 = packet.ReadUInt8();
         if (unk1 != 0x01) return new PacketResult();
@@ -628,7 +596,7 @@ public class AgentServer : AsyncServer
         return new PacketResult();
     }
 
-    private async Task<PacketResult> SERVER_ENTITY_STATE_UPDATE(Packet packet, ISession session)
+    private async Task<PacketResult> SERVER_ENTITY_STATE_UPDATE(Packet packet, ISession session, object obj)
     {
         var uniqueId = packet.ReadUInt32();
         if (session.SessionData.UniqueCharId != uniqueId) return new PacketResult();
@@ -695,7 +663,7 @@ public class AgentServer : AsyncServer
         return new PacketResult();
     }
 
-    private async Task<PacketResult> SERVER_AGENT_CHARACTER_DATA(Packet packet, ISession session)
+    private async Task<PacketResult> SERVER_AGENT_CHARACTER_DATA(Packet packet, ISession session, object obj)
     {
         var serverTime = packet.ReadUInt32(); // * 4   uint    ServerTime               //SROTimeStamp
         var refObjId = packet.ReadUInt32(); // 4   uint    RefObjID
@@ -1136,13 +1104,15 @@ public class AgentServer : AsyncServer
         return new PacketResult();
     }
 
-    private async Task<PacketResult> AGENT_MOVEMENT_SERVER(Packet packet, ISession session)
+    private async Task<PacketResult> AGENT_MOVEMENT_SERVER(Packet packet, ISession session, object obj)
     {
         var target = packet.ReadUInt32(); // Unique ID from player
 
-        if (target == session.SessionData.UniqueCharId || (session.SessionData.Vehicle != null && session.SessionData.Vehicle.UniqueId == target))
+        if (target == session.SessionData.UniqueCharId ||
+            (session.SessionData.Vehicle != null && session.SessionData.Vehicle.UniqueId == target))
         {
-            if (session.TimerManager.IsStarted() && session.TimerManager.IsStopOnMove() && target == session.SessionData.UniqueCharId)
+            if (session.TimerManager.IsStarted() && session.TimerManager.IsStopOnMove() &&
+                target == session.SessionData.UniqueCharId)
             {
                 session.TimerManager.Stop();
             }
@@ -1175,9 +1145,9 @@ public class AgentServer : AsyncServer
         }
 
         return new PacketResult();
-    } 
+    }
 
-    private async Task<PacketResult> AGENT_TELEPORT_USE(Packet packet, ISession session)
+    private async Task<PacketResult> AGENT_TELEPORT_USE(Packet packet, ISession session, object obj)
     {
         session.CharacterGameReady = false;
         if (session.CountdownManager.IsStarted() && session.CountdownManager.IsStopOnTeleport())
@@ -1193,7 +1163,7 @@ public class AgentServer : AsyncServer
         return new PacketResult();
     }
 
-    private async Task<PacketResult> AGENT_GAME_READY(Packet packet, ISession session)
+    private async Task<PacketResult> AGENT_GAME_READY(Packet packet, ISession session, object obj)
     {
         // fix to not crash on autonotice
         session.CharacterGameReady = true;
@@ -1241,14 +1211,15 @@ public class AgentServer : AsyncServer
         return new PacketResult();
     }
 
-    private async Task<PacketResult> AGENT_ENVIRONMENT_CELESTIAL_POSITION(Packet packet, ISession session)
+    private async Task<PacketResult> AGENT_ENVIRONMENT_CELESTIAL_POSITION(Packet packet, ISession session, object obj)
     {
         session.CharScreen = false;
         //.CharacterData.UniqueCharId = packet.ReadUInt32();
         return new PacketResult();
     }
 
-    private async Task<PacketResult> CLIENT_AGENT_CHARACTER_SELECTION_ACTION_REQUEST(Packet packet, ISession session)
+    private async Task<PacketResult> CLIENT_AGENT_CHARACTER_SELECTION_ACTION_REQUEST(Packet packet, ISession session,
+        object obj)
     {
         if (!session.CharScreen)
         {
@@ -1270,14 +1241,14 @@ public class AgentServer : AsyncServer
         return new PacketResult();
     }
 
-    private async Task<PacketResult> CLIENT_EXPLOIT_GSCRASH(Packet packet, ISession session)
+    private async Task<PacketResult> CLIENT_EXPLOIT_GSCRASH(Packet packet, ISession session, object obj)
     {
         Global.Logger.WarnFormat("EXPLOIT - {0} tried to use GS_CRASH_EXPLOIT - {1:X}", session.SessionData.Charname,
             packet.Opcode);
         return new PacketResult(PacketResultType.Disconnect);
     }
 
-    private async Task<PacketResult> AGENT_SKILL_MASTERY_LEARN(Packet packet, ISession session)
+    private async Task<PacketResult> AGENT_SKILL_MASTERY_LEARN(Packet packet, ISession session, object obj)
     {
         packet.ReadUInt32(); // masteryid
         var level = packet.ReadUInt8();
@@ -1289,7 +1260,7 @@ public class AgentServer : AsyncServer
         return new PacketResult(PacketResultType.Disconnect);
     }
 
-    private async Task<PacketResult> CLIENT_PLAYER_BERSERK(Packet packet, ISession session)
+    private async Task<PacketResult> CLIENT_PLAYER_BERSERK(Packet packet, ISession session, object obj)
     {
         var flag = packet.ReadUInt8();
         if (flag == 1) return new PacketResult();
@@ -1299,7 +1270,7 @@ public class AgentServer : AsyncServer
         return new PacketResult(PacketResultType.Disconnect);
     }
 
-    private async Task<PacketResult> AGENT_LOGOUT(Packet packet, ISession session)
+    private async Task<PacketResult> AGENT_LOGOUT(Packet packet, ISession session, object obj)
     {
         if (session.CharScreen)
         {
@@ -1329,7 +1300,7 @@ public class AgentServer : AsyncServer
         return new PacketResult();
     }
 
-    private async Task<PacketResult> AGENT_MAGICOPTION_GRANT(Packet packet, ISession session)
+    private async Task<PacketResult> AGENT_MAGICOPTION_GRANT(Packet packet, ISession session, object obj)
     {
         var avatarBlue = packet.ReadAscii().ToLower();
         if (avatarBlue.Contains("avatar")) return new PacketResult();
@@ -1339,7 +1310,7 @@ public class AgentServer : AsyncServer
         return new PacketResult(PacketResultType.Disconnect);
     }
 
-    private async Task<PacketResult> AGENT_GUILD_UPDATE_NOTICE(Packet packet, ISession session)
+    private async Task<PacketResult> AGENT_GUILD_UPDATE_NOTICE(Packet packet, ISession session, object obj)
     {
         var guildNoticeTitle = packet.ReadAscii();
         var guildNoticeMessage = packet.ReadAscii();
@@ -1371,7 +1342,7 @@ public class AgentServer : AsyncServer
         return new PacketResult(newPacket, PacketResultType.Override);
     }
 
-    private async Task<PacketResult> AGENT_SIEGE_ACTION(Packet packet, ISession session)
+    private async Task<PacketResult> AGENT_SIEGE_ACTION(Packet packet, ISession session, object obj)
     {
         packet.ReadUInt32();
         var unk2 = packet.ReadUInt8();
@@ -1392,7 +1363,7 @@ public class AgentServer : AsyncServer
         return new PacketResult(PacketResultType.Block);
     }
 
-    private async Task<PacketResult> AGENT_AUTH(Packet packet, ISession session)
+    private async Task<PacketResult> AGENT_AUTH(Packet packet, ISession session, object obj)
     {
         if (packet.ReadUInt8() == 1)
             session.UserLoggedIn = true;
@@ -1403,7 +1374,7 @@ public class AgentServer : AsyncServer
         return new PacketResult();
     }
 
-    private async Task<PacketResult> AGENT_CHARACTER_SELECTION_JOIN(Packet packet, ISession session)
+    private async Task<PacketResult> AGENT_CHARACTER_SELECTION_JOIN(Packet packet, ISession session, object obj)
     {
         if (session.CharnameSent)
             return new PacketResult(PacketResultType.Block);

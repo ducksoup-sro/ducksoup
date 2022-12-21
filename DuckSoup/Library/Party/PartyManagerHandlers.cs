@@ -38,7 +38,7 @@ public class PartyManagerHandlers
         packetHandler.RegisterModuleHandler(0xB06A, SERVER_AGENT_PARTY_MATCHING_CHANGE_RESPONSE);
     }
 
-    private async Task<PacketResult> SERVER_AGENT_PARTY_MATCHING_CHANGE_RESPONSE(Packet packet, ISession session)
+    private async Task<PacketResult> SERVER_AGENT_PARTY_MATCHING_CHANGE_RESPONSE(Packet packet, ISession session, object obj)
     {
         var response = new SERVER_AGENT_PARTY_MATCHING_CHANGE_RESPONSE();
         await response.Read(packet);
@@ -60,7 +60,7 @@ public class PartyManagerHandlers
         return new PacketResult();
     }
 
-    private async Task<PacketResult> SERVER_AGENT_PARTY_UPDATE(Packet packet, ISession session)
+    private async Task<PacketResult> SERVER_AGENT_PARTY_UPDATE(Packet packet, ISession session, object obj)
     {
         var response = new SERVER_AGENT_PARTY_UPDATE();
         
@@ -148,7 +148,7 @@ public class PartyManagerHandlers
         return new PacketResult();
     }
 
-    private async Task<PacketResult> SERVER_AGENT_PARTY_MATCHING_DELETE_RESPONSE(Packet packet, ISession session)
+    private async Task<PacketResult> SERVER_AGENT_PARTY_MATCHING_DELETE_RESPONSE(Packet packet, ISession session, object obj)
     {
         var response = new SERVER_AGENT_PARTY_MATCHING_DELETE_RESPONSE();
         await response.Read(packet);
@@ -156,7 +156,7 @@ public class PartyManagerHandlers
         return new PacketResult();
     }
 
-    private async Task<PacketResult> SERVER_AGENT_PARTY_MATCHING_FORM_RESPONSE(Packet packet, ISession session)
+    private async Task<PacketResult> SERVER_AGENT_PARTY_MATCHING_FORM_RESPONSE(Packet packet, ISession session, object obj)
     {
         var response = new SERVER_AGENT_PARTY_MATCHING_FORM_RESPONSE();
         await response.Read(packet);
@@ -192,7 +192,7 @@ public class PartyManagerHandlers
         return new PacketResult();
     }
 
-    private async Task<PacketResult> SERVER_AGENT_PARTY_CREATE_FROM_MATCHING(Packet packet, ISession session)
+    private async Task<PacketResult> SERVER_AGENT_PARTY_CREATE_FROM_MATCHING(Packet packet, ISession session, object obj)
     {
         var response = new SERVER_AGENT_PARTY_CREATE_FROM_MATCHING();
         await response.Read(packet);

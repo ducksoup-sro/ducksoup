@@ -53,7 +53,7 @@ namespace DuckSoup.Download
             PacketHandler = new PacketHandler(temp3, temp4);
             
             // ping
-            PacketHandler.RegisterClientHandler(0x2002, async (packet, session) =>
+            PacketHandler.RegisterClientHandler(0x2002, async (packet, session, _) =>
             {
                 session.LastPing = DateTime.Now;
                 return new PacketResult();

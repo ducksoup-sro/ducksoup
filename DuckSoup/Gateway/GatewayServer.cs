@@ -60,7 +60,7 @@ namespace DuckSoup.Gateway
             }
 
             // ping
-            PacketHandler.RegisterClientHandler(0x2002, async (packet, session) =>
+            PacketHandler.RegisterClientHandler(0x2002, async (packet, session, _) =>
             {
                 session.LastPing = DateTime.Now;
                 return new PacketResult();
@@ -104,7 +104,7 @@ namespace DuckSoup.Gateway
             base.Dispose();
         }
 
-        private async Task<PacketResult> SERVER_GATEWAY_PATCH_RESPONSE(Packet packet, ISession session)
+        private async Task<PacketResult> SERVER_GATEWAY_PATCH_RESPONSE(Packet packet, ISession session, object obj)
         {
             var overridePacket = new Packet(0xA100, packet.Encrypted, packet.Massive);
             var result = packet.ReadUInt8(); // 1	byte	result
@@ -162,7 +162,7 @@ namespace DuckSoup.Gateway
             return new PacketResult(overridePacket, PacketResultType.Override);
         }
 
-        private async Task<PacketResult> SERVER_GATEWAY_LOGIN_RESPONSE(Packet packet, ISession session)
+        private async Task<PacketResult> SERVER_GATEWAY_LOGIN_RESPONSE(Packet packet, ISession session, object obj)
         {
             var flag = packet.ReadUInt8();
 
@@ -211,7 +211,7 @@ namespace DuckSoup.Gateway
             return new PacketResult(redirectPacket, PacketResultType.Override);
         }
 
-        private async Task<PacketResult> SERVER_GATEWAY_NOTICE_RESPONSE(Packet packet, ISession session)
+        private async Task<PacketResult> SERVER_GATEWAY_NOTICE_RESPONSE(Packet packet, ISession session, object obj)
         {
             var newPacket = new Packet(packet.Opcode, packet.Encrypted, packet.Massive);
             newPacket.WriteByte((byte) SharedObjects.Notice.Count);
