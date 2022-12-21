@@ -80,7 +80,7 @@ public class PacketHandler : IPacketHandler
     {
         if (_serverHandlers.GetValueOrDefault(msgId, null) == null) return;
 
-        var keysToRemove = _serverHandlers[msgId].Keys.Where(m => m.Equals(handler)).ToList();
+        var keysToRemove = _serverHandlers[msgId].Where(m => m.Value.Equals(handler)).Select(c => c.Key).ToList();
         keysToRemove.ForEach(key => _serverHandlers[msgId].Remove(key, out var tempObject));
     }
 
@@ -135,7 +135,7 @@ public class PacketHandler : IPacketHandler
     {
         if (_clientHandlers.GetValueOrDefault(msgId, null) == null) return;
 
-        var keysToRemove = _clientHandlers[msgId].Keys.Where(m => m.Equals(handler)).ToList();
+        var keysToRemove = _clientHandlers[msgId].Where(m => m.Value.Equals(handler)).Select(c => c.Key).ToList();
         keysToRemove.ForEach(key => _clientHandlers[msgId].Remove(key, out var tempObject));
     }
 
@@ -193,7 +193,12 @@ public class PacketHandler : IPacketHandler
         var outcome = await _defaultHandler(packet, session, null);
         if (handler == null) return outcome;
         var tempPacket = packet;
-        var last = handler.Last().Key;
+        var last = 0;
+        if (handler.Count > 0)
+        {
+            last = handler.Last().Key;
+        }
+
         var oldIndex = -1;
         foreach (var packetHandler in handler)
         {
@@ -238,7 +243,10 @@ public class PacketHandler : IPacketHandler
         var outcome = await _defaultHandler(packet, session, null);
         if (handler == null) return outcome;
         var tempPacket = packet;
-        var last = handler.Last().Key;
+        var last = 0;
+        if(handler.Count > 0) {
+            last = handler.Last().Key;
+        }        
         var oldIndex = -1;
         foreach (var packetHandler in handler)
         {
