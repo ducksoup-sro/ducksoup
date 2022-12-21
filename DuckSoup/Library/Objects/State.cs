@@ -14,8 +14,8 @@ public class State : IState
     public MovementType? MovementType { get; set; }
     public BodyState? BodyState { get; set; }
     public PvpState? PvpState { get; set; }
-    public BattleState? BattleState { get; set; }
-    public ScrollState? ScrollState { get; set; }
+    public BattleState? BattleState { get; set; } = API.BattleState.InPeace;
+    public ScrollState? ScrollState { get; set; } = API.ScrollState.Cancel;
     public float? WalkSpeed { get; set; }
     public float? RunSpeed { get; set; }
     public float? BerzerkSpeed { get; set; }
