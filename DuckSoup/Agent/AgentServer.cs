@@ -106,6 +106,7 @@ public class AgentServer : AsyncServer
         PacketHandler.RegisterModuleHandler(0x30C8, SERVER_AGENT_COS_INFO);
         PacketHandler.RegisterModuleHandler(0x30C9, SERVER_AGENT_COS_UPDATE);
         PacketHandler.RegisterModuleHandler(0xB0CB, SERVER_AGENT_COS_UPDATE_RIDESTATE);
+        PacketHandler.RegisterModuleHandler(0xB516, AGENT_FRPVP_UPDATE);
 
         // Test Stuff
         PacketHandler.RegisterModuleHandler(0x3015, EntitySingleSpawnResponse);
@@ -119,6 +120,26 @@ public class AgentServer : AsyncServer
         PacketHandler.RegisterModuleHandler(0x3020, AGENT_ENVIRONMENT_CELESTIAL_POSITION); // CharacterUniqueId
         PacketHandler.RegisterModuleHandler(0x30BF, SERVER_ENTITY_STATE_UPDATE);
         PacketHandler.RegisterModuleHandler(0xB021, AGENT_MOVEMENT_SERVER);
+    }
+
+    private async Task<PacketResult> AGENT_FRPVP_UPDATE(Packet packet, ISession session, PacketData data)
+    {
+        var result = packet.ReadUInt8(); // 1   byte    result
+        if(result == 1)
+        {
+            var uniqueId = packet.ReadUInt32(); // 4   uint    Player.UniqueID
+            var cape = (PVPCape) packet.ReadUInt8(); // 1   byte    Player.FRPVPMode
+            if (session.SessionData.UniqueCharId == uniqueId)
+            {
+                session.SessionData.State.PvpCape = cape;
+            }
+        }
+        else if(result == 2)
+        {
+            packet.ReadUInt16();  // 2   ushort  errorCode
+        }
+
+        return new PacketResult();
     }
 
     private async Task<PacketResult> SERVER_AGENT_COS_UPDATE_RIDESTATE(Packet packet, ISession session, object obj)
@@ -397,7 +418,6 @@ public class AgentServer : AsyncServer
         }
 
         session.SpawnInfo.Clear();
-
         return new PacketResult();
     }
 
@@ -683,8 +703,7 @@ public class AgentServer : AsyncServer
         var totalPk = packet.ReadUInt16(); // 2   ushort  TotalPK
         var pkPenaltyPoint = packet.ReadUInt32(); // 4   uint    PKPenaltyPoint
         var hwanLevel = packet.ReadUInt8(); // 1   byte    HwanLevel
-        var freePvp =
-            packet.ReadUInt8(); // 1   byte    FreePVP           //0 = None, 1 = Red, 2 = Gray, 3 = Blue, 4 = White, 5 = Gold
+        session.SessionData.State.PvpCape = (PVPCape) packet.ReadUInt8(); // 1   byte    FreePVP           //0 = None, 1 = Red, 2 = Gray, 3 = Blue, 4 = White, 5 = Gold
 
         // //Inventory
         var inventorySize = packet.ReadUInt8(); // 1   byte    Inventory.Size

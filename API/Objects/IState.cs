@@ -10,8 +10,9 @@ public interface IState
     MovementType? MovementType { get; set; }
     BodyState? BodyState { get; set; }
     PvpState? PvpState { get; set; }
-    BattleState? BattleState { get; set; }
-    ScrollState? ScrollState { get; set; }
+    BattleState BattleState { get; set; }
+    ScrollState ScrollState { get; set; }
+    PVPCape PvpCape { get; set; }
     float? WalkSpeed { get; set; }
     float? RunSpeed { get; set; }
     float? BerzerkSpeed { get; set; }
