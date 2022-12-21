@@ -132,14 +132,6 @@ public class AgentServer : AsyncServer
 
         if (ownerUniqueId == session.SessionData.UniqueCharId)
         {
-            if (!isMounted)
-            {
-                session.SessionData.Vehicle = null;
-                session.SessionData.Transport = null;
-
-                return new PacketResult();
-            }
-
             if (cosUniqueId == session.SessionData.Transport?.UniqueId)
                 session.SessionData.Vehicle = session.SessionData.Transport;
 
@@ -155,6 +147,13 @@ public class AgentServer : AsyncServer
 
             session.SessionData.OnTransport = isMounted;
             session.SessionData.TransportUniqueId = cosUniqueId;
+            
+            if (!isMounted)
+            {
+                session.SessionData.Vehicle = null;
+                session.SessionData.Transport = null;
+                session.SessionData.TransportUniqueId = 0;
+            }
         }
 
 
