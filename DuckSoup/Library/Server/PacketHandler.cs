@@ -58,17 +58,19 @@ public class PacketHandler : IPacketHandler
         {
             foreach (var keyValuePair in _serverHandlers[msgId])
             {
+                
                 if (keyValuePair.Key <= priority)
                 {
+                    priority = keyValuePair.Key + 1;
                     continue;
                 }
 
-                if (_serverHandlers[msgId].ContainsKey(keyValuePair.Key + 1))
+                if (_serverHandlers[msgId].ContainsKey(priority))
                 {
+                    priority = keyValuePair.Key + 1;
                     continue;
                 }
 
-                priority = keyValuePair.Key + 1;
                 break;
             }
         }
@@ -113,17 +115,19 @@ public class PacketHandler : IPacketHandler
         {
             foreach (var keyValuePair in _clientHandlers[msgId])
             {
+                
                 if (keyValuePair.Key <= priority)
                 {
+                    priority = keyValuePair.Key + 1;
                     continue;
                 }
 
-                if (_clientHandlers[msgId].ContainsKey(keyValuePair.Key + 1))
+                if (_clientHandlers[msgId].ContainsKey(priority))
                 {
+                    priority = keyValuePair.Key + 1;
                     continue;
                 }
 
-                priority = keyValuePair.Key + 1;
                 break;
             }
         }
