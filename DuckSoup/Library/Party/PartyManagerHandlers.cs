@@ -43,7 +43,7 @@ public class PartyManagerHandlers
         var response = new SERVER_AGENT_PARTY_MATCHING_CHANGE_RESPONSE();
         await response.Read(packet);
 
-        var entry = _partyManager.getPartyMatchEntry((int) response.MatchingID);
+        var entry = _partyManager.GetPartyMatchEntry((int) response.MatchingID);
 
         if (entry == null)
         {
@@ -55,7 +55,7 @@ public class PartyManagerHandlers
         entry.LevelMax = response.LevelRangeMax;
         entry.LevelMin = response.LevelRangeMin;
 
-        _partyManager.addPartyMatchEntry(entry);
+        _partyManager.AddPartyMatchEntry(entry);
 
         return new PacketResult();
     }
@@ -74,7 +74,7 @@ public class PartyManagerHandlers
                 case PartyEnums.PartyUpdateType.Dismissed:
                     if (response.ErrorCode == 11)
                     {
-                        _partyManager.removeParty(session);
+                        _partyManager.RemoveParty(session);
                     }
 
                     break;
@@ -89,7 +89,7 @@ public class PartyManagerHandlers
                     if (sess != null)
                     {
                         var needsAddding = true;
-                        var tparty = _partyManager.getParty(session);
+                        var tparty = _partyManager.GetParty(session);
                         foreach (var tpartyMember in tparty.Members)
                         {
                             if (tpartyMember.SessionData.JID == sess.SessionData.JID)
@@ -116,7 +116,7 @@ public class PartyManagerHandlers
 
                     if (sess != null)
                     {
-                        _partyManager.getParty(session)?.Members.Remove(sess);
+                        _partyManager.GetParty(session)?.Members.Remove(sess);
                     }
 
                     break;
@@ -130,7 +130,7 @@ public class PartyManagerHandlers
                         sess = sharedObjectsAgentSession;
                     }
 
-                    var party = _partyManager.getParty(session);
+                    var party = _partyManager.GetParty(session);
                     if (sess != null && party != null)
                     {
                         party.Leader = sess;
@@ -152,7 +152,7 @@ public class PartyManagerHandlers
     {
         var response = new SERVER_AGENT_PARTY_MATCHING_DELETE_RESPONSE();
         await response.Read(packet);
-        _partyManager.removePartyMatchEntry((int) response.MatchingID);
+        _partyManager.RemovePartyMatchEntry((int) response.MatchingID);
         return new PacketResult();
     }
 
@@ -174,7 +174,7 @@ public class PartyManagerHandlers
         }
         else
         {
-            party = _partyManager.getParty((int) response.ID);
+            party = _partyManager.GetParty((int) response.ID);
         }
 
         IPartyMatchEntry partyMatchEntry = new PartyMatchEntry
@@ -187,7 +187,7 @@ public class PartyManagerHandlers
             Title = response.Title
         };
 
-        _partyManager.addPartyMatchEntry(partyMatchEntry);
+        _partyManager.AddPartyMatchEntry(partyMatchEntry);
         
         return new PacketResult();
     }
@@ -197,7 +197,7 @@ public class PartyManagerHandlers
         var response = new SERVER_AGENT_PARTY_CREATE_FROM_MATCHING();
         await response.Read(packet);
 
-        var party = _partyManager.getParty(response.ID);
+        var party = _partyManager.GetParty(response.ID);
         if (party != null || response.ID == 0)
         {
             return new PacketResult();
@@ -216,9 +216,9 @@ public class PartyManagerHandlers
             party.Members.Add(_sharedObjects.AgentSessions.First(session => session.SessionData.JID == responseMemberInfo.JID));
         }
         
-        _partyManager.addParty(party);
+        _partyManager.AddParty(party);
 
-        _partyManager.getPartyMatchEntries()
+        _partyManager.GetPartyMatchEntries()
             .First(entry => entry.Party?.Leader.SessionData.JID == leaderSession.SessionData.JID).Party = party;
         
         return new PacketResult();

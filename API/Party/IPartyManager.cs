@@ -4,22 +4,24 @@ namespace API.Party;
 
 public interface IPartyManager
 {
-    List<IParty> getParties();
-    IParty? getParty(int id);
-    IParty? getParty(string charname);
-    IParty? getParty(ISession session);
-    void addParty(IParty party);
-    void removeParty(int id);
-    void removeParty(string charname);
-    void removeParty(ISession session);
-    bool isInParty(string charname);
-    bool isInParty(ISession session);
-    List<IPartyMatchEntry> getPartyMatchEntries();
-    IPartyMatchEntry? getPartyMatchEntry(int id);
-    IPartyMatchEntry? getPartyMatchEntry(IParty party);
-    void addPartyMatchEntry(IPartyMatchEntry partyMatchEntry);
-    void removePartyMatchEntry(int id);
-    void removePartyMatchEntry(IParty party);
-    bool hasPartyMatchEntry(IParty party);
-    bool hasPartyMatchEntry(int id);
+    List<IParty> GetParties();
+    IParty? GetParty(int id);
+    IParty? GetParty(string charname);
+    IParty? GetParty(ISession session);
+    void AddParty(IParty party);
+    void RemoveParty(int id);
+    void RemoveParty(string charname);
+    void RemoveParty(ISession session);
+    bool IsInParty(string charname);
+    bool IsInParty(ISession session);
+    bool HasPartyMatchEntry(string charname);
+    bool HasPartyMatchEntry(ISession session);
+    List<IPartyMatchEntry> GetPartyMatchEntries();
+    IPartyMatchEntry? GetPartyMatchEntry(int id);
+    IPartyMatchEntry? GetPartyMatchEntry(IParty party);
+    void AddPartyMatchEntry(IPartyMatchEntry partyMatchEntry);
+    void RemovePartyMatchEntry(int id);
+    void RemovePartyMatchEntry(IParty party);
+    bool HasPartyMatchEntry(IParty party);
+    bool HasPartyMatchEntry(int id);
 }

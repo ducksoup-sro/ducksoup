@@ -19,88 +19,98 @@ public class PartyManager : IPartyManager
         ServiceFactory.Register<IPartyManager>(typeof(IPartyManager), this);
     }
 
-    public List<IParty> getParties()
+    public List<IParty> GetParties()
     {
         return _parties.Values.ToList();
     }
 
-    public IParty getParty(int id)
+    public IParty GetParty(int id)
     {
         return _parties.TryGetValue(id, out var value) ? value : null;
     }
 
-    public IParty getParty(string charname)
+    public IParty GetParty(string charname)
     {
         return _parties.Values.FirstOrDefault(party => party.Members.Any(partyMember => string.Equals(partyMember.SessionData.Charname, charname, StringComparison.CurrentCultureIgnoreCase)));
     }
 
-    public IParty getParty(ISession session)
+    public IParty GetParty(ISession session)
     {
         return _parties.Values.FirstOrDefault(party => party.Members.Any(partyMember => partyMember.ClientId == session.ClientId));
     }
 
-    public void addParty(IParty party)
+    public void AddParty(IParty party)
     {
         _parties.AddOrUpdate(party.PartyId, party, (_, _) => party);
     }
 
-    public void removeParty(int id)
+    public void RemoveParty(int id)
     {
-        var party = getParty(id);
-        removePartyMatchEntry(party);
+        var party = GetParty(id);
+        RemovePartyMatchEntry(party);
         _parties.Remove(id, out _);
     }
 
-    public void removeParty(string charname)
+    public void RemoveParty(string charname)
     {
-        var party = getParty(charname);
-        removePartyMatchEntry(party);
+        var party = GetParty(charname);
+        RemovePartyMatchEntry(party);
         _parties.Remove(party.PartyId, out _);
     }
 
-    public void removeParty(ISession session)
+    public void RemoveParty(ISession session)
     {
-        var party = getParty(session);
-        removePartyMatchEntry(party);
+        var party = GetParty(session);
+        RemovePartyMatchEntry(party);
         _parties.Remove(party.PartyId, out _);
     }
 
-    public bool isInParty(string charname)
+    public bool IsInParty(string charname)
     {
         return _parties.Values.Any(party => party.Members.Any(partyMember => string.Equals(partyMember.SessionData.Charname, charname, StringComparison.CurrentCultureIgnoreCase)));
     }
 
-    public bool isInParty(ISession session)
+    public bool IsInParty(ISession session)
     {
         return _parties.Values.Any(party => party.Members.Any(partyMember => partyMember.ClientId == session.ClientId));
     }
+    
+    public bool HasPartyMatchEntry(string charname)
+    {
+        return _partyMatchEntries.Values.Any(entry => entry.Party.Members.Any(partyMember => string.Equals(partyMember.SessionData.Charname, charname, StringComparison.CurrentCultureIgnoreCase)));
+    }
 
-    public List<IPartyMatchEntry> getPartyMatchEntries()
+    public bool HasPartyMatchEntry(ISession session)
+    {
+        return _partyMatchEntries.Values.Any(entry => entry.Party.Members.Any(partyMember => partyMember.ClientId == session.ClientId));
+    }
+
+    public List<IPartyMatchEntry> GetPartyMatchEntries()
     {
         return _partyMatchEntries.Values.ToList();
     }
 
-    public IPartyMatchEntry getPartyMatchEntry(int id)
+    public IPartyMatchEntry GetPartyMatchEntry(int id)
     {
         return _partyMatchEntries.TryGetValue(id, out var value) ? value : null;
     }
 
-    public IPartyMatchEntry getPartyMatchEntry(IParty party)
+    public IPartyMatchEntry GetPartyMatchEntry(IParty party)
     {
         return _partyMatchEntries.Values.FirstOrDefault(partyMatchEntry => partyMatchEntry.Party == party);
     }
 
-    public void addPartyMatchEntry(IPartyMatchEntry partyMatchEntry)
+    public void AddPartyMatchEntry(IPartyMatchEntry partyMatchEntry)
     {
         _partyMatchEntries.AddOrUpdate(partyMatchEntry.MatchId, partyMatchEntry, (_, _) => partyMatchEntry);
     }
 
-    public void removePartyMatchEntry(int id)
+    public void RemovePartyMatchEntry(int id)
     {
         _partyMatchEntries.Remove(id, out _);
     }
 
-    public void removePartyMatchEntry(IParty party)
+    public void RemovePartyMatchEntry(IParty party)
     {
         var removingEntry = _partyMatchEntries.Values.FirstOrDefault(partyMatchEntry => partyMatchEntry.Party.PartyId == party.PartyId);
         if (removingEntry != null)
@@ -109,13 +119,13 @@ public class PartyManager : IPartyManager
         }
     }
 
-    public bool hasPartyMatchEntry(IParty party)
+    public bool HasPartyMatchEntry(IParty party)
     {
         var removingEntry = _partyMatchEntries.Values.FirstOrDefault(partyMatchEntry => partyMatchEntry.Party.PartyId == party.PartyId);
         return removingEntry != null;
     }
 
-    public bool hasPartyMatchEntry(int id)
+    public bool HasPartyMatchEntry(int id)
     {
         return _partyMatchEntries.ContainsKey(id);
     }

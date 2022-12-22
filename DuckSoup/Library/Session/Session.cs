@@ -61,17 +61,17 @@ public sealed class Session : ISession
     public void Stop(string reason)
     {
         var partyManager = ServiceFactory.Load<IPartyManager>(typeof(IPartyManager));
-        var party = partyManager.getParty(this);
+        var party = partyManager.GetParty(this);
 
-        var entry = partyManager.getPartyMatchEntries()
+        var entry = partyManager.GetPartyMatchEntries()
             .FirstOrDefault(entry => entry.Party?.Leader.SessionData.JID == SessionData.JID);
         if(entry != null) {
-            partyManager.removePartyMatchEntry(entry.MatchId);
+            partyManager.RemovePartyMatchEntry(entry.MatchId);
         }
         
         if (party != null && party.Members.Count == 1)
         {
-            partyManager.removeParty(this);
+            partyManager.RemoveParty(this);
         }
 
         if (SharedObjects.DebugLevel >= DebugLevel.Connections)
