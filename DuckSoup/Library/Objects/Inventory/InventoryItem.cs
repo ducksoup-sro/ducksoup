@@ -67,11 +67,9 @@ public class InventoryItem : IInventoryItem
 
             //Read magic options for the item
             var magicOptionsAmount = packet.ReadUInt8();
-            Global.Logger.Info("1 " + magicOptionsAmount);
 
             for (var iMagicOption = 0; iMagicOption < magicOptionsAmount; iMagicOption++)
             {
-                Global.Logger.Info("11 " + iMagicOption);
                 item.MagicOptions.Add(MagicOptionInfo.FromPacket(packet));
             }
             
