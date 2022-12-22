@@ -182,5 +182,33 @@ namespace API.Database.SRO_VT_SHARD
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<C_User> C_User { get; set; }
+
+        public C_RefObjCommon RefObjCommon
+        {
+            get
+            {
+                return ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefObjCommon
+                    .First(c => c.Value.ID == RefObjID).Value;
+            }
+        }
+        
+        public C_RefObjChar RefObjChar
+        {
+            get
+            {
+                return ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefObjChar
+                    .First(c => c.Value.ID == RefObjCommon.Link).Value;
+            }
+        }
+
+        public bool IsMale()
+        {
+            return RefObjChar.CharGender == 1;
+        }
+        
+        public bool IsFemale()
+        {
+            return RefObjChar.CharGender == 0;
+        }
     }
 }

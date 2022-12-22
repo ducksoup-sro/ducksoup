@@ -16,8 +16,10 @@ public class InventoryItem : IInventoryItem
     public uint ItemId { get; set; }
     public byte Slot { get; set; }
     public IRentInfo Rental { get; set; }
-    C_RefObjItem Record => API.ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefObjItem
-        .First(c => c.Value.Link == ItemId).Value;
+    C_RefObjItem? Record => API.ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefObjItem
+        .FirstOrDefault(c => c.Value.ID == RefObjCommon.Link).Value;
+    C_RefObjCommon? RefObjCommon => API.ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefObjCommon
+        .FirstOrDefault(c => c.Value.ID == ItemId).Value; 
     public byte OptLevel { get; set; }
     public IItemAttributesInfo Attributes { get; set; }
     public uint Durability { get; set; }
@@ -26,10 +28,10 @@ public class InventoryItem : IInventoryItem
     public ushort Amount { get; set; }
     public InventoryItemState State { get; set; }
     public IInventoryItemCosInfo Cos { get; set; }
-
+    
     public static IInventoryItem FromPacket(Packet packet, byte destinationSlot = 0xFE)
     {
-        var item = new InventoryItem()
+        var item = new InventoryItem
         {
             MagicOptions = new List<IMagicOptionInfo>(),
             BindingOptions = new List<IBindingOption>(),
@@ -44,8 +46,7 @@ public class InventoryItem : IInventoryItem
 
         item.Rental = RentInfo.FromPacket(packet);
 
-        item.ItemId = packet.ReadUInt8();
-
+        item.ItemId = packet.ReadUInt32();
         var record = item.Record;
         if (record == null)
         {
@@ -66,8 +67,13 @@ public class InventoryItem : IInventoryItem
 
             //Read magic options for the item
             var magicOptionsAmount = packet.ReadUInt8();
+            Global.Logger.Info("1 " + magicOptionsAmount);
+
             for (var iMagicOption = 0; iMagicOption < magicOptionsAmount; iMagicOption++)
+            {
+                Global.Logger.Info("11 " + iMagicOption);
                 item.MagicOptions.Add(MagicOptionInfo.FromPacket(packet));
+            }
             
             //Read sockets & advanced elixirs
             var bindingCount = 2;
@@ -121,6 +127,11 @@ public class InventoryItem : IInventoryItem
         else if (record.IsMagicCube)
         {
             item.Amount = (ushort) packet.ReadUInt32();; //Quantity
+        }
+        else if (record.IsNormalTrading || record.IsSpecialTrading)
+        {
+            item.Amount = packet.ReadUInt16();; //Quantity
+            var ownerName = packet.ReadAscii();
         }
         else if (record.IsSpecialtyGoodBox)
         {

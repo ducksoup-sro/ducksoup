@@ -274,6 +274,8 @@ namespace API.Database.SRO_VT_SHARD
         public bool IsJobOutfit => IsEquip && GetRefObjCommon.TypeID3 == 7 && GetRefObjCommon.TypeID4 is not 4 or 5;
         public bool IsStackable => GetRefObjCommon.TypeID2 == 3;
         public bool IsTrading => IsStackable && GetRefObjCommon.TypeID3 == 8;
+        public bool IsNormalTrading => IsTrading && GetRefObjCommon.TypeID4 == 1;
+        public bool IsSpecialTrading => IsTrading && GetRefObjCommon.TypeID4 == 2;
         public bool IsSpecialtyGoodBox => IsTrading && GetRefObjCommon.TypeID4 == 3;
         public bool IsQuest => IsStackable && GetRefObjCommon.TypeID3 == 9;
         public bool IsAmmunition => IsStackable && GetRefObjCommon.TypeID3 == 4;

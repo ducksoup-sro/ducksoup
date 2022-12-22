@@ -2,6 +2,8 @@
 
 #endregion
 
+using System.Text.Json.Serialization;
+using API.Database.SRO_VT_SHARD;
 using API.Objects.Cos;
 
 namespace API.Session
@@ -30,6 +32,9 @@ namespace API.Session
         ICos? Vehicle { get; set; }
         bool OnTransport { get; set; }
         uint TransportUniqueId { get; set; }
+
+        [JsonIgnore]
+        C_Char GetChar { get; }
         public object this[string field] { get; set; }
     }
 }

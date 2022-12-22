@@ -1,7 +1,10 @@
 ﻿#region
 
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Serialization;
 using API;
+using API.Database.SRO_VT_SHARD;
 using API.Objects.Cos;
 using API.Session;
 
@@ -42,6 +45,16 @@ public class SessionData : ISessionData
     public bool OnTransport { get; set; }
     public uint TransportUniqueId { get; set; }
 
+    [JsonIgnore]
+    public C_Char GetChar
+    {
+        get
+        {
+            using var db = new SRO_VT_SHARD();
+            return db.C_Char.First(c => c.CharID == Charid);
+        }
+    }
+    
     public object this[string field]
     {
         get => _extraData.ContainsKey(field) ? _extraData[field] : "";
