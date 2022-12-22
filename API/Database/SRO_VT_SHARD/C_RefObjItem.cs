@@ -256,12 +256,15 @@ namespace API.Database.SRO_VT_SHARD
         public byte ChildItemCount { get; set; }
 
         public int Link { get; set; }
+
+        private C_RefObjCommon? _refObjCommon;
         
         public C_RefObjCommon GetRefObjCommon
         {
             get
             {
-                return ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefObjCommon
+                return _refObjCommon ??= ServiceFactory.ServiceFactory
+                    .Load<ISharedObjects>(typeof(ISharedObjects)).RefObjCommon
                     .First(c => c.Value.Link == ID).Value;
             }
         }

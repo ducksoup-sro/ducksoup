@@ -16,10 +16,18 @@ public class InventoryItem : IInventoryItem
     public uint ItemId { get; set; }
     public byte Slot { get; set; }
     public IRentInfo Rental { get; set; }
-    C_RefObjItem? Record => API.ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefObjItem
-        .FirstOrDefault(c => c.Value.ID == RefObjCommon.Link).Value;
-    C_RefObjCommon? RefObjCommon => API.ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefObjCommon
-        .FirstOrDefault(c => c.Value.ID == ItemId).Value; 
+    private C_RefObjItem? _refObjItem;
+
+    C_RefObjItem? Record
+    {
+        get
+        {
+            return _refObjItem ??= API.ServiceFactory.ServiceFactory
+                .Load<ISharedObjects>(typeof(ISharedObjects)).RefObjCommon
+                .First(c => c.Value.ID == ItemId).Value.GetRefObjItem();
+        }
+    }
+    
     public byte OptLevel { get; set; }
     public IItemAttributesInfo Attributes { get; set; }
     public uint Durability { get; set; }
@@ -45,7 +53,6 @@ public class InventoryItem : IInventoryItem
         }
 
         item.Rental = RentInfo.FromPacket(packet);
-
         item.ItemId = packet.ReadUInt32();
         var record = item.Record;
         if (record == null)

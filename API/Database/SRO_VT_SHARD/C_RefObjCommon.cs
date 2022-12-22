@@ -153,6 +153,24 @@ namespace API.Database.SRO_VT_SHARD
 
         public int Link { get; set; }
 
+        private C_RefObjItem? _refObjItem;
+
+        public C_RefObjItem GetRefObjItem()
+        {
+            return _refObjItem ??= ServiceFactory.ServiceFactory
+                .Load<ISharedObjects>(typeof(ISharedObjects)).RefObjItem
+                .FirstOrDefault(c => c.Value.ID == Link).Value;
+        }
+        
+        private C_RefObjChar? _refObjChar;
+
+        public C_RefObjChar GetRefObjChar()
+        {
+            return _refObjChar ??= ServiceFactory.ServiceFactory
+                .Load<ISharedObjects>(typeof(ISharedObjects)).RefObjChar
+                .FirstOrDefault(c => c.Value.ID == Link).Value;
+        }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<C_RefAbilityByItemOptLevel> C_RefAbilityByItemOptLevel { get; set; }
 
