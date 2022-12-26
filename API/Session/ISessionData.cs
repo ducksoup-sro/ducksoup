@@ -4,6 +4,7 @@
 
 using System.Text.Json.Serialization;
 using API.Database.SRO_VT_SHARD;
+using API.Objects;
 using API.Objects.Cos;
 
 namespace API.Session
@@ -12,6 +13,7 @@ namespace API.Session
     {
         IState State { get; }
         long? LastSnowshieldUsage { get; set; }
+        long? LastClientReady { get; set; }
         int? JID { get; set; }
         int? Charid { get; set; }
         string Charname { get; set; }

@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using API;
 using API.Database.SRO_VT_SHARD;
+using API.Objects;
 using API.Objects.Cos;
 using API.Session;
+using DuckSoup.Library.Objects;
 
 #endregion
 
@@ -24,6 +26,7 @@ public class SessionData : ISessionData
 
     public IState State { get; }
     public long? LastSnowshieldUsage { get; set; }
+    public long? LastClientReady { get; set; }
     public int? JID { get; set; }
     public int? Charid { get; set; }
     public string Charname { get; set; }

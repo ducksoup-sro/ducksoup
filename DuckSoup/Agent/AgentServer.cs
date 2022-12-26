@@ -1168,6 +1168,7 @@ public class AgentServer : AsyncServer
     private async Task<PacketResult> AGENT_TELEPORT_USE(Packet packet, ISession session, object obj)
     {
         session.CharacterGameReady = false;
+        session.SessionData.LastClientReady = null;
         if (session.CountdownManager.IsStarted() && session.CountdownManager.IsStopOnTeleport())
         {
             session.CountdownManager.Stop();
@@ -1185,6 +1186,7 @@ public class AgentServer : AsyncServer
     {
         // fix to not crash on autonotice
         session.CharacterGameReady = true;
+        session.SessionData.LastClientReady = Helper.GetCurrentTimeMillis();
 
         if (session.CountdownManager.IsStarted())
         {
