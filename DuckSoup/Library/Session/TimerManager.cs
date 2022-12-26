@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 using API;
 using API.ServiceFactory;
@@ -14,10 +15,11 @@ public class TimerManager : ITimerManager
     private bool _stopOnBattle;
     private bool _stopOnMove;
     private bool _stopOnVehicleMoveMove;
-    private Timer _timer;
     private DateTime? _started;
     private int _timerInterval;
     private readonly ISession _session;
+    private Timer _timer;
+
     public TimerManager(ISession session)
     {
         _timerInterval = -1;
@@ -27,22 +29,22 @@ public class TimerManager : ITimerManager
         _stopOnVehicleMoveMove = true;
     }
 
-    public void Start(int timeInSeconds, ElapsedEventHandler elapsedEventHandler)
+    public void Start(int timeInSeconds, ITimerManager.Action action)
     {
-        Start(timeInSeconds, true, true, true, elapsedEventHandler);
+        Start(timeInSeconds, true, true, true, action);
     }
     
-    public void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, bool stopOnVehicleMove, ElapsedEventHandler elapsedEventHandler)
+    public void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, bool stopOnVehicleMove, ITimerManager.Action action)
     {
-        Start(timeInSeconds, stopOnBattle, stopOnMove,  stopOnVehicleMove, true, elapsedEventHandler);
+        Start(timeInSeconds, stopOnBattle, stopOnMove,  stopOnVehicleMove, true, action);
     }
     
-    public void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, bool stopOnVehicleMove,bool broadcast, ElapsedEventHandler elapsedEventHandler)
+    public void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, bool stopOnVehicleMove,bool broadcast, ITimerManager.Action action)
     {
-        Start(timeInSeconds, stopOnBattle, stopOnMove, stopOnVehicleMove, broadcast, true, elapsedEventHandler);
+        Start(timeInSeconds, stopOnBattle, stopOnMove, stopOnVehicleMove, broadcast, true, action);
     }
 
-    public void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, bool stopOnVehicleMove,bool broadcast, bool stopOldTimer, ElapsedEventHandler elapsedEventHandler)
+    public void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, bool stopOnVehicleMove,bool broadcast, bool stopOldTimer, ITimerManager.Action action)
     {
         if(stopOldTimer && IsStarted()) {
             Stop();
@@ -56,16 +58,24 @@ public class TimerManager : ITimerManager
         _broadcast = broadcast;
         _timerInterval = timeInSeconds;
         _timer = new Timer();
-        _timer.Interval = timeInSeconds;
-        _timer.AutoReset = false;
-        _timer.Elapsed += elapsedEventHandler;
+        _timer.Interval = 100;
+        _timer.AutoReset = true;
         _timer.Elapsed += (_, _) =>
         {
-            Stop();
+            if (_started.GetValueOrDefault().AddMilliseconds(_timerInterval).Subtract(DateTime.Now).TotalMilliseconds > 0)
+            {
+                return;
+            }
+            Task.Run(async () =>
+            {
+                Stop();
+                await action();
+                return Task.CompletedTask;
+            });
         };
         _timer.Start();
         _started = DateTime.Now;
-
+        
         var packet = CreateStartPacket();
         
         if (!broadcast)

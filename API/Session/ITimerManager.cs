@@ -4,10 +4,11 @@ namespace API.Session;
 
 public interface ITimerManager
 {
-    void Start(int timeInSeconds, ElapsedEventHandler elapsedEventHandler);
-    void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, bool stopOnVehicleMove, ElapsedEventHandler elapsedEventHandler);
-    void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, bool stopOnVehicleMove, bool broadcast, ElapsedEventHandler elapsedEventHandler);
-    void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, bool stopOnVehicleMove, bool broadcast, bool stopOldTimer, ElapsedEventHandler elapsedEventHandler);
+    public delegate Task Action();
+    void Start(int timeInSeconds, Action action);
+    void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, bool stopOnVehicleMove, Action action);
+    void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, bool stopOnVehicleMove, bool broadcast, Action action);
+    void Start(int timeInSeconds, bool stopOnBattle, bool stopOnMove, bool stopOnVehicleMove, bool broadcast, bool stopOldTimer, Action action);
     void Stop();
     void Send(ISession session);
     bool IsStarted();

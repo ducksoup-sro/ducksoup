@@ -4,9 +4,10 @@ namespace API.Session;
 
 public interface ICountdownManager
 {
-    void Start(int timeInSeconds, ElapsedEventHandler elapsedEventHandler);
-    void Start(int timeInSeconds, bool stopOnTeleport, bool stopOnDead, ElapsedEventHandler elapsedEventHandler);
-    void Start(int timeInSeconds, bool stopOnTeleport, bool stopOnDead, bool stopOldTimer, ElapsedEventHandler elapsedEventHandler);
+    public delegate Task Action();
+    void Start(int timeInSeconds, Action action);
+    void Start(int timeInSeconds, bool stopOnTeleport, bool stopOnDead, Action action);
+    void Start(int timeInSeconds, bool stopOnTeleport, bool stopOnDead, bool stopOldTimer, Action action);
     void Stop();
     void Resend();
     bool IsStarted();

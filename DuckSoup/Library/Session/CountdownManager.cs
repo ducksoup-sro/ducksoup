@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Timers;
 using API.Session;
 using SilkroadSecurityAPI;
@@ -22,18 +23,18 @@ public class CountdownManager : ICountdownManager
         _stopOnTeleport = true;
     }
 
-    public void Start(int timeInSeconds, ElapsedEventHandler elapsedEventHandler)
+    public void Start(int timeInSeconds, ICountdownManager.Action action)
     {
-        Start(timeInSeconds, true, true, elapsedEventHandler);
+        Start(timeInSeconds, true, true, action);
     }
     
-    public void Start(int timeInSeconds, bool stopOnTeleport, bool stopOnDead, ElapsedEventHandler elapsedEventHandler)
+    public void Start(int timeInSeconds, bool stopOnTeleport, bool stopOnDead, ICountdownManager.Action action)
     {
-        Start(timeInSeconds, stopOnTeleport, stopOnDead, true, elapsedEventHandler);
+        Start(timeInSeconds, stopOnTeleport, stopOnDead, true, action);
     }
 
     
-    public void Start(int timeInSeconds, bool stopOnTeleport, bool stopOnDead, bool stopOldTimer, ElapsedEventHandler elapsedEventHandler)
+    public void Start(int timeInSeconds, bool stopOnTeleport, bool stopOnDead, bool stopOldTimer, ICountdownManager.Action action)
     {
         if(stopOldTimer) {
             Stop();
@@ -48,14 +49,22 @@ public class CountdownManager : ICountdownManager
 
         _stopOnDead = stopOnDead;
         _stopOnTeleport = stopOnTeleport;
-        _timerInterval = timeInSeconds ;
+        _timerInterval = timeInSeconds;
         _timer = new Timer();
-        _timer.Interval = timeInSeconds;
-        _timer.AutoReset = false;
-        _timer.Elapsed += elapsedEventHandler;
+        _timer.Interval = 100;
+        _timer.AutoReset = true;
         _timer.Elapsed += (_, _) =>
         {
-            Stop();
+            if (_started.GetValueOrDefault().AddMilliseconds(_timerInterval).Subtract(DateTime.Now).TotalMilliseconds > 0)
+            {
+                return;
+            }
+            Task.Run(async () =>
+            {
+                Stop();
+                await action();
+                return Task.CompletedTask;
+            });
         };
         _timer.Start();
         _started = DateTime.Now;
@@ -81,7 +90,7 @@ public class CountdownManager : ICountdownManager
         return response;
     }
 
-    private static Packet createStopPacket()
+    private Packet CreateStopPacket()
     {
         var response = new Packet(0x34B1, false, false);
         response.WriteByte(0x05);
@@ -98,7 +107,7 @@ public class CountdownManager : ICountdownManager
         _stopOnDead = true;
         _stopOnTeleport = true;
         
-        _session.SendToClient(createStopPacket());
+        _session.SendToClient(CreateStopPacket());
     }
 
     public bool IsStarted()
