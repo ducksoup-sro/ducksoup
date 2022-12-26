@@ -1,6 +1,6 @@
 ﻿using SilkroadSecurityAPI;
 
-namespace API.Session;
+namespace API.Objects;
 
 // Partially from: https://github.com/SDClowen/RSBot/
 public interface IState

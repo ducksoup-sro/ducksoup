@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using API.Objects;
 using API.Session;
 using SilkroadSecurityAPI;
 

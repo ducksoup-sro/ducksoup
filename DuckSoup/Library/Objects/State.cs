@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using API;
-using API.Session;
+using API.Objects;
 using DuckSoup.Library.Objects.Skill;
 using SilkroadSecurityAPI;
 
-namespace DuckSoup.Library.Session;
+namespace DuckSoup.Library.Objects;
 
 // Partially from: https://github.com/SDClowen/RSBot/
 public class State : IState
@@ -14,8 +14,8 @@ public class State : IState
     public MovementType? MovementType { get; set; }
     public BodyState? BodyState { get; set; }
     public PvpState? PvpState { get; set; }
-    public BattleState BattleState { get; set; } = API.BattleState.InPeace;
-    public ScrollState ScrollState { get; set; } = API.ScrollState.Cancel;
+    public BattleState BattleState { get; set; } = BattleState.InPeace;
+    public ScrollState ScrollState { get; set; } = ScrollState.Cancel;
     public PVPCape PvpCape { get; set; } = PVPCape.None;
     public float? WalkSpeed { get; set; }
     public float? RunSpeed { get; set; }

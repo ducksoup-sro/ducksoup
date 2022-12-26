@@ -1,7 +1,6 @@
-﻿using API;
-using SilkroadSecurityAPI;
+﻿using SilkroadSecurityAPI;
 
-namespace DuckSoup.Library.Objects.Spawn;
+namespace API.Objects.Spawn;
 
 // https://github.com/SDClowen/RSBot/
 public interface ISpawnedBionic : ISpawnedEntity

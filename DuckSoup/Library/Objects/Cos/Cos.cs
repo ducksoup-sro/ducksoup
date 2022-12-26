@@ -1,5 +1,6 @@
 ﻿using API;
 using API.Database.SRO_VT_SHARD;
+using API.Objects;
 using API.Objects.Cos;
 using API.Objects.Inventory;
 using API.Session;

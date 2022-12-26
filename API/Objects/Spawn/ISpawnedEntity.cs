@@ -1,10 +1,8 @@
-﻿using API;
-using API.Database.SRO_VT_SHARD;
-using API.ServiceFactory;
+﻿using API.Database.SRO_VT_SHARD;
 using API.Session;
 using SilkroadSecurityAPI;
 
-namespace DuckSoup.Library.Objects.Spawn;
+namespace API.Objects.Spawn;
 
 // https://github.com/SDClowen/RSBot/
 public interface ISpawnedEntity

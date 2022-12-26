@@ -1,8 +1,8 @@
-﻿using API.Session;
+﻿using API.Objects.Cos;
 using DuckSoup.Library.Objects.Inventory;
 using SilkroadSecurityAPI;
 
-namespace API.Objects.Cos;
+namespace DuckSoup.Library.Objects.Cos;
 
 // https://github.com/SDClowen/RSBot/
 public class Ability : DuckSoup.Library.Objects.Cos.Cos, IAbility

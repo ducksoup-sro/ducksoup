@@ -1,6 +1,4 @@
-﻿using SilkroadSecurityAPI;
-
-namespace API.Session;
+﻿namespace API.Objects;
 
 // https://github.com/SDClowen/RSBot/
 public interface IMovement

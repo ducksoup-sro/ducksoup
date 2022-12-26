@@ -1,4 +1,4 @@
-﻿namespace API.Session;
+﻿namespace API.Objects;
 
 // https://github.com/SDClowen/RSBot/
 public class IPosition
