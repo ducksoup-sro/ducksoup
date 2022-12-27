@@ -1,12 +1,9 @@
-﻿using System.Net.Http.Headers;
-using System.Runtime.InteropServices.JavaScript;
-using API.ServiceFactory;
-using API.Session;
+﻿using API.Session;
 using SilkroadSecurityAPI;
 
 namespace API;
 
-public class Helper
+public static class Helper
 {
     public static long GetCurrentTimeMillis()
     {
