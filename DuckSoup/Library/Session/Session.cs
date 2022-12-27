@@ -44,13 +44,13 @@ public sealed class Session : ISession
 
         // generates a "unique" id from the address and port hashcode and safes ip
         if (!(_clientTcpClient.Client.RemoteEndPoint is IPEndPoint ep)) return;
-        ClientId = ep.Address.GetHashCode() + ep.Port.GetHashCode();
+        ClientGuid = Guid.NewGuid();
         ClientIp = ep.Address.ToString();
     }
 
     public IAsyncServer AsyncServer { get; init; }
 
-    public int ClientId { get; set; }
+    public Guid ClientGuid { get; set; }
     public string ClientIp { get; set; }
 
     public void Stop()
@@ -76,7 +76,7 @@ public sealed class Session : ISession
 
         if (SharedObjects.DebugLevel >= DebugLevel.Connections)
             _logger.InfoFormat("{0} - Stop Session - {1} ({2}) - {3}",
-                AsyncServer.Service.Name, ClientId,
+                AsyncServer.Service.Name, ClientGuid,
                 ClientIp,
                 reason);
 
@@ -236,7 +236,7 @@ public sealed class Session : ISession
                     if (SharedObjects.DebugLevel >= DebugLevel.Warning)
                         _logger.WarnFormat(
                             "{0} - Client {1}({2}) exceedet the byte limit: {3} (maximum: {4} - Last check {5} seconds ago)",
-                            AsyncServer.Service.Name, ClientId, ClientIp,
+                            AsyncServer.Service.Name, ClientGuid, ClientIp,
                             _packetSize, maxBytesPerTime, lastCheckDiff);
                     Stop("byte limit");
                 }
@@ -254,7 +254,7 @@ public sealed class Session : ISession
                 // debug
                 if (SharedObjects.DebugLevel >= DebugLevel.Debug)
                     _logger.DebugFormat("{0} - DoRecvFromClient Packet: 0x{1:X} - {2} ({3}) - Status: {4} ",
-                        AsyncServer.Service.Name, packet.Opcode, ClientId, ClientIp,
+                        AsyncServer.Service.Name, packet.Opcode, ClientGuid, ClientIp,
                         packetResult.PacketResultType);
 
                 switch (packetResult.PacketResultType)
@@ -320,7 +320,7 @@ public sealed class Session : ISession
                 // debug
                 if (SharedObjects.DebugLevel >= DebugLevel.Debug)
                     Global.Logger.DebugFormat("{0} - DoRecvFromServer Packet: 0x{1:X} - {2} ({3})",
-                        AsyncServer.Service.Name, packet.Opcode, ClientId, ClientIp);
+                        AsyncServer.Service.Name, packet.Opcode, ClientGuid, ClientIp);
 
                 var packetResult = await AsyncServer.PacketHandler.HandleServer(packet, this);
 

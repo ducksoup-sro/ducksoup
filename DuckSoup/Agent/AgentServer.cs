@@ -1402,7 +1402,7 @@ public class AgentServer : AsyncServer
         if (!session.CharScreen)
         {
             Global.Logger.WarnFormat("Client {0}({1}) attempted to send 0x7001 outside char screen!",
-                session.ClientId, session.ClientIp);
+                session.ClientGuid, session.ClientIp);
             return new PacketResult(PacketResultType.Disconnect);
         }
 
@@ -1410,7 +1410,7 @@ public class AgentServer : AsyncServer
 
         if (session.PacketLength - session.SessionData.Charname.Length != 2)
         {
-            Global.Logger.WarnFormat("Client {0}({1})attempted to modify 0x7001!", session.ClientId,
+            Global.Logger.WarnFormat("Client {0}({1})attempted to modify 0x7001!", session.ClientGuid,
                 session.ClientIp);
             return new PacketResult(PacketResultType.Disconnect);
         }

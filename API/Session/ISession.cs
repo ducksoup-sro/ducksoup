@@ -6,7 +6,7 @@ namespace API.Session;
 public interface ISession
 {
     IAsyncServer AsyncServer { get; init; }
-    int ClientId { get; set; }
+    Guid ClientGuid { get; set; }
     string ClientIp { get; set; }
 
     Task SendToClient(Packet packet);

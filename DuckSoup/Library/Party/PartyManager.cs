@@ -36,7 +36,7 @@ public class PartyManager : IPartyManager
 
     public IParty GetParty(ISession session)
     {
-        return _parties.Values.FirstOrDefault(party => party.Members.Any(partyMember => partyMember.ClientId == session.ClientId));
+        return _parties.Values.FirstOrDefault(party => party.Members.Any(partyMember => partyMember.ClientGuid == session.ClientGuid));
     }
 
     public void AddParty(IParty party)
@@ -72,7 +72,7 @@ public class PartyManager : IPartyManager
 
     public bool IsInParty(ISession session)
     {
-        return _parties.Values.Any(party => party.Members.Any(partyMember => partyMember.ClientId == session.ClientId));
+        return _parties.Values.Any(party => party.Members.Any(partyMember => partyMember.ClientGuid == session.ClientGuid));
     }
     
     public bool HasPartyMatchEntry(string charname)
@@ -82,7 +82,7 @@ public class PartyManager : IPartyManager
 
     public bool HasPartyMatchEntry(ISession session)
     {
-        return _partyMatchEntries.Values.Any(entry => entry.Party.Members.Any(partyMember => partyMember.ClientId == session.ClientId));
+        return _partyMatchEntries.Values.Any(entry => entry.Party.Members.Any(partyMember => partyMember.ClientGuid == session.ClientGuid));
     }
 
     public List<IPartyMatchEntry> GetPartyMatchEntries()
