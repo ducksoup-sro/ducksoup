@@ -44,4 +44,15 @@ public partial class _Item
     public long? MagParam12 { get; set; }
 
     public long Serial64 { get; set; }
+    
+    private _RefObjCommon? _refObjCommon;
+
+    public _RefObjCommon? GetChar()
+    {
+        if (_refObjCommon != null) return _refObjCommon;
+        
+        using var db = new Context.SRO_VT_SHARD();
+        _refObjCommon = db._RefObjCommons.FirstOrDefault(c => RefItemID == c.ID);
+        return _refObjCommon;
+    }
 }
