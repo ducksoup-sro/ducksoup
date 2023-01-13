@@ -15,8 +15,8 @@ public class SpawnedItem : SpawnedEntity
     public bool HasOwner;
     public uint OwnerJID;
     public ObjectRarity Rarity;
-    public C_RefObjItem RefObjItem => ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefObjItem.First(i => i.Value.Link == Id).Value;
-    public C_RefObjCommon RefObjCommon => ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefObjCommon[(int) Id];
+    public _RefObjItem RefObjItem => ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefObjItem.First(i => i.Value.Link == Id).Value;
+    public _RefObjCommon RefObjCommon => ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefObjCommon[(int) Id];
     internal static SpawnedItem FromPacket(Packet packet, uint itemId)
     {
         var result = new SpawnedItem { Id = itemId };

@@ -36,7 +36,7 @@ namespace API.Session
         uint TransportUniqueId { get; set; }
 
         [JsonIgnore]
-        C_Char GetChar { get; }
+        _Char GetChar { get; }
         public object this[string field] { get; set; }
     }
 }

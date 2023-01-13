@@ -25,9 +25,9 @@ public sealed class SpawnedPlayer : SpawnedBionic
     public PvpState PvpCape { get; set; }
     public ExpIcon AutoInverstExp { get; set; }
     public byte InventorySize { get; set; }
-    public Dictionary<C_RefObjCommon, byte> Inventory { get; set; }
+    public Dictionary<_RefObjCommon, byte> Inventory { get; set; }
     public byte AvatarInventorySize { get; set; }
-    public Dictionary<C_RefObjCommon, byte> Avatars { get; set; }
+    public Dictionary<_RefObjCommon, byte> Avatars { get; set; }
     public SpawnedPlayerStall Stall { get; set; }
     public SpawnedPlayerGuild Guild { get; set; }
     public bool WearsJobSuite { get; set; }
@@ -46,7 +46,7 @@ public sealed class SpawnedPlayer : SpawnedBionic
         InventorySize = packet.ReadUInt8();
 
         var itemCount = packet.ReadUInt8();
-        Inventory = new Dictionary<C_RefObjCommon, byte>();
+        Inventory = new Dictionary<_RefObjCommon, byte>();
 
         for (var i = 0; i < itemCount; i++)
         {
@@ -68,7 +68,7 @@ public sealed class SpawnedPlayer : SpawnedBionic
                 Inventory.Add(itemObj, packet.ReadUInt8()); //Item object and the "+" value as value
         }
 
-        Avatars = new Dictionary<C_RefObjCommon, byte>();
+        Avatars = new Dictionary<_RefObjCommon, byte>();
 
         AvatarInventorySize = packet.ReadUInt8();
         itemCount = packet.ReadUInt8();

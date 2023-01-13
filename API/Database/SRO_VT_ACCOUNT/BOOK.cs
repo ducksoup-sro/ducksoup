@@ -1,36 +1,19 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 
-namespace API.Database.SRO_VT_ACCOUNT
+namespace API.Database.SRO_VT_ACCOUNT;
+
+public partial class BOOK
 {
-    [Table("BOOKS")]
-    public partial class BOOK
-    {
-        [Key]
-        [Column(Order = 0)]
-        public int id { get; set; }
+    public int id { get; set; }
 
-        [Key]
-        [Column(Order = 1)]
-        [StringLength(255)]
-        public string title { get; set; }
+    public string title { get; set; } = null!;
 
-        [Key]
-        [Column(Order = 2)]
-        public DateTime pubdate { get; set; }
+    public DateTime pubdate { get; set; }
 
-        [Key]
-        [Column(Order = 3)]
-        [StringLength(4000)]
-        public string synopsis { get; set; }
+    public string synopsis { get; set; } = null!;
 
-        [Key]
-        [Column(Order = 4)]
-        public bool inprint { get; set; }
+    public bool inprint { get; set; }
 
-        [Key]
-        [Column(Order = 5)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int salesCount { get; set; }
-    }
+    public int salesCount { get; set; }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using API;
+using API.Database.Context;
 using API.Database.SRO_VT_SHARD;
 using API.Objects;
 using API.Objects.Cos;
@@ -49,12 +50,12 @@ public class SessionData : ISessionData
     public uint TransportUniqueId { get; set; }
 
     [JsonIgnore]
-    public C_Char GetChar
+    public _Char GetChar
     {
         get
         {
             using var db = new SRO_VT_SHARD();
-            return db.C_Char.First(c => c.CharID == Charid);
+            return db._Chars.First(c => c.CharID == Charid);
         }
     }
     

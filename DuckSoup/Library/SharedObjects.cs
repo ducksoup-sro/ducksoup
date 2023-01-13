@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Data.Entity.Migrations;
 using System.Linq;
 using API;
 using API.Database;
+using API.Database.Context;
 using API.Database.DuckSoup;
 using API.Database.SRO_VT_ACCOUNT;
 using API.Database.SRO_VT_SHARD;
@@ -30,13 +30,13 @@ public class SharedObjects : ISharedObjects
             DownloadSessions = new HashSet<ISession>();
             GatewaySessions = new HashSet<ISession>();
 
-            Notice = new Dictionary<int, C_Notice>();
-            RefObjCommon = new Dictionary<int, C_RefObjCommon>();
-            RefSkill = new Dictionary<int, C_RefSkill>();
+            Notice = new Dictionary<int, _Notice>();
+            RefObjCommon = new Dictionary<int, _RefObjCommon>();
+            RefSkill = new Dictionary<int, _RefSkill>();
 
-            using (var context = new API.Database.DuckSoup.DuckSoup())
+            using (var context = new API.Database.Context.DuckSoup())
             {
-                if (context.Whitelist.ToList().Count == 0)
+                if (context.Whitelists.ToList().Count == 0)
                 {
                     foreach (var msgId in DefaultPacketlist.DownloadClientWhitelist)
                     {
@@ -46,7 +46,7 @@ public class SharedObjects : ISharedObjects
                             continue;
                         }
                         
-                        context.Whitelist.AddOrUpdate(new Whitelist()
+                        context.Whitelists.Add(new Whitelist()
                         {
                             MsgId = msgId, Comment = DefaultPacketlist.DownloadClientWhitelistFull[msgId],
                             ServerType = ServerType.DownloadServer
@@ -60,7 +60,7 @@ public class SharedObjects : ISharedObjects
                             continue;
                         }
                         
-                        context.Whitelist.AddOrUpdate(new Whitelist()
+                        context.Whitelists.Update(new Whitelist
                         {
                             MsgId = msgId, Comment = DefaultPacketlist.GatewayClientWhitelistFull[msgId],
                             ServerType = ServerType.GatewayServer
@@ -74,7 +74,7 @@ public class SharedObjects : ISharedObjects
                             continue;
                         }
                         
-                        context.Whitelist.AddOrUpdate(new Whitelist()
+                        context.Whitelists.Update(new Whitelist
                         {
                             MsgId = msgId, Comment = DefaultPacketlist.AgentClientWhitelistFull[msgId],
                             ServerType = ServerType.AgentServer
@@ -93,14 +93,14 @@ public class SharedObjects : ISharedObjects
         public HashSet<ISession> AgentSessions { get; private set; }
         public HashSet<ISession> DownloadSessions { get; private set; }
         public HashSet<ISession> GatewaySessions { get; private set; }
-        public Dictionary<int, C_Notice> Notice { get; private set; }
-        public Dictionary<int, C_RefObjChar> RefObjChar { get; private set; }
-        public Dictionary<int, C_RefObjCharExtraSkill> RefObjCharExtraSkill { get; private set; }
-        public Dictionary<int, C_RefObjCommon> RefObjCommon { get; private set; }
-        public Dictionary<int, C_RefObjItem> RefObjItem { get; private set; }
-        public Dictionary<int, C_RefObjStruct> RefObjStruct { get; private set; }
-        public Dictionary<byte, C_RefLevel> RefLevel { get; private set; }
-        public Dictionary<int, C_RefSkill> RefSkill { get; private set; }
+        public Dictionary<int, _Notice> Notice { get; private set; }
+        public Dictionary<int, _RefObjChar> RefObjChar { get; private set; }
+        public Dictionary<int, _RefObjCharExtraSkill> RefObjCharExtraSkill { get; private set; }
+        public Dictionary<int, _RefObjCommon> RefObjCommon { get; private set; }
+        public Dictionary<int, _RefObjItem> RefObjItem { get; private set; }
+        public Dictionary<int, _RefObjStruct> RefObjStruct { get; private set; }
+        public Dictionary<byte, _RefLevel> RefLevel { get; private set; }
+        public Dictionary<int, _RefSkill> RefSkill { get; private set; }
 
         public void Dispose()
         {
@@ -127,12 +127,12 @@ public class SharedObjects : ISharedObjects
 
             using (var db = new SRO_VT_SHARD())
             {
-                RefObjChar = db.C_RefObjChar.ToDictionary(x => x.ID);
-                RefObjCharExtraSkill = db.C_RefObjCharExtraSkill.ToDictionary(x => x.ID);
-                RefObjCommon = db.C_RefObjCommon.ToDictionary(x => x.ID);
-                RefObjItem = db.C_RefObjItem.ToDictionary(x => x.ID);
-                RefObjStruct = db.C_RefObjStruct.ToDictionary(x => x.ID);
-                RefLevel = db.C_RefLevel.ToDictionary(x => x.Lvl);
+                RefObjChar = db._RefObjChars.ToDictionary(x => x.ID);
+                RefObjCharExtraSkill = db._RefObjCharExtraSkills.ToDictionary(x => x.ID);
+                RefObjCommon = db._RefObjCommons.ToDictionary(x => x.ID);
+                RefObjItem = db._RefObjItems.ToDictionary(x => x.ID);
+                RefObjStruct = db._RefObjStructs.ToDictionary(x => x.ID);
+                RefLevel = db._RefLevels.ToDictionary(x => x.Lvl);
             }
 
             if (DebugLevel < DebugLevel.Info) return;
@@ -154,7 +154,7 @@ public class SharedObjects : ISharedObjects
 
             using (var db = new SRO_VT_SHARD())
             {
-                RefSkill = db.C_RefSkill.ToDictionary(x => x.ID);
+                RefSkill = db._RefSkills.ToDictionary(x => x.ID);
             }
 
             if (DebugLevel < DebugLevel.Info) return;
@@ -172,7 +172,7 @@ public class SharedObjects : ISharedObjects
 
             using (var db = new SRO_VT_ACCOUNT())
             {
-                Notice = db.C_Notice.ToDictionary(x => x.ID);
+                Notice = db._Notices.ToDictionary(x => x.ID);
             }
 
             if (DebugLevel < DebugLevel.Info) return;

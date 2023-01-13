@@ -21,12 +21,12 @@ namespace DuckSoup.Download
         {
             SharedObjects = ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
 
-            using var context = new API.Database.DuckSoup.DuckSoup();
-            if (!context.Whitelist.Any(s => s.ServerType == ServerType.DownloadServer))
+            using var context = new API.Database.Context.DuckSoup();
+            if (!context.Whitelists.Any(s => s.ServerType == ServerType.DownloadServer))
             {
                 foreach (var (key, value) in DefaultPacketlist.DownloadClientWhitelistFull)
                 {
-                    context.Whitelist.Add(new Whitelist
+                    context.Whitelists.Add(new Whitelist
                         {MsgId = key, Comment = value, ServerType = ServerType.DownloadServer});
                 }
 
@@ -34,9 +34,9 @@ namespace DuckSoup.Download
             }
 
             // Conversion shit because Database actually only supports int not ushort sadge
-            var temp1 = context.Whitelist.Where(s => s.ServerType == ServerType.DownloadServer).Select(s => s.MsgId)
+            var temp1 = context.Whitelists.Where(s => s.ServerType == ServerType.DownloadServer).Select(s => s.MsgId)
                 .ToList();
-            var temp2 = context.Blacklist.Where(s => s.ServerType == ServerType.DownloadServer).Select(s => s.MsgId)
+            var temp2 = context.Blacklists.Where(s => s.ServerType == ServerType.DownloadServer).Select(s => s.MsgId)
                 .ToList();
             var temp3 = new HashSet<ushort>();
             var temp4 = new HashSet<ushort>();

@@ -6,14 +6,14 @@ namespace API;
 
 public interface ISharedObjects : IDisposable
 {
-    Dictionary<int, C_RefObjChar> RefObjChar { get; }
-    Dictionary<int, C_RefObjCharExtraSkill> RefObjCharExtraSkill { get; }
-    Dictionary<int, C_RefObjCommon> RefObjCommon { get; }
-    Dictionary<int, C_RefObjItem> RefObjItem { get; }
-    Dictionary<int, C_RefObjStruct> RefObjStruct { get; }
-    Dictionary<byte, C_RefLevel> RefLevel { get; }
-    Dictionary<int, C_RefSkill> RefSkill { get; }
-    Dictionary<int, C_Notice> Notice { get; }
+    Dictionary<int, _RefObjChar> RefObjChar { get; }
+    Dictionary<int, _RefObjCharExtraSkill> RefObjCharExtraSkill { get; }
+    Dictionary<int, _RefObjCommon> RefObjCommon { get; }
+    Dictionary<int, _RefObjItem> RefObjItem { get; }
+    Dictionary<int, _RefObjStruct> RefObjStruct { get; }
+    Dictionary<byte, _RefLevel> RefLevel { get; }
+    Dictionary<int, _RefSkill> RefSkill { get; }
+    Dictionary<int, _Notice> Notice { get; }
 
     HashSet<ISession> DownloadSessions { get; }
     HashSet<ISession> GatewaySessions { get; }

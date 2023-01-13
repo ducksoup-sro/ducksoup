@@ -6,7 +6,7 @@
         <RootNamespace>DuckSoup</RootNamespace>
         <ProductVersion>2.0.0</ProductVersion>
         <LangVersion>11</LangVersion>
-        <Version>1.6.4</Version>
+        <Version>1.7.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -20,7 +20,6 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
         <PackageReference Include="Quartz" Version="3.5.0" />
         <PackageReference Include="Quartz.Jobs" Version="3.5.0" />
-        <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
         <PackageReference Include="Watson" Version="4.3.5" />
     </ItemGroup>
 

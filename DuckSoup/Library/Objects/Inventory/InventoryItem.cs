@@ -16,9 +16,9 @@ public class InventoryItem : IInventoryItem
     public uint ItemId { get; set; }
     public byte Slot { get; set; }
     public IRentInfo Rental { get; set; }
-    private C_RefObjItem? _refObjItem;
+    private _RefObjItem? _refObjItem;
 
-    C_RefObjItem? Record
+    _RefObjItem? Record
     {
         get
         {

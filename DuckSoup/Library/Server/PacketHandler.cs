@@ -185,7 +185,7 @@ public class PacketHandler : IPacketHandler
         if (packet.Opcode == 0x9000 || packet.Opcode == 0x5000 || packet.Opcode == 0x2001)
             return await _defaultHandler(packet, session, null);
 
-        // automatically blocks all packets that are not on the whitelist!
+        // automatically blocks all packets that are not on the Whitelists!
         if (_clientBlacklist.Contains(packet.Opcode))
             return await _disconnectHandler(packet, session, null);
 

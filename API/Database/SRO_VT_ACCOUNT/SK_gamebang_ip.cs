@@ -1,23 +1,13 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 
-namespace API.Database.SRO_VT_ACCOUNT
+namespace API.Database.SRO_VT_ACCOUNT;
+
+public partial class SK_gamebang_ip
 {
-    public partial class SK_gamebang_ip
-    {
-        [Key]
-        [Column(Order = 0)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public short nID { get; set; }
+    public short nID { get; set; }
 
-        [Key]
-        [Column(Order = 1)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int ip { get; set; }
+    public int ip { get; set; }
 
-        [Key]
-        [Column(Order = 2)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public short capacity { get; set; }
-    }
+    public short capacity { get; set; }
 }

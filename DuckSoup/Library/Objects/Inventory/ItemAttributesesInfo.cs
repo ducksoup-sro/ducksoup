@@ -133,7 +133,7 @@ public class ItemAttributesesInfo : IItemAttributesInfo
         return (byte) value;
     }
 
-    public static IEnumerable<ItemAttributeGroup>? GetAvailableAttributeGroupsForItem(C_RefObjItem item)
+    public static IEnumerable<ItemAttributeGroup>? GetAvailableAttributeGroupsForItem(_RefObjItem item)
     {
         if (item.IsArmor)
         {
@@ -177,7 +177,7 @@ public class ItemAttributesesInfo : IItemAttributesInfo
         return null;
     }
 
-    public static ItemAttributeGroup GetAttributeGroupBySlot(C_RefObjItem item, byte slot)
+    public static ItemAttributeGroup GetAttributeGroupBySlot(_RefObjItem item, byte slot)
     {
         if ((item.IsWeapon || item.IsShield || item.IsArmor) && slot == 0)
             return ItemAttributeGroup.Durability;
@@ -231,7 +231,7 @@ public class ItemAttributesesInfo : IItemAttributesInfo
         throw new Exception($"Unknown attribute type requested! [slot={slot}]");
     }
 
-    public static string? GetActualAttributeGroupNameForItem(C_RefObjItem item, ItemAttributeGroup group)
+    public static string? GetActualAttributeGroupNameForItem(_RefObjItem item, ItemAttributeGroup group)
     {
         //Weapon attributes
         if (item.IsWeapon && group == ItemAttributeGroup.Durability)
@@ -303,7 +303,7 @@ public class ItemAttributesesInfo : IItemAttributesInfo
         return null;
     }
 
-    public static byte GetAttributeSlotForItem(ItemAttributeGroup group, C_RefObjItem item)
+    public static byte GetAttributeSlotForItem(ItemAttributeGroup group, _RefObjItem item)
 
     {
         //Weapon attributes

@@ -11,8 +11,8 @@ public interface ISpawnedEntity
     uint UniqueId { get; }
     IMovement Movement { get; }
     IState State { get; }
-    C_RefObjCommon RefObjCommon { get; }
-    C_RefObjChar RefObjChar { get; }
+    _RefObjCommon RefObjCommon { get; }
+    _RefObjChar RefObjChar { get; }
     ObjectCountry Race { get; }
     ObjectGender Gender { get; }
     IPosition Position { get; }

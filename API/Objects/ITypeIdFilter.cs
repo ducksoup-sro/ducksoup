@@ -16,6 +16,6 @@ public interface ITypeIdFilter
     bool CompareByTypeID3 { get; set; }
     bool CompareByTypeID4 { get; set; }
     
-    Predicate<C_RefObjCommon> _condition { get; set; }
-    bool EqualsRefItem(C_RefObjCommon item);
+    Predicate<_RefObjCommon> _condition { get; set; }
+    bool EqualsRefItem(_RefObjCommon item);
 }

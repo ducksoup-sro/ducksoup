@@ -9,7 +9,7 @@ namespace DuckSoup.Library.Objects.Spawn;
 public class SpawnedSpellArea : SpawnedEntity
 {
     public uint SkillId;
-    public C_RefSkill Record => ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefSkill[(int) SkillId];
+    public _RefSkill Record => ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefSkill[(int) SkillId];
 
     internal static SpawnedSpellArea FromPacket(Packet packet)
     {

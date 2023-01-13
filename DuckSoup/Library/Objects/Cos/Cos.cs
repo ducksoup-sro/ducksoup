@@ -15,8 +15,8 @@ public class Cos : ICos
     public uint UniqueId { get; init; }
     public IMovement Movement { get; }
     public IState State { get; }
-    public C_RefObjCommon RefObjCommon { get; }
-    public C_RefObjChar RefObjChar { get; }
+    public _RefObjCommon RefObjCommon { get; }
+    public _RefObjChar RefObjChar { get; }
     public ObjectCountry Race { get; }
     public ObjectGender Gender { get; }
     public IPosition Position { get; }

@@ -9,7 +9,7 @@ public interface IInventoryItem
     uint ItemId { get; set; }
     byte Slot { get; set; }
     IRentInfo Rental { get; set; }
-    C_RefObjItem Record => ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefObjItem
+    _RefObjItem Record => ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefObjItem
         .First(c => c.Value.Link == ItemId).Value;
     byte OptLevel { get; set; }
     IItemAttributesInfo Attributes { get; set; }

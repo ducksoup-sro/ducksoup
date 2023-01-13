@@ -26,13 +26,13 @@ namespace DuckSoup.Gateway
             SharedObjects = ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
             ServerManager = ServiceFactory.Load<IServerManager>(typeof(IServerManager));
 
-            using (var context = new API.Database.DuckSoup.DuckSoup())
+            using (var context = new API.Database.Context.DuckSoup())
             {
-                if (!context.Whitelist.Any(s => s.ServerType == ServerType.GatewayServer))
+                if (!context.Whitelists.Any(s => s.ServerType == ServerType.GatewayServer))
                 {
                     foreach (var (key, value) in DefaultPacketlist.GatewayClientWhitelistFull)
                     {
-                        context.Whitelist.Add(new Whitelist
+                        context.Whitelists.Add(new Whitelist
                             {MsgId = key, Comment = value, ServerType = ServerType.GatewayServer});
                     }
 
@@ -40,9 +40,9 @@ namespace DuckSoup.Gateway
                 }
 
                 // Conversion shit because Database actually only supports int not ushort sadge
-                var temp1 = context.Whitelist.Where(s => s.ServerType == ServerType.GatewayServer).Select(s => s.MsgId)
+                var temp1 = context.Whitelists.Where(s => s.ServerType == ServerType.GatewayServer).Select(s => s.MsgId)
                     .ToList();
-                var temp2 = context.Blacklist.Where(s => s.ServerType == ServerType.GatewayServer).Select(s => s.MsgId)
+                var temp2 = context.Blacklists.Where(s => s.ServerType == ServerType.GatewayServer).Select(s => s.MsgId)
                     .ToList();
                 var temp3 = new HashSet<ushort>();
                 var temp4 = new HashSet<ushort>();
@@ -126,15 +126,15 @@ namespace DuckSoup.Gateway
                     // finds the according downloadServer to the given port and address and writes the redirect packet
                     foreach (var downloadServer in ServerManager.Servers.Where(agentServer =>
                                  agentServer.Service.RemotePort == downloadServerPort &&
-                                 agentServer.Service.RemoteMachine.Address == downloadServerIp))
+                                 agentServer.Service.RemoteMachine_Machine.Address == downloadServerIp))
                     {
-                        bindAddress = downloadServer.Service.LocalMachine.Address;
+                        bindAddress = downloadServer.Service.LocalMachine_Machine.Address;
                         bindPort = downloadServer.Service.BindPort;
 
-                        if (downloadServer.Service.SpoofMachine != null &&
-                            downloadServer.Service.SpoofMachine.Address != "")
+                        if (downloadServer.Service.SpoofMachine_Machine != null &&
+                            downloadServer.Service.SpoofMachine_Machine.Address != "")
                         {
-                            bindAddress = downloadServer.Service.SpoofMachine.Address;
+                            bindAddress = downloadServer.Service.SpoofMachine_Machine.Address;
                         }
                     }
 
@@ -180,14 +180,14 @@ namespace DuckSoup.Gateway
             // finds the according agentServer to the given port and address and writes the redirect packet
             foreach (var agentServer in ServerManager.Servers.Where(agentServer =>
                          agentServer.Service.RemotePort == remotePort &&
-                         agentServer.Service.RemoteMachine.Address == remoteAddress))
+                         agentServer.Service.RemoteMachine_Machine.Address == remoteAddress))
             {
-                bindAddress = agentServer.Service.LocalMachine.Address;
+                bindAddress = agentServer.Service.LocalMachine_Machine.Address;
                 bindPort = agentServer.Service.BindPort;
 
-                if (agentServer.Service.SpoofMachine != null && agentServer.Service.SpoofMachine.Address != "")
+                if (agentServer.Service.SpoofMachine_Machine != null && agentServer.Service.SpoofMachine_Machine.Address != "")
                 {
-                    bindAddress = agentServer.Service.SpoofMachine.Address;
+                    bindAddress = agentServer.Service.SpoofMachine_Machine.Address;
                 }
             }
 

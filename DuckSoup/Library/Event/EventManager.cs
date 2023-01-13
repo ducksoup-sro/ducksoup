@@ -58,8 +58,8 @@ public class EventManager : IEventManager
 
     public IEvent StartEvent(PluginLoader pluginLoader)
     {
-        using var context = new API.Database.DuckSoup.DuckSoup();
-        var eventTable = context.Event.ToList();
+        using var context = new API.Database.Context.DuckSoup();
+        var eventTable = context.Events.ToList();
 
         IEvent eEvent = null;
         foreach (var pluginType in pluginLoader

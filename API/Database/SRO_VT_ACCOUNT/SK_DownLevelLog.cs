@@ -1,28 +1,23 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
 
-namespace API.Database.SRO_VT_ACCOUNT
+namespace API.Database.SRO_VT_ACCOUNT;
+
+public partial class SK_DownLevelLog
 {
-    public partial class SK_DownLevelLog
-    {
-        public int id { get; set; }
+    public int id { get; set; }
 
-        public int? JID { get; set; }
+    public int? JID { get; set; }
 
-        [StringLength(20)]
-        public string struserid { get; set; }
+    public string? struserid { get; set; }
 
-        [StringLength(20)]
-        public string charname { get; set; }
+    public string? charname { get; set; }
 
-        [StringLength(50)]
-        public string package { get; set; }
+    public string? package { get; set; }
 
-        [StringLength(10)]
-        public string newlevel { get; set; }
+    public string? newlevel { get; set; }
 
-        [StringLength(20)]
-        public string server { get; set; }
+    public string? server { get; set; }
 
-        public DateTime? timedown { get; set; }
-    }
+    public DateTime? timedown { get; set; }
 }

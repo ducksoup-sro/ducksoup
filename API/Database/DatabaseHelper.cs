@@ -2,18 +2,18 @@
 
 namespace API.Database;
 
-public class DatabaseHelper
+public static class DatabaseHelper
 {
     public static string GetSettingOrDefault(string key, string defaultValue)
     {
-        using var context = new Database.DuckSoup.DuckSoup();
-        if (context.Settings.Any(o => o.key == key))
-        {
-            return context.Settings.First(s => s.key.ToLower().Equals(key)).value;
-        }
+        using var context = new Context.DuckSoup();
+        var setting = context.GlobalSettings.FirstOrDefault(o => o.key == key);
         
-        context.Settings.Add(new Setting {key = key, value = defaultValue});
+        if (setting != null) return setting.value;
+        
+        context.GlobalSettings.Add(new GlobalSetting {key = key, value = defaultValue});
         context.SaveChanges();
         return defaultValue;
+
     }
 }

@@ -1,9 +1,9 @@
-﻿using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
 using API;
 using API.Command;
 using API.Server;
 using API.ServiceFactory;
+using Microsoft.EntityFrameworkCore;
 
 namespace DuckSoup.Library.Commands.Server
 {
@@ -45,9 +45,9 @@ namespace DuckSoup.Library.Commands.Server
                 return;
             }
 
-            using var service = new API.Database.DuckSoup.DuckSoup();
-            var services = service.Services.Where(s => s.ServiceId == id).Include(b => b.LocalMachine)
-                .Include(b => b.RemoteMachine).Include(b => b.SpoofMachine).ToList();
+            using var service = new API.Database.Context.DuckSoup();
+            var services = service.Services.Where(s => s.ServiceId == id).Include(b => b.LocalMachine_Machine)
+                .Include(b => b.RemoteMachine_Machine).Include(b => b.SpoofMachine_Machine).ToList();
 
             if (services.Count == 0)
             {

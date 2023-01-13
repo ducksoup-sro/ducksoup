@@ -1,5 +1,5 @@
-﻿
-using API.Settings;
+﻿using API.Settings;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Database;
 
@@ -17,40 +17,49 @@ public class DatabaseManager : IDatabaseManager
         
         // string address, int port, string username, string password, string sharDb, string logDb, string accountDb, string proxyDb
         SroVtAccountConnectionString =
-            $"data source={settings.Address},{settings.Port};initial catalog={settings.AccountDb};persist security info =True; User Id={settings.Username};Password={settings.Password};MultipleActiveResultSets=True;App=DuckSoupEntityFramework;";
+            $"data source={settings.Address},{settings.Port};initial catalog={settings.AccountDb};persist security info =True; User Id={settings.Username};Password={settings.Password};MultipleActiveResultSets=True;App=DuckSoupEntityFramework;Encrypt=False;";
         SroVtShardConnectionString =
-            $"data source={settings.Address},{settings.Port};initial catalog={settings.SharDb};persist security info =True; User Id={settings.Username};Password={settings.Password};MultipleActiveResultSets=True;App=DuckSoupEntityFramework;";
+            $"data source={settings.Address},{settings.Port};initial catalog={settings.SharDb};persist security info =True; User Id={settings.Username};Password={settings.Password};MultipleActiveResultSets=True;App=DuckSoupEntityFramework;Encrypt=False;";
         SroVtLogConnectionString =
-            $"data source={settings.Address},{settings.Port};initial catalog={settings.LogDb};persist security info =True; User Id={settings.Username};Password={settings.Password};MultipleActiveResultSets=True;App=DuckSoupEntityFramework;";
+            $"data source={settings.Address},{settings.Port};initial catalog={settings.LogDb};persist security info =True; User Id={settings.Username};Password={settings.Password};MultipleActiveResultSets=True;App=DuckSoupEntityFramework;Encrypt=False;";
         DuckSoupConnectionString =
-            $"data source={settings.Address},{settings.Port};initial catalog={settings.ProxyDb};persist security info =True; User Id={settings.Username};Password={settings.Password};MultipleActiveResultSets=True;App=DuckSoupEntityFramework;";
+            $"data source={settings.Address},{settings.Port};initial catalog={settings.ProxyDb};persist security info =True; User Id={settings.Username};Password={settings.Password};MultipleActiveResultSets=True;App=DuckSoupEntityFramework;Encrypt=False;";
 
-        using var context = new Database.DuckSoup.DuckSoup();
-        context.Database.CreateIfNotExists();
-        context.Database.Initialize(false);
+
+
+        try
+        {
+            using var context = new Context.DuckSoup();
+            context.Database.Migrate();
+            // context.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            Global.Logger.Error(ex + " An error occurred while migrating the database");
+        }
     }
 
     public bool CheckConnection()
     {
         bool acc, shard, log, proxy;
-        using (var db = new SRO_VT_ACCOUNT.SRO_VT_ACCOUNT())
+        using (var db = new Context.SRO_VT_ACCOUNT())
         {
-            acc = db.Database.Exists();
+            acc = db.Database.CanConnect();
         }
 
-        using (var db = new SRO_VT_SHARD.SRO_VT_SHARD())
+        using (var db = new Context.SRO_VT_SHARD())
         {
-            shard = db.Database.Exists();
+            shard = db.Database.CanConnect();
         }
 
-        using (var db = new SRO_VT_LOG.SRO_VT_LOG())
+        using (var db = new Context.SRO_VT_LOG())
         {
-            log = db.Database.Exists();
+            log = db.Database.CanConnect();
         }
 
-        using (var db = new DuckSoup.DuckSoup())
+        using (var db = new Context.DuckSoup())
         {
-            proxy = db.Database.Exists();
+            proxy = db.Database.CanConnect();
         }
 
         return acc && shard && log && proxy;

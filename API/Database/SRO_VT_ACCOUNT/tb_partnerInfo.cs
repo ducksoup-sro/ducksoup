@@ -1,21 +1,17 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
 
-namespace API.Database.SRO_VT_ACCOUNT
+namespace API.Database.SRO_VT_ACCOUNT;
+
+public partial class tb_partnerInfo
 {
-    public partial class tb_partnerInfo
-    {
-        [Key]
-        [StringLength(10)]
-        public string partnerID { get; set; }
+    public string partnerID { get; set; } = null!;
 
-        [StringLength(20)]
-        public string partnerName { get; set; }
+    public string? partnerName { get; set; }
 
-        [StringLength(10)]
-        public string partnerPass { get; set; }
+    public string? partnerPass { get; set; }
 
-        public int? balance { get; set; }
+    public int? balance { get; set; }
 
-        public DateTime? udate { get; set; }
-    }
+    public DateTime? udate { get; set; }
 }

@@ -2,22 +2,23 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using API;
+using API.Database.Context;
 using API.Database.DuckSoup;
 using API.Database.SRO_VT_SHARD;
-using API.Objects.Cos;
 using API.Server;
 using API.ServiceFactory;
 using API.Session;
+using DuckSoup.Library.Objects;
 using DuckSoup.Library.Objects.Cos;
 using DuckSoup.Library.Objects.Inventory;
 using DuckSoup.Library.Objects.Spawn;
 using DuckSoup.Library.Party;
 using DuckSoup.Library.Server;
+using Microsoft.EntityFrameworkCore;
 using PacketLibrary;
 using PacketLibrary.Agent.Client;
 using SilkroadSecurityAPI;
@@ -36,13 +37,13 @@ public class AgentServer : AsyncServer
     {
         SharedObjects = ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
 
-        using (var context = new API.Database.DuckSoup.DuckSoup())
+        using (var context = new API.Database.Context.DuckSoup())
         {
-            if (!context.Whitelist.Any(s => s.ServerType == ServerType.AgentServer))
+            if (!context.Whitelists.Any(s => s.ServerType == ServerType.AgentServer))
             {
                 foreach (var (key, value) in DefaultPacketlist.AgentClientWhitelistFull)
                 {
-                    context.Whitelist.Add(new Whitelist
+                    context.Whitelists.Add(new Whitelist
                         {MsgId = key, Comment = value, ServerType = ServerType.AgentServer});
                 }
 
@@ -50,9 +51,9 @@ public class AgentServer : AsyncServer
             }
 
             // Conversion shit because Database actually only supports int not ushort sadge
-            var temp1 = context.Whitelist.Where(s => s.ServerType == ServerType.AgentServer).Select(s => s.MsgId)
+            var temp1 = context.Whitelists.Where(s => s.ServerType == ServerType.AgentServer).Select(s => s.MsgId)
                 .ToList();
-            var temp2 = context.Blacklist.Where(s => s.ServerType == ServerType.AgentServer).Select(s => s.MsgId)
+            var temp2 = context.Blacklists.Where(s => s.ServerType == ServerType.AgentServer).Select(s => s.MsgId)
                 .ToList();
             var temp3 = new HashSet<ushort>();
             var temp4 = new HashSet<ushort>();
@@ -1125,7 +1126,9 @@ public class AgentServer : AsyncServer
     private async Task<PacketResult> AGENT_MOVEMENT_SERVER(Packet packet, ISession session, object obj)
     {
         var target = packet.ReadUInt32(); // Unique ID from player
-
+        // TODO FIGURE OUT IF WE REALLY WANNA USE THIS
+        var movement = Movement.MotionFromPacket(packet);
+        
         if (target == session.SessionData.UniqueCharId ||
             (session.SessionData.Vehicle != null && session.SessionData.Vehicle.UniqueId == target))
         {
@@ -1419,9 +1422,9 @@ public class AgentServer : AsyncServer
 
         using var db = new SRO_VT_SHARD();
         session.SessionData.Charid =
-            (await db.C_Char.Where(x => x.CharName16 == session.SessionData.Charname).FirstAsync()).CharID;
+            (await db._Chars.Where(x => x.CharName16 == session.SessionData.Charname).FirstAsync()).CharID;
         session.SessionData.JID =
-            (await db.C_User.Where(x => x.CharID == session.SessionData.Charid).FirstAsync()).UserJID;
+            (await db._Users.Where(x => x.CharID == session.SessionData.Charid).FirstAsync()).UserJID;
 
         return new PacketResult();
     }

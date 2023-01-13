@@ -1,121 +1,83 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 
-namespace API.Database.SRO_VT_ACCOUNT
+namespace API.Database.SRO_VT_ACCOUNT;
+
+public partial class TB_Net2e_Bak
 {
-    public partial class TB_Net2e_Bak
-    {
-        [Key]
-        [Column(Order = 0)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int JID { get; set; }
+    public int JID { get; set; }
 
-        [Key]
-        [Column(Order = 1)]
-        [StringLength(25)]
-        public string StrUserID { get; set; }
+    public string StrUserID { get; set; } = null!;
 
-        [Key]
-        [Column(Order = 2)]
-        [StringLength(50)]
-        public string password { get; set; }
+    public string password { get; set; } = null!;
 
-        [StringLength(50)]
-        public string SecondPassword { get; set; }
+    public string? SecondPassword { get; set; }
 
-        [StringLength(70)]
-        public string question { get; set; }
+    public string? question { get; set; }
 
-        [StringLength(50)]
-        public string answer { get; set; }
+    public string? answer { get; set; }
 
-        public byte? Status { get; set; }
+    public byte? Status { get; set; }
 
-        public byte? GMrank { get; set; }
+    public byte? GMrank { get; set; }
 
-        [StringLength(50)]
-        public string Name { get; set; }
+    public string? Name { get; set; }
 
-        [StringLength(50)]
-        public string MDK { get; set; }
+    public string? MDK { get; set; }
 
-        [StringLength(50)]
-        public string Email { get; set; }
+    public string? Email { get; set; }
 
-        [StringLength(2)]
-        public string sex { get; set; }
+    public string? sex { get; set; }
 
-        [StringLength(30)]
-        public string certificate_num { get; set; }
+    public string? certificate_num { get; set; }
 
-        [StringLength(100)]
-        public string address { get; set; }
+    public string? address { get; set; }
 
-        [StringLength(10)]
-        public string postcode { get; set; }
+    public string? postcode { get; set; }
 
-        [StringLength(20)]
-        public string phone { get; set; }
+    public string? phone { get; set; }
 
-        [StringLength(20)]
-        public string mobile { get; set; }
+    public string? mobile { get; set; }
 
-        [StringLength(70)]
-        public string cid { get; set; }
+    public string? cid { get; set; }
 
-        public int? cidType { get; set; }
+    public int? cidType { get; set; }
 
-        public DateTime? regtime { get; set; }
+    public DateTime? regtime { get; set; }
 
-        [StringLength(25)]
-        public string reg_ip { get; set; }
+    public string? reg_ip { get; set; }
 
-        public DateTime? Time_log { get; set; }
+    public DateTime? Time_log { get; set; }
 
-        public int? freetime { get; set; }
+    public int? freetime { get; set; }
 
-        [Key]
-        [Column(Order = 3)]
-        public byte sec_primary { get; set; }
+    public byte sec_primary { get; set; }
 
-        [Key]
-        [Column(Order = 4)]
-        public byte sec_content { get; set; }
+    public byte sec_content { get; set; }
 
-        public DateTime? Birthday { get; set; }
+    public DateTime? Birthday { get; set; }
 
-        [StringLength(50)]
-        public string Province { get; set; }
+    public string? Province { get; set; }
 
-        [StringLength(50)]
-        public string District { get; set; }
+    public string? District { get; set; }
 
-        [StringLength(50)]
-        public string WherePlay { get; set; }
+    public string? WherePlay { get; set; }
 
-        [StringLength(50)]
-        public string WhereKnow { get; set; }
+    public string? WhereKnow { get; set; }
 
-        [StringLength(50)]
-        public string Reference { get; set; }
+    public string? Reference { get; set; }
 
-        [StringLength(50)]
-        public string Games { get; set; }
+    public string? Games { get; set; }
 
-        [StringLength(10)]
-        public string strLevel { get; set; }
+    public string? strLevel { get; set; }
 
-        [StringLength(50)]
-        public string Class { get; set; }
+    public string? Class { get; set; }
 
-        public byte? HowPlay { get; set; }
+    public byte? HowPlay { get; set; }
 
-        [StringLength(25)]
-        public string Inviter { get; set; }
+    public string? Inviter { get; set; }
 
-        [StringLength(50)]
-        public string Sec_act { get; set; }
+    public string? Sec_act { get; set; }
 
-        public DateTime? LastModification { get; set; }
-    }
+    public DateTime? LastModification { get; set; }
 }

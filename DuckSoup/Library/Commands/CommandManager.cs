@@ -5,6 +5,7 @@ using API;
 using API.Command;
 using API.Exceptions;
 using API.ServiceFactory;
+using DuckSoup.Library.Commands.Auth;
 using DuckSoup.Library.Commands.Event;
 using DuckSoup.Library.Commands.Plugin;
 using DuckSoup.Library.Commands.Server;
@@ -21,6 +22,7 @@ public class CommandManager : ICommandManager
 
         _commands = new List<Command>();
         _helpCommand = new HelpCommand(_commands);
+        _commands.Add(new AuthCommand());
         _commands.Add(new ServerCommand());
         _commands.Add(new PluginCommand());
         _commands.Add(new EventCommand());

@@ -11,7 +11,7 @@ public class SpawnedPlayerStall
 {
     public string Name { get; set; }
     public uint DecorationId { get; set; }
-    public C_RefObjItem Decoration => ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefObjItem[(int) DecorationId];
+    public _RefObjItem Decoration => ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefObjItem[(int) DecorationId];
 
     internal static SpawnedPlayerStall FromPacket(Packet packet)
     {

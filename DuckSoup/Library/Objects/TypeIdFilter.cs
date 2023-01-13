@@ -17,7 +17,7 @@ public class TypeIdFilter : ITypeIdFilter
     public bool CompareByTypeID3 { get; set; }
     public bool CompareByTypeID4 { get; set; }
 
-    public Predicate<C_RefObjCommon> _condition { get; set; }
+    public Predicate<_RefObjCommon> _condition { get; set; }
         
     public TypeIdFilter(byte t1, byte t2, byte t3, byte t4)
     {
@@ -27,7 +27,7 @@ public class TypeIdFilter : ITypeIdFilter
         TypeID4 = t4;
     }
 
-    public TypeIdFilter(Predicate<C_RefObjCommon> condition)
+    public TypeIdFilter(Predicate<_RefObjCommon> condition)
     {
         _condition = condition;
     }
@@ -36,7 +36,7 @@ public class TypeIdFilter : ITypeIdFilter
     {
     }
         
-    public bool EqualsRefItem(C_RefObjCommon item)
+    public bool EqualsRefItem(_RefObjCommon item)
     {
         if (_condition != null && _condition(item))
             return true;

@@ -2,9 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using API;
 using API.Database.DuckSoup;
@@ -13,6 +11,7 @@ using API.ServiceFactory;
 using DuckSoup.Agent;
 using DuckSoup.Download;
 using DuckSoup.Gateway;
+using Microsoft.EntityFrameworkCore;
 
 #endregion
 
@@ -24,9 +23,9 @@ namespace DuckSoup.Library.Server
         {
             ServiceFactory.Register<IServerManager>(typeof(IServerManager), this);
             Servers = new List<IAsyncServer>();
-            using var context = new API.Database.DuckSoup.DuckSoup();
-            foreach (var contextService in context.Services.Include(b => b.LocalMachine)
-                         .Include(b => b.RemoteMachine).Include(b => b.SpoofMachine))
+            using var context = new API.Database.Context.DuckSoup();
+            foreach (var contextService in context.Services.Include(b => b.LocalMachine_Machine)
+                         .Include(b => b.RemoteMachine_Machine).Include(b => b.SpoofMachine_Machine))
             {
                 AddServer(contextService);
             }

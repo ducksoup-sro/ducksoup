@@ -1,13 +1,11 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
 
-namespace API.Database.SRO_VT_SHARD
+namespace API.Database.SRO_VT_SHARD;
+
+public partial class Tab_RefSpawnToolVersion
 {
-    public partial class Tab_RefSpawnToolVersion
-    {
-        [Key]
-        public int dwRefDataVersion { get; set; }
+    public int dwRefDataVersion { get; set; }
 
-        [StringLength(128)]
-        public string szVersionDescString { get; set; }
-    }
+    public string? szVersionDescString { get; set; }
 }

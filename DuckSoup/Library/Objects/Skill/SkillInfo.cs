@@ -10,7 +10,7 @@ public class SkillInfo
 {
     public uint Id;
     public bool Enabled;
-    public C_RefSkill Record => ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefSkill[(int) Id];
+    public _RefSkill Record => ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).RefSkill[(int) Id];
 
     public bool IsPassive => Record.Basic_Activity == 0;
     public bool IsAttack => Record.ParamsContains(6386804);
