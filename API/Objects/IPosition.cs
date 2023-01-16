@@ -1,13 +1,17 @@
 ﻿namespace API.Objects;
 
 // https://github.com/SDClowen/RSBot/
-public class IPosition
+public interface IPosition
 {
-    public IRegion Region { get; set; }
-    public float XOffset { get; set; }
-    public float YOffset { get; set; }
-    public float ZOffset { get; set; }
-    public short Angle { get; set; }
-    public short WorldId { get; set; }
-    public short LayerId { get; set; }
+    IRegion Region { get; set; }
+    float XOffset { get; set; }
+    float YOffset { get; set; }
+    float ZOffset { get; set; }
+    float X { get; }
+    float Y { get; }
+    float XSectorOffset { get; }
+    float YSectorOffset { get; }
+    short Angle { get; set; }
+    short WorldId { get; set; }
+    short LayerId { get; set; }
 }

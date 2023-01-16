@@ -6,7 +6,7 @@ using SilkroadSecurityAPI;
 namespace DuckSoup.Library.Objects;
 
 // https://github.com/SDClowen/RSBot/
-public class Position : IPosition
+public struct Position : IPosition
 {
     private float _XOffset;
     private float _YOffset;
@@ -65,27 +65,15 @@ public class Position : IPosition
     public short WorldId { get; set; }
     public short LayerId { get; set; }
 
-    public float X
-    {
-        get { return Region.IsDungeon ? _XOffset / 10 : (Region.GetX() - 135) * 192 + _XOffset / 10; }
-    }
+    public float X => Region.IsDungeon ? _XOffset / 10 : (Region.GetX() - 135) * 192 + _XOffset / 10;
 
-    public float Y
-    {
-        get { return Region.IsDungeon ? _YOffset / 10 : (Region.GetY() - 92) * 192 + _YOffset / 10; }
-    }
+    public float Y => Region.IsDungeon ? _YOffset / 10 : (Region.GetY() - 92) * 192 + _YOffset / 10;
 
-    public float XSectorOffset
-    {
-        get { return Region.IsDungeon ? (127 * 192 + _XOffset / 10) * 10 % 1920 : _XOffset; }
-    }
+    public float XSectorOffset => Region.IsDungeon ? (127 * 192 + _XOffset / 10) * 10 % 1920 : _XOffset;
 
-    public float YSectorOffset
-    {
-        get { return Region.IsDungeon ? (128 * 192 + _YOffset / 10) * 10 % 1920 : _YOffset; }
-    }
+    public float YSectorOffset => Region.IsDungeon ? (128 * 192 + _YOffset / 10) * 10 % 1920 : _YOffset;
 
-    public Position(float x, float y, ushort regionId = 0)
+    public Position(float x, float y, ushort regionId = 0) : this ()
     {
         Region = new Region(regionId);
 
@@ -119,7 +107,7 @@ public class Position : IPosition
     }
 
 
-    public Position(short xOffset, short yOffset, short zOffset, ushort regionId)
+    public Position(short xOffset, short yOffset, short zOffset, ushort regionId) : this()
     {
         Region = new Region(regionId);
 
@@ -128,7 +116,7 @@ public class Position : IPosition
         ZOffset = zOffset;
     }
 
-    public Position(float xOffset, float yOffset, float zOffset, byte xSector, byte ySector)
+    public Position(float xOffset, float yOffset, float zOffset, byte xSector, byte ySector) : this()
     {
         Region.SetX(xSector);
         Region.SetY(ySector);
@@ -145,7 +133,7 @@ public class Position : IPosition
 
     public static IPosition FromPacket(Packet packet)
     {
-        return new IPosition
+        return new Position()
         {
             Region = new Region(packet.ReadUInt16()),
             XOffset = packet.ReadFloat(),
@@ -157,7 +145,7 @@ public class Position : IPosition
 
     public static IPosition FromPacketInt(Packet packet)
     {
-        return new IPosition
+        return new Position()
         {
             Region = new Region(packet.ReadUInt16()),
             XOffset = packet.ReadInt32(),
@@ -168,7 +156,7 @@ public class Position : IPosition
 
     public static IPosition FromPacketConditional(Packet packet, bool parseLayerWorldId = true)
     {
-        var position = new IPosition
+        var position = new Position()
         {
             Region = new Region(packet.ReadUInt16())
         };

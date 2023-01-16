@@ -39,7 +39,7 @@ public class Movement : IMovement
             result.HasSource = packet.ReadBool();
             if (result.HasSource)
             {
-                result.Source = new()
+                result.Source = new Position
                 {
                     Region = new Region(packet.ReadUInt16())
                 };
