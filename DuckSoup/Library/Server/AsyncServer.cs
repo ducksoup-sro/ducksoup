@@ -45,7 +45,7 @@ public class AsyncServer : IAsyncServer
 
         // defines a binding endpoint
         var bindEndPoint = new IPEndPoint(IPAddress.Parse(Service.LocalMachine_Machine.Address), Service.BindPort);
-        RemoteEndPoint = new IPEndPoint(IPAddress.Parse(Service.LocalMachine_Machine.Address), Service.RemotePort);
+        RemoteEndPoint = new IPEndPoint(IPAddress.Parse(Service.RemoteMachine_Machine.Address), Service.RemotePort);
 
         // starts the listener socket for the incoming connections
         _tcpServer = new TcpListener(bindEndPoint);
