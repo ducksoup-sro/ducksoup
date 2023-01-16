@@ -8,11 +8,9 @@ using System.Threading.Tasks;
 using API;
 using API.Database.Context;
 using API.Database.DuckSoup;
-using API.Database.SRO_VT_SHARD;
 using API.Server;
 using API.ServiceFactory;
 using API.Session;
-using DuckSoup.Library.Objects;
 using DuckSoup.Library.Objects.Cos;
 using DuckSoup.Library.Objects.Inventory;
 using DuckSoup.Library.Objects.Spawn;
@@ -1126,8 +1124,34 @@ public class AgentServer : AsyncServer
     private async Task<PacketResult> AGENT_MOVEMENT_SERVER(Packet packet, ISession session, object obj)
     {
         var target = packet.ReadUInt32(); // Unique ID from player
+         if (target != session.SessionData.UniqueCharId)
+         {
+             return new PacketResult();
+         }
+
         // TODO FIGURE OUT IF WE REALLY WANNA USE THIS
-        var movement = Movement.MotionFromPacket(packet);
+        // yes we want to use this at a later stage
+        // specially to track sectorX and sectorY
+        // var movement = Movement.MotionFromPacket(packet);
+        //
+        // try
+        // {
+        //     Global.Logger.Debug("---------------------");
+        //     Global.Logger.Debug("X: " + movement.Destination.X);        
+        //     Global.Logger.Debug("XOffset: " + movement.Destination.XOffset);        
+        //     Global.Logger.Debug("XSectorOffset: " + movement.Destination.XSectorOffset);     
+        //     Global.Logger.Debug("Y: " + movement.Destination.Y);        
+        //     Global.Logger.Debug("YOffset: " + movement.Destination.YOffset);        
+        //     Global.Logger.Debug("YSectorOffset: " + movement.Destination.YSectorOffset);     
+        //     Global.Logger.Debug("RegionId: " + movement.Destination.Region.GetId());     
+        //     Global.Logger.Debug("RegionX: " + movement.Destination.Region.GetX());
+        //     Global.Logger.Debug("RegionY: " + movement.Destination.Region.GetY());
+        //     Global.Logger.Debug("---------------------");
+        // }
+        // catch (Exception e)
+        // {
+        //     Global.Logger.Debug(e.ToString());
+        // }
         
         if (target == session.SessionData.UniqueCharId ||
             (session.SessionData.Vehicle != null && session.SessionData.Vehicle.UniqueId == target))
@@ -1137,17 +1161,17 @@ public class AgentServer : AsyncServer
             {
                 session.TimerManager.Stop();
             }
-
+        
             if (session.TimerManager.IsStarted() && session.TimerManager.IsStopOnVehicleMove() &&
                 session.SessionData.Vehicle != null && session.SessionData.Vehicle.UniqueId == target)
             {
                 session.TimerManager.Stop();
             }
-
+        
             // sky = 0, ground = 1
             var groundClick = packet.ReadUInt8(); //sky or ground click
             if (groundClick == 0x00) return new PacketResult();
-
+        
             session.SessionData.LatestRegionId = packet.ReadUInt16(); // Region ID
             if (session.SessionData.LatestRegionId >= short.MaxValue)
             {
@@ -1161,7 +1185,7 @@ public class AgentServer : AsyncServer
                 session.SessionData.PositionY = packet.ReadUInt16();
                 session.SessionData.PositionZ = packet.ReadUInt16();
             }
-
+        
             return new PacketResult();
         }
 
