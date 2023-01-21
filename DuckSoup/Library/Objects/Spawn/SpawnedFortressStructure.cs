@@ -1,4 +1,5 @@
-﻿using SilkroadSecurityAPI;
+﻿using API;
+using SilkroadSecurityAPI;
 
 namespace DuckSoup.Library.Objects.Spawn;
 
@@ -8,8 +9,6 @@ public sealed class SpawnedFortressStructure : SpawnedNpc
     public uint HP { get; set; }
     public uint RefEventStructID { get; set; }
     public ushort CurrentState { get; set; }
-    public uint GuildId { get; set; }
-    public string GuildName { get; set; }
     public SpawnedFortressStructure(uint objId) :
         base(objId) { }
     internal override void Deserialize(Packet packet)
@@ -21,8 +20,5 @@ public sealed class SpawnedFortressStructure : SpawnedNpc
         ParseBionicDetails(packet);
 
         base.Deserialize(packet);
-
-        GuildId = packet.ReadUInt32();
-        GuildName = packet.ReadAscii();
     }
 }
