@@ -1,4 +1,5 @@
-﻿using SilkroadSecurityAPI;
+﻿using API;
+using SilkroadSecurityAPI;
 
 namespace DuckSoup.Library.Objects.Spawn;
 
@@ -23,6 +24,9 @@ public sealed class SpawnedFortressStructure : SpawnedNpc
         base.Deserialize(packet);
 
         GuildId = packet.ReadUInt32();
-        GuildName = packet.ReadAscii();
+        if (GuildId != 0)
+        {
+            GuildName = packet.ReadAscii();
+        }
     }
 }
