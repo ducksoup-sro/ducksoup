@@ -511,7 +511,12 @@ public class AgentServer : AsyncServer
                                 spawnedCos.Deserialize(packet);
                             }
                                 break;
-
+                            case 4:
+                            {
+                                var guildId = packet.ReadUInt32();
+                                var guildName = packet.ReadAscii();
+                                break;
+                            }
                             case 5:
                             {
                                 var spawnedFortressStructure = new SpawnedFortressStructure(refObjId);
