@@ -24,7 +24,8 @@
     public enum MovementType : byte
     {
         Walking = 0,
-        Running = 1
+        Running = 1,
+        None = 0xFF // b0ykoe - this does not really exist
     }
 
     public enum MovementAction : byte

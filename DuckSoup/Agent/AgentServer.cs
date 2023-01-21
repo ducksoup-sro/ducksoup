@@ -42,7 +42,7 @@ public class AgentServer : AsyncServer
                 foreach (var (key, value) in DefaultPacketlist.AgentClientWhitelistFull)
                 {
                     context.Whitelists.Add(new Whitelist
-                        {MsgId = key, Comment = value, ServerType = ServerType.AgentServer});
+                        { MsgId = key, Comment = value, ServerType = ServerType.AgentServer });
                 }
 
                 context.SaveChanges();
@@ -124,18 +124,18 @@ public class AgentServer : AsyncServer
     private async Task<PacketResult> AGENT_FRPVP_UPDATE(Packet packet, ISession session, PacketData data)
     {
         var result = packet.ReadUInt8(); // 1   byte    result
-        if(result == 1)
+        if (result == 1)
         {
             var uniqueId = packet.ReadUInt32(); // 4   uint    Player.UniqueID
-            var cape = (PVPCape) packet.ReadUInt8(); // 1   byte    Player.FRPVPMode
+            var cape = (PVPCape)packet.ReadUInt8(); // 1   byte    Player.FRPVPMode
             if (session.SessionData.UniqueCharId == uniqueId)
             {
                 session.SessionData.State.PvpCape = cape;
             }
         }
-        else if(result == 2)
+        else if (result == 2)
         {
-            packet.ReadUInt16();  // 2   ushort  errorCode
+            packet.ReadUInt16(); // 2   ushort  errorCode
         }
 
         return new PacketResult();
@@ -167,7 +167,7 @@ public class AgentServer : AsyncServer
 
             session.SessionData.OnTransport = isMounted;
             session.SessionData.TransportUniqueId = cosUniqueId;
-            
+
             if (!isMounted)
             {
                 session.SessionData.Vehicle = null;
@@ -462,7 +462,7 @@ public class AgentServer : AsyncServer
             packet.ReadUInt32();
         }
 
-        var obj = SharedObjects.RefObjCommon[(int) refObjId];
+        var obj = SharedObjects.RefObjCommon[(int)refObjId];
 
         if (obj == null)
         {
@@ -591,10 +591,10 @@ public class AgentServer : AsyncServer
         var unk1 = packet.ReadUInt8();
         if (unk1 != 0x01) return new PacketResult();
 
-        var action = (CharacterAction) packet.ReadUInt8();
+        var action = (CharacterAction)packet.ReadUInt8();
         if (action != CharacterAction.SkillCast) return new PacketResult();
 
-        var skillId = (int) packet.ReadUInt32();
+        var skillId = (int)packet.ReadUInt32();
         var skill = SharedObjects.RefSkill.GetValueOrDefault(skillId, null);
         if (skill == null) return new PacketResult();
 
@@ -604,9 +604,9 @@ public class AgentServer : AsyncServer
             DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
         {
             session.SendNotice("You cannot use Snow Shield again. Please wait another " +
-                               (int) ((DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() -
-                                       session.SessionData.LastSnowshieldUsage - skill.Action_ReuseDelay) / 1000 *
-                                      -1) + " seconds!");
+                               (int)((DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() -
+                                      session.SessionData.LastSnowshieldUsage - skill.Action_ReuseDelay) / 1000 *
+                                     -1) + " seconds!");
             return new PacketResult(PacketResultType.Block);
         }
 
@@ -625,8 +625,8 @@ public class AgentServer : AsyncServer
         switch (updateType)
         {
             case 0:
-                session.SessionData.State.LifeState = (LifeState) updateState;
-                if ((LifeState) updateState == LifeState.Dead && session.CountdownManager.IsStopOnDead() &&
+                session.SessionData.State.LifeState = (LifeState)updateState;
+                if ((LifeState)updateState == LifeState.Dead && session.CountdownManager.IsStopOnDead() &&
                     session.CountdownManager.IsStarted())
                 {
                     session.CountdownManager.Stop();
@@ -639,29 +639,29 @@ public class AgentServer : AsyncServer
 
                 break;
             case 1:
-                var motionState = (MotionState) updateState;
+                var motionState = (MotionState)updateState;
                 session.SessionData.State.MotionState = motionState;
 
                 session.SessionData.State.MovementType = motionState switch
                 {
                     MotionState.Walking => MovementType.Walking,
                     MotionState.Running => MovementType.Running,
-                    MotionState.StandUp => throw new ArgumentOutOfRangeException(),
-                    MotionState.Sitting => throw new ArgumentOutOfRangeException(),
+                    MotionState.StandUp => MovementType.None,
+                    MotionState.Sitting => MovementType.None,
                     _ => throw new ArgumentOutOfRangeException()
                 };
 
                 break;
             case 4:
-                session.SessionData.State.BodyState = (BodyState) updateState;
+                session.SessionData.State.BodyState = (BodyState)updateState;
                 break;
 
             case 7:
-                session.SessionData.State.PvpState = (PvpState) updateState;
+                session.SessionData.State.PvpState = (PvpState)updateState;
                 break;
             case 8:
-                session.SessionData.State.BattleState = (BattleState) updateState;
-                if ((BattleState) updateState == BattleState.InBattle && session.TimerManager.IsStarted() &&
+                session.SessionData.State.BattleState = (BattleState)updateState;
+                if ((BattleState)updateState == BattleState.InBattle && session.TimerManager.IsStarted() &&
                     session.TimerManager.IsStopOnBattle())
                 {
                     session.TimerManager.Stop();
@@ -669,7 +669,7 @@ public class AgentServer : AsyncServer
 
                 break;
             case 11:
-                session.SessionData.State.ScrollState = (ScrollState) updateState;
+                session.SessionData.State.ScrollState = (ScrollState)updateState;
                 break;
 
             default:
@@ -702,7 +702,9 @@ public class AgentServer : AsyncServer
         var totalPk = packet.ReadUInt16(); // 2   ushort  TotalPK
         var pkPenaltyPoint = packet.ReadUInt32(); // 4   uint    PKPenaltyPoint
         var hwanLevel = packet.ReadUInt8(); // 1   byte    HwanLevel
-        session.SessionData.State.PvpCape = (PVPCape) packet.ReadUInt8(); // 1   byte    FreePVP           //0 = None, 1 = Red, 2 = Gray, 3 = Blue, 4 = White, 5 = Gold
+        session.SessionData.State.PvpCape =
+            (PVPCape)packet
+                .ReadUInt8(); // 1   byte    FreePVP           //0 = None, 1 = Red, 2 = Gray, 3 = Blue, 4 = White, 5 = Gold
 
         // //Inventory
         var inventorySize = packet.ReadUInt8(); // 1   byte    Inventory.Size
@@ -739,7 +741,7 @@ public class AgentServer : AsyncServer
             }
 
             var itemRefItemId = packet.ReadUInt32(); //     4   uint    item.RefItemID
-            var item = SharedObjects.RefObjCommon[(int) itemRefItemId];
+            var item = SharedObjects.RefObjCommon[(int)itemRefItemId];
 
             if (item == null) continue;
             if (item.TypeID1 == 3)
@@ -883,7 +885,7 @@ public class AgentServer : AsyncServer
             }
 
             var itemRefItemId = packet.ReadUInt32(); // 4 uint item.RefItemID
-            var item = SharedObjects.RefObjCommon[(int) itemRefItemId];
+            var item = SharedObjects.RefObjCommon[(int)itemRefItemId];
 
             if (item.TypeID1 == 3)
                 //ITEM_        
@@ -1044,12 +1046,12 @@ public class AgentServer : AsyncServer
 
         //State
         session.SessionData.State.LifeState =
-            (LifeState) packet.ReadUInt8(); // 1   byte    State.LifeState         //1 = Alive, 2 = Dead
+            (LifeState)packet.ReadUInt8(); // 1   byte    State.LifeState         //1 = Alive, 2 = Dead
         packet.ReadUInt8(); // 1   byte    State.unkByte0
         session.SessionData.State.MotionState =
-            (MotionState) packet
+            (MotionState)packet
                 .ReadUInt8(); // 1   byte    State.MotionState       //0 = None, 2 = Walking, 3 = Running, 4 = Sitting
-        session.SessionData.State.BodyState = (BodyState) packet
+        session.SessionData.State.BodyState = (BodyState)packet
             .ReadUInt8(); // 1   byte    State.Status            //0 = None, 1 = Hwan, 2 = Untouchable, 3 = GameMasterInvincible, 5 = GameMasterInvisible, 5 = ?, 6 = Stealth, 7 = Invisible
         var stateWalkSpeed = packet.ReadFloat(); // 4   float   State.WalkSpeed
         var stateRunSpeed = packet.ReadFloat(); // 4   float   State.RunSpeed
@@ -1061,7 +1063,7 @@ public class AgentServer : AsyncServer
             var buffRefSkillId = packet.ReadUInt32(); // 4   uint    Buff.RefSkillID
             var buffDuration = packet.ReadUInt32(); // 4   uint    Buff.Duration
 
-            var skill = SharedObjects.RefSkill[(int) buffRefSkillId];
+            var skill = SharedObjects.RefSkill[(int)buffRefSkillId];
 
             if (skill == null) continue;
             if (skill.ParamsContains(1701213281))
@@ -1074,15 +1076,15 @@ public class AgentServer : AsyncServer
         var name = packet.ReadAscii(); // 2   ushort  Name.Length // *   string  Name
         session.SessionData.Charname = name;
         var jobName = packet.ReadAscii(); // 2   ushort  JobName.Length // *   string  JobName
-        session.SessionData.JobType = (Job) packet.ReadUInt8(); // 1   byte    JobType
+        session.SessionData.JobType = (Job)packet.ReadUInt8(); // 1   byte    JobType
         var jobLevel = packet.ReadUInt8(); // 1   byte    JobLevel
         var jobExp = packet.ReadUInt32(); // 4   uint    JobExp
         var jobContribution = packet.ReadUInt32(); // 4   uint    JobContribution
         var jobReward = packet.ReadUInt32(); // 4   uint    JobReward
         session.SessionData.State.PvpState =
-            (PvpState) packet.ReadUInt8(); // 1   byte    PVPState                //0 = White, 1 = Purple, 2 = Red
+            (PvpState)packet.ReadUInt8(); // 1   byte    PVPState                //0 = White, 1 = Purple, 2 = Red
         session.SessionData.OnTransport = packet.ReadBool(); // 1   byte    TransportFlag
-        session.SessionData.State.BattleState = (BattleState) packet.ReadUInt8(); // 1   byte    InCombat
+        session.SessionData.State.BattleState = (BattleState)packet.ReadUInt8(); // 1   byte    InCombat
         if (session.SessionData.OnTransport)
         {
             session.SessionData.TransportUniqueId = packet.ReadUInt32(); // 4   uint    Transport.UniqueID
@@ -1124,10 +1126,10 @@ public class AgentServer : AsyncServer
     private async Task<PacketResult> AGENT_MOVEMENT_SERVER(Packet packet, ISession session, object obj)
     {
         var target = packet.ReadUInt32(); // Unique ID from player
-         if (target != session.SessionData.UniqueCharId)
-         {
-             return new PacketResult();
-         }
+        if (target != session.SessionData.UniqueCharId)
+        {
+            return new PacketResult();
+        }
 
         // TODO FIGURE OUT IF WE REALLY WANNA USE THIS
         // yes we want to use this at a later stage
@@ -1152,7 +1154,7 @@ public class AgentServer : AsyncServer
         // {
         //     Global.Logger.Debug(e.ToString());
         // }
-        
+
         if (target == session.SessionData.UniqueCharId ||
             (session.SessionData.Vehicle != null && session.SessionData.Vehicle.UniqueId == target))
         {
@@ -1161,17 +1163,17 @@ public class AgentServer : AsyncServer
             {
                 session.TimerManager.Stop();
             }
-        
+
             if (session.TimerManager.IsStarted() && session.TimerManager.IsStopOnVehicleMove() &&
                 session.SessionData.Vehicle != null && session.SessionData.Vehicle.UniqueId == target)
             {
                 session.TimerManager.Stop();
             }
-        
+
             // sky = 0, ground = 1
             var groundClick = packet.ReadUInt8(); //sky or ground click
             if (groundClick == 0x00) return new PacketResult();
-        
+
             session.SessionData.LatestRegionId = packet.ReadUInt16(); // Region ID
             if (session.SessionData.LatestRegionId >= short.MaxValue)
             {
@@ -1185,7 +1187,7 @@ public class AgentServer : AsyncServer
                 session.SessionData.PositionY = packet.ReadUInt16();
                 session.SessionData.PositionZ = packet.ReadUInt16();
             }
-        
+
             return new PacketResult();
         }
 
