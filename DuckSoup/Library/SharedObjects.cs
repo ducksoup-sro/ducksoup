@@ -122,7 +122,7 @@ public class SharedObjects : ISharedObjects
     {
         if (DebugLevel >= DebugLevel.Info)
         {
-            Global.Logger.InfoFormat("{0} - Starting to read RefObj. This might take a while!", ServerName);
+            Global.Logger.InfoFormat("{0} - Starting to read and cache the Database. This might take a while!", ServerName);
         }
 
         using (var db = new SRO_VT_SHARD())
