@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using API;
 using API.Database.Context;
 using API.Database.DuckSoup;
+using API.EventFactory;
 using API.Server;
 using API.ServiceFactory;
 using API.Session;
@@ -1203,6 +1204,7 @@ public class AgentServer : AsyncServer
     {
         session.CharacterGameReady = false;
         session.SessionData.LastClientReady = null;
+        EventFactory.Publish(EventFactoryNames.OnCharacterGameReadyChange, session, false);
         if (session.CountdownManager.IsStarted() && session.CountdownManager.IsStopOnTeleport())
         {
             session.CountdownManager.Stop();
@@ -1221,6 +1223,12 @@ public class AgentServer : AsyncServer
         // fix to not crash on autonotice
         session.CharacterGameReady = true;
         session.SessionData.LastClientReady = Helper.GetCurrentTimeMillis();
+        if (!session.SessionData.FirstSpawn)
+        {
+            session.SessionData.FirstSpawn = true;
+            EventFactory.Publish(EventFactoryNames.OnCharacterFirstSpawn, session);
+        }
+        EventFactory.Publish(EventFactoryNames.OnCharacterGameReadyChange, session, true);
 
         if (session.CountdownManager.IsStarted())
         {
@@ -1267,6 +1275,10 @@ public class AgentServer : AsyncServer
 
     private async Task<PacketResult> AGENT_ENVIRONMENT_CELESTIAL_POSITION(Packet packet, ISession session, object obj)
     {
+        if (session.CharScreen)
+        {
+            EventFactory.Publish(EventFactoryNames.OnUserLeaveCharScreen, session);
+        }
         session.CharScreen = false;
         //.CharacterData.UniqueCharId = packet.ReadUInt32();
         return new PacketResult();
@@ -1420,10 +1432,16 @@ public class AgentServer : AsyncServer
     private async Task<PacketResult> AGENT_AUTH(Packet packet, ISession session, object obj)
     {
         if (packet.ReadUInt8() == 1)
+        {
             session.UserLoggedIn = true;
+            EventFactory.Publish(EventFactoryNames.OnUserAgentLogin, session);
+        }
 
         if (session.UserLoggedIn)
+        {
             session.CharScreen = true;
+            EventFactory.Publish(EventFactoryNames.OnUserJoinCharScreen, session);
+        }
 
         return new PacketResult();
     }
@@ -1450,7 +1468,8 @@ public class AgentServer : AsyncServer
         }
 
         session.CharnameSent = true;
-
+        EventFactory.Publish(EventFactoryNames.OnUserCharnameSent, session);
+        
         using var db = new SRO_VT_SHARD();
         session.SessionData.Charid =
             (await db._Chars.Where(x => x.CharName16 == session.SessionData.Charname).FirstAsync()).CharID;

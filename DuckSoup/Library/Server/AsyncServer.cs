@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using API;
 using API.Database.DuckSoup;
+using API.EventFactory;
 using API.Plugin;
 using API.Server;
 using API.ServiceFactory;
@@ -81,6 +82,8 @@ public class AsyncServer : IAsyncServer
             Global.Logger.InfoFormat("{0}", e.Message);
         }
 
+        EventFactory.Publish(EventFactoryNames.OnAsyncServerStart, this);
+
         Started = true;
         // accepts client connections
         while (!Exit)
@@ -94,6 +97,7 @@ public class AsyncServer : IAsyncServer
     {
         Exit = true;
         _tcpServer?.Stop();
+        EventFactory.Publish(EventFactoryNames.OnAsyncServerStop, this);
     }
 
     public async Task OnAccept(Task<TcpClient> task)
