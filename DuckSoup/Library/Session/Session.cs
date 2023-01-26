@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using API;
+using API.EventFactory;
 using API.Party;
 using API.Server;
 using API.ServiceFactory;
@@ -46,6 +47,8 @@ public sealed class Session : ISession
         if (!(_clientTcpClient.Client.RemoteEndPoint is IPEndPoint ep)) return;
         ClientGuid = Guid.NewGuid();
         ClientIp = ep.Address.ToString();
+        
+        EventFactory.Publish(EventFactoryNames.OnSessionStart, this);
     }
 
     public IAsyncServer AsyncServer { get; init; }
@@ -96,6 +99,8 @@ public sealed class Session : ISession
         _clientTcpClient = null;
         _serverTcpClient?.Close();
         _serverTcpClient = null;
+        
+        EventFactory.Publish(EventFactoryNames.OnSessionEnd, this);
     }
 
     public async Task SendToClient(Packet packet)

@@ -34,6 +34,7 @@ namespace API.Session
         ICos? Vehicle { get; set; }
         bool OnTransport { get; set; }
         uint TransportUniqueId { get; set; }
+        bool FirstSpawn { get; set; }
 
         [JsonIgnore]
         _Char GetChar { get; }

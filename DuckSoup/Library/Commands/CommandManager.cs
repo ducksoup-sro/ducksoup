@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using API;
 using API.Command;
+using API.EventFactory;
 using API.Exceptions;
 using API.ServiceFactory;
 using DuckSoup.Library.Commands.Auth;
@@ -76,6 +77,7 @@ public class CommandManager : ICommandManager
                 
             command.Execute(split.Skip(1).ToArray());
             commandFound = true;
+            EventFactory.Publish(EventFactoryNames.OnCommandExecution, input, command);
             break;
         }
 
@@ -85,10 +87,11 @@ public class CommandManager : ICommandManager
         }
             
         removeList.Clear();
-            
+
         if (!commandFound)
         {
             _helpCommand.Execute(null);
+            EventFactory.Publish(EventFactoryNames.OnCommandExecution, input, null);
         }
     }
 

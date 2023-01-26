@@ -48,6 +48,7 @@ public class SessionData : ISessionData
     public ICos? Vehicle { get; set; }
     public bool OnTransport { get; set; }
     public uint TransportUniqueId { get; set; }
+    public bool FirstSpawn { get; set; } = false;
 
     [JsonIgnore]
     public _Char GetChar
