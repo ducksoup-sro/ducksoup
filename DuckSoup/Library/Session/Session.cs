@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using API;
+using API.Database;
 using API.EventFactory;
 using API.Party;
 using API.Server;
@@ -30,10 +31,12 @@ public sealed class Session : ISession
     private TcpClient _clientTcpClient;
     private bool _exit;
     private TcpClient _serverTcpClient;
+    private readonly bool _isTryCatchDebug;
 
 
     public Session(TcpClient clientTcpClient, IAsyncServer asyncServer)
     {
+        _isTryCatchDebug = Convert.ToBoolean(DatabaseHelper.GetSettingOrDefault("DebugPacketHandler", "false"));
         SpawnInfo = new SpawnInfo();
         SessionData = new SessionData();
         AsyncServer = asyncServer;
@@ -254,7 +257,21 @@ public sealed class Session : ISession
 
                 #endregion
 
-                var packetResult = await AsyncServer.PacketHandler.HandleClient(packet, this);
+                PacketResult packetResult;
+                if (_isTryCatchDebug)
+                {
+                    try
+                    {
+                        packetResult = await AsyncServer.PacketHandler.HandleClient(packet, this);
+                    }
+                    catch (Exception e)
+                    {
+                        Global.Logger.Fatal(e.ToString());
+                        packetResult = new PacketResult(PacketResultType.Block);
+                    }
+                } else {
+                    packetResult = await AsyncServer.PacketHandler.HandleClient(packet, this);
+                }
 
                 // debug
                 if (SharedObjects.DebugLevel >= DebugLevel.Debug)
@@ -327,7 +344,21 @@ public sealed class Session : ISession
                     Global.Logger.DebugFormat("{0} - DoRecvFromServer Packet: 0x{1:X} - {2} ({3})",
                         AsyncServer.Service.Name, packet.Opcode, ClientGuid, ClientIp);
 
-                var packetResult = await AsyncServer.PacketHandler.HandleServer(packet, this);
+                PacketResult packetResult;
+                if (_isTryCatchDebug)
+                {
+                    try
+                    {
+                        packetResult = await AsyncServer.PacketHandler.HandleServer(packet, this);
+                    }
+                    catch (Exception e)
+                    {
+                        Global.Logger.Fatal(e.ToString());
+                        packetResult = new PacketResult(PacketResultType.Block);
+                    }
+                } else {
+                    packetResult = await AsyncServer.PacketHandler.HandleServer(packet, this);
+                }
 
                 switch (packetResult.PacketResultType)
                 {
@@ -417,7 +448,7 @@ public sealed class Session : ISession
     // Packet Flooding
     private int _packetSize;
     private DateTime _lastPacketReset;
-    
+
     // timer
     public DateTime LastPing { get; set; } = DateTime.Now;
 
