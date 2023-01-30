@@ -1,8 +1,8 @@
 ﻿using API;
 using API.Command;
 using API.Database.DuckSoup;
-using API.Database.Services;
 using API.ServiceFactory;
+using API.Services;
 
 namespace DuckSoup.Library.Commands.Auth;
 
@@ -43,12 +43,12 @@ public class AuthRegisterCommand : Command
         _service.AddUser(user);
         user = _service.GetUser(username);
         
-        if (_service.GetUser(username) != null)
+        if (user != null)
         {
             Global.Logger.InfoFormat("User {0}[{1}] was successfully created", user.username, user.userId);
             return;
         }
 
-        Global.Logger.ErrorFormat("There was a error creating the user {0}", user.username);
+        Global.Logger.ErrorFormat("There was a error creating the user {0}", username);
     }
 }

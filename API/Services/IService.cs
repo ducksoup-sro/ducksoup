@@ -1,4 +1,4 @@
-﻿namespace API.Database.Services;
+﻿namespace API.Services;
 
 public interface IService<T>
 {

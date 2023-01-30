@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using API.Database.DuckSoup;
-using API.Database.Services;
+using API.Services;
 
-namespace DuckSoup.Library.Database.Services;
+namespace DuckSoup.Library.Services;
 
 public class UserService : Service<IUserService>, IUserService 
 {
     public User GetUser(string username)
     {
         using var db = new API.Database.Context.DuckSoup();
-        return db.Users.FirstOrDefault(c => c.username == username, null);
+        return db.Users.Where(c => c.username == username).ToList().FirstOrDefault();
     }
 
     public User GetUser(Guid guid)
     {
         using var db = new API.Database.Context.DuckSoup();
-        return db.Users.FirstOrDefault(c => c.userId == guid, null);
+        return db.Users.Where(c => c.userId == guid).ToList().FirstOrDefault();
     }
 
     public List<User> GetUsers()
@@ -30,7 +30,15 @@ public class UserService : Service<IUserService>, IUserService
     public void AddUser(User user)
     {
         using var db = new API.Database.Context.DuckSoup();
-        db.Users.Update(user);
+        var tempUser = GetUser(user.userId);
+        if (tempUser == null)
+        {
+            db.Users.Add(user);
+        }
+        else
+        {
+            db.Users.Update(user);
+        }
         db.SaveChanges();
     }
 

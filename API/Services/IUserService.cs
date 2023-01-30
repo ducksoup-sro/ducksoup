@@ -1,6 +1,6 @@
 ﻿using API.Database.DuckSoup;
 
-namespace API.Database.Services;
+namespace API.Services;
 
 public interface IUserService
 {

@@ -1,7 +1,7 @@
 ﻿using API;
 using API.Command;
-using API.Database.Services;
 using API.ServiceFactory;
+using API.Services;
 
 namespace DuckSoup.Library.Commands.Auth;
 
@@ -22,5 +22,23 @@ public class AuthDeleteCommand : Command
             Global.Logger.InfoFormat("The Syntax for the following command is: {0}", GetSyntax());
             return;
         }
+        var username = args[0];
+        var user = _service.GetUser(username);
+        
+        if (user == null)
+        {
+            Global.Logger.InfoFormat("Username {0} does not exist", username);
+            return;
+        }
+        
+        _service.RemoveUser(user);
+        
+        if (_service.GetUser(username) == null)
+        {
+            Global.Logger.InfoFormat("User {0} was successfully deleted", username);
+            return;
+        }
+
+        Global.Logger.ErrorFormat("There was a error deleting the user {0}", username);
     }
 }

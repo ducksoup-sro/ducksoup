@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using API.Enums;
 
 namespace API.Database.DuckSoup;
 
@@ -15,4 +16,5 @@ public class User
     public byte[] passwordSalt { get; set; }
 
     public int tokenVersion { get; set; } = 0;
+    public UserRole Role { get; set; } = UserRole.User;
 }
