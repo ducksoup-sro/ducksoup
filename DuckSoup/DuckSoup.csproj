@@ -6,7 +6,7 @@
         <RootNamespace>DuckSoup</RootNamespace>
         <ProductVersion>2.0.0</ProductVersion>
         <LangVersion>11</LangVersion>
-        <Version>1.8.2</Version>
+        <Version>1.8.3</Version>
     </PropertyGroup>
 
     <ItemGroup>
