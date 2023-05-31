@@ -462,10 +462,10 @@ public class AgentServer : AsyncServer
             packet.ReadUInt32();
             packet.ReadUInt32();
         }
+        
+        var hasValue = SharedObjects.RefObjCommon.TryGetValue((int)refObjId, out var obj);
 
-        var obj = SharedObjects.RefObjCommon[(int)refObjId];
-
-        if (obj == null)
+        if (!hasValue)
         {
             return;
         }
