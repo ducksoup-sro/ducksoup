@@ -50,7 +50,7 @@ public class AuthRoutes
 
     private async Task RefreshRoute(HttpContext ctx)
     {
-        var hasCookie = ctx.Request.HeaderExists("Cookie", true);
+        var hasCookie = ctx.Request.HeaderExists("Cookie");
         if (!hasCookie)
         {
             ctx.Response.StatusCode = 401;

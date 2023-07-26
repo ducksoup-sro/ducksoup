@@ -16,12 +16,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="JWT" Version="10.0.1" />
+        <PackageReference Include="JWT" Version="10.0.3" />
         <PackageReference Include="McMaster.NETCore.Plugins" Version="2.0.0-beta.130" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-        <PackageReference Include="Quartz" Version="3.5.0" />
-        <PackageReference Include="Quartz.Jobs" Version="3.5.0" />
-        <PackageReference Include="Watson" Version="4.3.5" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Quartz" Version="3.6.3" />
+        <PackageReference Include="Quartz.Jobs" Version="3.6.3" />
+        <PackageReference Include="Watson" Version="5.1.1" />
     </ItemGroup>
 
     <ItemGroup>

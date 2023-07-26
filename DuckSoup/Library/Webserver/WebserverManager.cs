@@ -67,7 +67,7 @@ public class WebserverManager : IWebserverManager
         User user = null;
         string accessToken = null;
         IAuthPayload payload = null;
-        var hasHeader = ctx.Request.HeaderExists("Authorization", true);
+        var hasHeader = ctx.Request.HeaderExists("Authorization");
         if (hasHeader)
         {
             var split = ctx.Request.Headers["Authorization"].Split(" ");
