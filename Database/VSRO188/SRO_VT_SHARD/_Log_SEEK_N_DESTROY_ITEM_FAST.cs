@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace API.Database.SRO_VT_SHARD;
+﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
 public partial class _Log_SEEK_N_DESTROY_ITEM_FAST
 {

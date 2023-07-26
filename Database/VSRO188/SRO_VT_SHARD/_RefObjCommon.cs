@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace API.Database.SRO_VT_SHARD;
+﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
 public partial class _RefObjCommon
 {
@@ -120,23 +117,4 @@ public partial class _RefObjCommon
     public string AssocFile2_128 { get; set; } = null!;
 
     public int Link { get; set; }
-    
-    
-    private _RefObjItem? _refObjItem;
-
-    public _RefObjItem GetRefObjItem()
-    {
-        return _refObjItem ??= ServiceFactory.ServiceFactory
-            .Load<ISharedObjects>(typeof(ISharedObjects)).RefObjItem
-            .FirstOrDefault(c => c.Value.ID == Link).Value;
-    }
-        
-    private _RefObjChar? _refObjChar;
-
-    public _RefObjChar GetRefObjChar()
-    {
-        return _refObjChar ??= ServiceFactory.ServiceFactory
-            .Load<ISharedObjects>(typeof(ISharedObjects)).RefObjChar
-            .FirstOrDefault(c => c.Value.ID == Link).Value;
-    }
 }

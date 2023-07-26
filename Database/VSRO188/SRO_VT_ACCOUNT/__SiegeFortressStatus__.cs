@@ -1,4 +1,4 @@
-﻿namespace API.Database.SRO_VT_ACCOUNT;
+﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
 public partial class __SiegeFortressStatus__
 {

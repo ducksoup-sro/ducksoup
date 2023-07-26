@@ -1,18 +1,14 @@
-﻿using API.Database.SRO_VT_ACCOUNT;
+﻿using Database.VSRO188.SRO_VT_ACCOUNT;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Database.Context;
+namespace Database.VSRO188.Context;
 
-public partial class SRO_VT_ACCOUNT : DbContext
+public partial class SRO_VT_ACCOUNT : DuckContext
 {
     public SRO_VT_ACCOUNT()
     {
     }
-
-    public SRO_VT_ACCOUNT(DbContextOptions<SRO_VT_ACCOUNT> options)
-        : base(options)
-    {
-    }
+    
 
     public virtual DbSet<BOOK> BOOKs { get; set; }
 
@@ -111,10 +107,6 @@ public partial class SRO_VT_ACCOUNT : DbContext
     public virtual DbSet<tb_partnerInfo> tb_partnerInfos { get; set; }
 
     public virtual DbSet<tb_paygate_tran> tb_paygate_trans { get; set; }
-
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer(DatabaseManager.SroVtAccountConnectionString);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

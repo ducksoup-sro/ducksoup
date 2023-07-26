@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace API.Database.SRO_VT_LOG;
+﻿namespace Database.VSRO188.SRO_VT_LOG;
 
 public partial class _LogServerEvent
 {

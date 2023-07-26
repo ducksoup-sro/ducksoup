@@ -1,18 +1,14 @@
-﻿using API.Database.SRO_VT_LOG;
+﻿using Database.VSRO188.SRO_VT_LOG;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Database.Context;
+namespace Database.VSRO188.Context;
 
-public partial class SRO_VT_LOG : DbContext
+public partial class SRO_VT_LOG : DuckContext
 {
     public SRO_VT_LOG()
     {
     }
-
-    public SRO_VT_LOG(DbContextOptions<SRO_VT_LOG> options)
-        : base(options)
-    {
-    }
+    
 
     public virtual DbSet<_LogCashItem> _LogCashItems { get; set; }
 
@@ -26,8 +22,6 @@ public partial class SRO_VT_LOG : DbContext
 
     public virtual DbSet<_LogServerEvent> _LogServerEvents { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer(DatabaseManager.SroVtLogConnectionString);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -141,6 +135,6 @@ public partial class SRO_VT_LOG : DbContext
 
         OnModelCreatingPartial(modelBuilder);
     }
-
+    
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace API.Database.SRO_VT_SHARD;
+﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
 public partial class _RefDropClassSel_Cure
 {

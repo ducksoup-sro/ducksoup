@@ -1,16 +1,11 @@
-﻿using API.Database.SRO_VT_SHARD;
+﻿using Database.VSRO188.SRO_VT_SHARD;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Database.Context;
+namespace Database.VSRO188.Context;
 
-public partial class SRO_VT_SHARD : DbContext
+public partial class SRO_VT_SHARD : DuckContext
 {
     public SRO_VT_SHARD()
-    {
-    }
-
-    public SRO_VT_SHARD(DbContextOptions<SRO_VT_SHARD> options)
-        : base(options)
     {
     }
 
@@ -435,9 +430,6 @@ public partial class SRO_VT_SHARD : DbContext
     public virtual DbSet<_WebShop_SRO_Log> _WebShop_SRO_Logs { get; set; }
 
     public virtual DbSet<test_item_TNET> test_item_TNETs { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer(DatabaseManager.SroVtShardConnectionString);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
