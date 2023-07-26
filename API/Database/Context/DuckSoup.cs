@@ -1,16 +1,12 @@
 ﻿using API.Database.DuckSoup;
+using Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Database.Context;
 
-public partial class DuckSoup : DbContext
+public partial class DuckSoup : DuckContext
 {
     public DuckSoup()
-    {
-    }
-
-    public DuckSoup(DbContextOptions<DuckSoup> options)
-        : base(options)
     {
     }
 
@@ -27,9 +23,6 @@ public partial class DuckSoup : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<Whitelist> Whitelists { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer(DatabaseManager.DuckSoupConnectionString);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

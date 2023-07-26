@@ -1,6 +1,6 @@
-﻿using API.Database.SRO_VT_ACCOUNT;
-using API.Database.SRO_VT_SHARD;
-using API.Session;
+﻿using API.Session;
+using Database.VSRO188.SRO_VT_ACCOUNT;
+using Database.VSRO188.SRO_VT_SHARD;
 
 namespace API;
 
@@ -8,8 +8,8 @@ public interface ISharedObjects : IDisposable
 {
     Dictionary<int, _RefObjChar> RefObjChar { get; }
     Dictionary<int, _RefObjCharExtraSkill> RefObjCharExtraSkill { get; }
-    Dictionary<int, _RefObjCommon> RefObjCommon { get; }
-    Dictionary<int, _RefObjItem> RefObjItem { get; }
+    Dictionary<int, API.Database.VSRO188.SRO_VT_SHARD._RefObjCommon> RefObjCommon { get; }
+    Dictionary<int, API.Database.VSRO188.SRO_VT_SHARD._RefObjItem> RefObjItem { get; }
     Dictionary<int, _RefObjStruct> RefObjStruct { get; }
     Dictionary<byte, _RefLevel> RefLevel { get; }
     Dictionary<int, _RefSkill> RefSkill { get; }

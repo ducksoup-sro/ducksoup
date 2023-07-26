@@ -2,13 +2,15 @@
 using System.Linq;
 using API;
 using API.Database;
-using API.Database.Context;
 using API.Database.DuckSoup;
-using API.Database.SRO_VT_ACCOUNT;
-using API.Database.SRO_VT_SHARD;
 using API.ServiceFactory;
 using API.Session;
+using Database.VSRO188.Context;
+using Database.VSRO188.SRO_VT_ACCOUNT;
+using Database.VSRO188.SRO_VT_SHARD;
 using PacketLibrary;
+using _RefObjCommon = API.Database.VSRO188.SRO_VT_SHARD._RefObjCommon;
+using _RefObjItem = API.Database.VSRO188.SRO_VT_SHARD._RefObjItem;
 
 namespace DuckSoup.Library;
 
