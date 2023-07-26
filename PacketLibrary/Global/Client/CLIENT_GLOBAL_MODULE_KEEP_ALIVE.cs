@@ -1,29 +1,30 @@
-using PacketLibrary.Enums;
-using SilkroadSecurityAPI;
+using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.Global.Client;
 
-public class CLIENT_GLOBAL_MODULE_KEEP_ALIVE : IPacketStructure
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/Global-packets
+public class CLIENT_GLOBAL_MODULE_KEEP_ALIVE : Packet
 {
-    public static ushort MsgId => 0x2002;
-    public static bool Encrypted => false;
-    public static bool Massive => false;
-    public PacketDirection FromDirection => PacketDirection.Client;
-    public PacketDirection ToDirection => PacketDirection.Server;
-
-    public Task Read(Packet packet)
+    public CLIENT_GLOBAL_MODULE_KEEP_ALIVE() : base(0x2002)
     {
-        throw new NotImplementedException();
     }
 
-    public Packet Build()
+    public override PacketDirection FromDirection => PacketDirection.Client;
+    public override PacketDirection ToDirection => PacketDirection.Server;
+
+    public override async Task Read()
     {
-        throw new NotImplementedException();
+        // Empty
+    }
+
+    public override async Task<Packet> Build()
+    {
+        // Empty
+        return this;
     }
 
     public static Packet of()
     {
-        throw new NotImplementedException();
+        return new CLIENT_GLOBAL_MODULE_KEEP_ALIVE();
     }
 }
-

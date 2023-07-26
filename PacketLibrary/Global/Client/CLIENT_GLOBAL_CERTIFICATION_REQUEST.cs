@@ -1,23 +1,23 @@
-using PacketLibrary.Enums;
-using SilkroadSecurityAPI;
+using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.Global.Client;
 
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/blob/master/Packets/GLOBAL/0x6003%20-%20CLIENT_GLOBAL_CERTIFICATION_REQUEST.cs
-public class CLIENT_GLOBAL_CERTIFICATION_REQUEST : IPacketStructure
+public class CLIENT_GLOBAL_CERTIFICATION_REQUEST : Packet
 {
-    public static ushort MsgId => 0x6003;
-    public static bool Encrypted => false;
-    public static bool Massive => false;
-    public PacketDirection FromDirection => PacketDirection.Client;
-    public PacketDirection ToDirection => PacketDirection.Server;
+    public CLIENT_GLOBAL_CERTIFICATION_REQUEST() : base(0x6003)
+    {
+    }
 
-    public Task Read(Packet packet)
+    public override PacketDirection FromDirection => PacketDirection.Client;
+    public override PacketDirection ToDirection => PacketDirection.Server;
+
+    public override async Task Read()
     {
         throw new NotImplementedException();
     }
 
-    public Packet Build()
+    public override async Task<Packet> Build()
     {
         throw new NotImplementedException();
     }
@@ -27,4 +27,3 @@ public class CLIENT_GLOBAL_CERTIFICATION_REQUEST : IPacketStructure
         throw new NotImplementedException();
     }
 }
-

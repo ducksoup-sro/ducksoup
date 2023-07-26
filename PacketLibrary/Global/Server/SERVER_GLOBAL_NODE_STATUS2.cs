@@ -1,22 +1,22 @@
-using PacketLibrary.Enums;
-using SilkroadSecurityAPI;
+using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.Global.Server;
 
-public class SERVER_GLOBAL_NODE_STATUS2 : IPacketStructure
+public class SERVER_GLOBAL_NODE_STATUS2 : Packet
 {
-    public static ushort MsgId => 0x6005;
-    public static bool Encrypted => false;
-    public static bool Massive => true;
-    public PacketDirection FromDirection => PacketDirection.Server;
-    public PacketDirection ToDirection => PacketDirection.Client;
+    public SERVER_GLOBAL_NODE_STATUS2() : base(0x6005, false, true)
+    {
+    }
 
-    public Task Read(Packet packet)
+    public override PacketDirection FromDirection => PacketDirection.Server;
+    public override PacketDirection ToDirection => PacketDirection.Client;
+
+    public override async Task Read()
     {
         throw new NotImplementedException();
     }
 
-    public Packet Build()
+    public override async Task<Packet> Build()
     {
         throw new NotImplementedException();
     }
@@ -26,4 +26,3 @@ public class SERVER_GLOBAL_NODE_STATUS2 : IPacketStructure
         throw new NotImplementedException();
     }
 }
-
