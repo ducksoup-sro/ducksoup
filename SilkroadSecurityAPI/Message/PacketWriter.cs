@@ -1,4 +1,6 @@
-﻿namespace SilkroadSecurityAPI.Message;
+﻿using System.IO;
+
+namespace SilkroadSecurityAPI.Message;
 
 public class PacketWriter : BinaryWriter
 {

@@ -18,22 +18,34 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Enums\Download" />
-        <Folder Include="Global" />
-        <Folder Include="Objects\Download" />
-        <Folder Include="Objects\Global" />
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\API\API.csproj" />
         <ProjectReference Include="..\SilkroadSecurityAPI\SilkroadSecurityAPI.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="DuckSoup.png">
-        <Pack>True</Pack>
-        <PackagePath></PackagePath>
-      </None>
+      <Folder Include="Enums\Download\" />
+      <Folder Include="ISRO_R\Agent\Client\" />
+      <Folder Include="ISRO_R\Agent\Enums\" />
+      <Folder Include="ISRO_R\Agent\Objects\" />
+      <Folder Include="ISRO_R\Agent\Server\" />
+      <Folder Include="ISRO_R\Download\Client\" />
+      <Folder Include="ISRO_R\Download\Enums\" />
+      <Folder Include="ISRO_R\Download\Objects\" />
+      <Folder Include="ISRO_R\Download\Server\" />
+      <Folder Include="Template\Agent\Client\" />
+      <Folder Include="Template\Agent\Enums\" />
+      <Folder Include="Template\Agent\Objects\" />
+      <Folder Include="Template\Agent\Server\" />
+      <Folder Include="Template\Download\Client\" />
+      <Folder Include="Template\Download\Enums\" />
+      <Folder Include="Template\Download\Objects\" />
+      <Folder Include="Template\Download\Server\" />
+      <Folder Include="Template\Gateway\Client\" />
+      <Folder Include="Template\Gateway\Enums\" />
+      <Folder Include="Template\Gateway\Objects\" />
+      <Folder Include="Template\Gateway\Server\" />
+      <Folder Include="VSRO188\Download\Enums\" />
+      <Folder Include="VSRO188\Download\Objects\" />
     </ItemGroup>
 
 </Project>

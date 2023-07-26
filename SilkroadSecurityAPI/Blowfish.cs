@@ -1,4 +1,6 @@
-﻿namespace SilkroadSecurityAPI;
+﻿using System;
+
+namespace SilkroadSecurityAPI;
 
 public class Blowfish
 {

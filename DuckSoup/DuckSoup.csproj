@@ -18,6 +18,7 @@
     <ItemGroup>
         <PackageReference Include="JWT" Version="10.0.3" />
         <PackageReference Include="McMaster.NETCore.Plugins" Version="2.0.0-beta.130" />
+        <PackageReference Include="NetCoreServer" Version="7.0.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Quartz" Version="3.6.3" />
         <PackageReference Include="Quartz.Jobs" Version="3.6.3" />

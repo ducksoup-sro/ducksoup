@@ -5,4 +5,8 @@
         <LangVersion>11</LangVersion>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="NetCoreServer" Version="7.0.0" />
+    </ItemGroup>
+
 </Project>

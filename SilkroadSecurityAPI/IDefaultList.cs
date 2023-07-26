@@ -1,4 +1,6 @@
-﻿namespace SilkroadSecurityAPI;
+﻿using System.Collections.Generic;
+
+namespace SilkroadSecurityAPI;
 
 public interface IDefaultList
 {

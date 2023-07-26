@@ -1,4 +1,6 @@
-﻿namespace SilkroadSecurityAPI.VSRO188;
+﻿using System.Collections.Generic;
+
+namespace SilkroadSecurityAPI.VSRO188;
 
 public class DefaultList : IDefaultList
 {
