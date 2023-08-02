@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using API;
 using API.Database;
 using API.Database.DuckSoup;

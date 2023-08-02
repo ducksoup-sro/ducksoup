@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using API;
 using API.Command;
 using API.Server;
@@ -32,12 +31,12 @@ public class ServerStopCommand : Command
             return; 
         }
 
-        var temp = _serverManager.Servers.Where(asyncServer => asyncServer.Service.ServiceId == id).ToList();
-        foreach (var asyncServer in temp)
-        {
-            _serverManager.Stop(asyncServer.Service);
-        }
-        temp.Clear();
+        // var temp = _serverManager.Servers.Where(asyncServer => asyncServer.Service.ServiceId == id).ToList();
+        // foreach (var asyncServer in temp)
+        // {
+        //     _serverManager.Stop(asyncServer.Service);
+        // }
+        // temp.Clear();
         Global.Logger.InfoFormat("Server with the ID {0} was stopped and removed", id);
     }
 }

@@ -30,8 +30,4 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Library\Database" />
-    </ItemGroup>
 </Project>

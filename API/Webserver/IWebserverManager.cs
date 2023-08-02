@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using API.Enums;
+﻿using API.Enums;
 using WatsonWebserver;
 using HttpMethod = WatsonWebserver.HttpMethod;
 

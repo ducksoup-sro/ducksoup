@@ -1,4 +1,5 @@
-﻿using SilkroadSecurityAPI;
+﻿using PacketLibrary.VSRO188.Agent.Enums;
+using SilkroadSecurityAPI.Message;
 
 namespace API.Session;
 

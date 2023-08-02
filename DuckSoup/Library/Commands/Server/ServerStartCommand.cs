@@ -33,17 +33,17 @@ namespace DuckSoup.Library.Commands.Server
             }
 
             IAsyncServer server = null;
-            foreach (var asyncServer in _serverManager.Servers.Where(asyncServer => asyncServer.Service.ServiceId == id))
-            {
-                server = asyncServer;
-            }
-
-            if (server != null)
-            {
-                server.Start();
-                Global.Logger.InfoFormat("Server with the ID {0} started", id);
-                return;
-            }
+            // foreach (var asyncServer in _serverManager.Servers.Where(asyncServer => asyncServer.Service.ServiceId == id))
+            // {
+            //     server = asyncServer;
+            // }
+            //
+            // if (server != null)
+            // {
+            //     server.Start();
+            //     Global.Logger.InfoFormat("Server with the ID {0} started", id);
+            //     return;
+            // }
 
             using var service = new API.Database.Context.DuckSoup();
             var services = service.Services.Where(s => s.ServiceId == id).Include(b => b.LocalMachine_Machine)

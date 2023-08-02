@@ -7,7 +7,6 @@ using API.Command;
 using API.Plugin;
 using API.ServiceFactory;
 using DuckSoup.Library.Commands;
-using DuckSoup.Library.Server;
 using McMaster.NETCore.Plugins;
 
 namespace DuckSoup.Library.Plugins;

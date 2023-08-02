@@ -1,6 +1,4 @@
-﻿using System.Timers;
-
-namespace API.Session;
+﻿namespace API.Session;
 
 public interface ICountdownManager
 {

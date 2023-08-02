@@ -105,4 +105,46 @@ public partial class _Char
     public short DiedWorldID { get; set; }
 
     public byte HwanLevel { get; set; }
+    
+    public _RefObjCommon? _refObjCommon;
+
+    public _RefObjCommon RefObjCommon
+    {
+        get
+        {
+            if (_refObjCommon != null)
+            {
+                return _refObjCommon;
+            }
+
+            _refObjCommon = Cache.GetRefObjCommonAsync(RefObjID).Result;
+            return _refObjCommon;
+        }
+    }
+
+    private _RefObjChar? _refObjChar;
+    
+    public _RefObjChar? RefObjChar
+    {
+         get
+        {
+            if (_refObjChar != null)
+            {
+                return _refObjChar;
+            }
+
+            _refObjChar = Cache.GetRefObjCharAsync(RefObjID).Result;
+            return _refObjChar;
+        }
+    }
+
+    public bool IsMale()
+    {
+        return RefObjChar.CharGender == 1;
+    }
+        
+    public bool IsFemale()
+    {
+        return RefObjChar.CharGender == 0;
+    }
 }

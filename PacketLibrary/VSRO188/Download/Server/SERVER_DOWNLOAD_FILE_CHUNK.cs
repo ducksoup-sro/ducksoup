@@ -16,7 +16,7 @@ public class SERVER_DOWNLOAD_FILE_CHUNK : Packet
 
     public override async Task Read()
     {
-        Data = this.GetBytes();
+        Data = GetBytes();
     }
 
     public override async Task<Packet> Build()

@@ -14,6 +14,5 @@ public static class DatabaseHelper
         context.GlobalSettings.Add(new GlobalSetting {key = key, value = defaultValue});
         context.SaveChanges();
         return defaultValue;
-
     }
 }

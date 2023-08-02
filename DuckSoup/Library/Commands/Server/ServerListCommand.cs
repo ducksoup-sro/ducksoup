@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using API;
+﻿using API;
 using API.Command;
 using API.Server;
 using API.ServiceFactory;
@@ -17,12 +16,12 @@ public class ServerListCommand : Command
 
     public override void Execute(string[] args)
     {
-        foreach (var asyncServer in _serverManager.Servers)
-        {
-            Global.Logger.InfoFormat("Id: {0} - Name: {1} - Started {2} - Type: {3} ",asyncServer.Service.ServiceId,
-                asyncServer.Service.Name,
-                asyncServer.Started,
-                asyncServer.Service.ServerType);
-        }
+        // foreach (var asyncServer in _serverManager.Servers)
+        // {
+        //     Global.Logger.InfoFormat("Id: {0} - Name: {1} - Started {2} - Type: {3} ",asyncServer.Service.ServiceId,
+        //         asyncServer.Service.Name,
+        //         asyncServer.Started,
+        //         asyncServer.Service.ServerType);
+        // }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using API.Party;
 using API.ServiceFactory;
 using API.Session;
+using PacketLibrary.Handler;
 
 namespace DuckSoup.Library.Party;
 
@@ -31,12 +32,16 @@ public class PartyManager : IPartyManager
 
     public IParty GetParty(string charname)
     {
-        return _parties.Values.FirstOrDefault(party => party.Members.Any(partyMember => string.Equals(partyMember.SessionData.Charname, charname, StringComparison.CurrentCultureIgnoreCase)));
+        return _parties.Values.FirstOrDefault(party => party.Members.Any(partyMember =>
+        {
+            partyMember.GetData<string>(SessionConst.CHARNAME, out var partyCharname);
+            return string.Equals(partyCharname, charname, StringComparison.CurrentCultureIgnoreCase);
+        }));
     }
 
     public IParty GetParty(ISession session)
     {
-        return _parties.Values.FirstOrDefault(party => party.Members.Any(partyMember => partyMember.ClientGuid == session.ClientGuid));
+        return _parties.Values.FirstOrDefault(party => party.Members.Any(partyMember => partyMember.Guid == session.Guid));
     }
 
     public void AddParty(IParty party)
@@ -67,22 +72,30 @@ public class PartyManager : IPartyManager
 
     public bool IsInParty(string charname)
     {
-        return _parties.Values.Any(party => party.Members.Any(partyMember => string.Equals(partyMember.SessionData.Charname, charname, StringComparison.CurrentCultureIgnoreCase)));
+        return _parties.Values.Any(party => party.Members.Any(partyMember =>
+        {
+            partyMember.GetData<string>(SessionConst.CHARNAME, out var partyCharname);
+            return string.Equals(partyCharname, charname, StringComparison.CurrentCultureIgnoreCase);
+        }));
     }
 
     public bool IsInParty(ISession session)
     {
-        return _parties.Values.Any(party => party.Members.Any(partyMember => partyMember.ClientGuid == session.ClientGuid));
+        return _parties.Values.Any(party => party.Members.Any(partyMember => partyMember.Guid == session.Guid));
     }
     
     public bool HasPartyMatchEntry(string charname)
     {
-        return _partyMatchEntries.Values.Any(entry => entry.Party.Members.Any(partyMember => string.Equals(partyMember.SessionData.Charname, charname, StringComparison.CurrentCultureIgnoreCase)));
+        return _partyMatchEntries.Values.Any(entry => entry.Party.Members.Any(partyMember =>
+        {
+            partyMember.GetData<string>(SessionConst.CHARNAME, out var partyCharname);
+            return string.Equals(partyCharname, charname, StringComparison.CurrentCultureIgnoreCase);
+        }));
     }
 
     public bool HasPartyMatchEntry(ISession session)
     {
-        return _partyMatchEntries.Values.Any(entry => entry.Party.Members.Any(partyMember => partyMember.ClientGuid == session.ClientGuid));
+        return _partyMatchEntries.Values.Any(entry => entry.Party.Members.Any(partyMember => partyMember.Guid == session.Guid));
     }
 
     public List<IPartyMatchEntry> GetPartyMatchEntries()

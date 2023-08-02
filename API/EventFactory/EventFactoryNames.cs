@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace API.EventFactory;
+﻿namespace API.EventFactory;
 
 public static class EventFactoryNames
 {

@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using API;
+﻿using API;
 using API.Command;
 using API.Plugin;
 using API.ServiceFactory;
-using McMaster.NETCore.Plugins;
 
 namespace DuckSoup.Library.Commands.Plugin;
 

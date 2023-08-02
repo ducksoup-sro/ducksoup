@@ -6,7 +6,7 @@ namespace PacketLibrary.ISRO_R.Gateway.Server;
 public class SERVER_GATEWAY_PING_LIST_RESPONSE : Packet
 {
     /// <summary>
-    /// Probably answer onto 0x6107 <see cref="PacketLibrary.ISRO_R.Gateway.Client.SERVER_GATEWAY_PING_LIST_RESPONSE"/>
+    /// Probably answer onto 0x6107 <see cref="SERVER_GATEWAY_PING_LIST_RESPONSE"/>
     /// </summary>
     public SERVER_GATEWAY_PING_LIST_RESPONSE() : base(0xA107, false, false)
     {

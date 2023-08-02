@@ -1,6 +1,5 @@
 ﻿using API;
 using API.Command;
-using API.Event;
 using API.ServiceFactory;
 using API.Services;
 

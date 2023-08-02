@@ -2,7 +2,8 @@
 using System.Threading.Tasks;
 using System.Timers;
 using API.Session;
-using SilkroadSecurityAPI;
+using PacketLibrary.Handler;
+using SilkroadSecurityAPI.Message;
 
 namespace DuckSoup.Library.Session;
 
@@ -83,18 +84,16 @@ public class CountdownManager : ICountdownManager
         var packetTime = 1200000 - (int) _started.GetValueOrDefault().AddMilliseconds(_timerInterval).Subtract(DateTime.Now).TotalMilliseconds;
         
         var response = new Packet(0x34B1, false, false);
-        response.WriteUInt8(0xFF);
-        response.WriteUInt8(0x0E);
-        response.WriteUInt32(packetTime);
-
+        response.TryWrite<byte>(0xFF)
+            .TryWrite<byte>(0x0E)
+            .TryWrite<uint>((uint)packetTime);
         return response;
     }
 
     private Packet CreateStopPacket()
     {
         var response = new Packet(0x34B1, false, false);
-        response.WriteByte(0x05);
-
+        response.TryWrite<byte>(0x05);
         return response;
     }
     

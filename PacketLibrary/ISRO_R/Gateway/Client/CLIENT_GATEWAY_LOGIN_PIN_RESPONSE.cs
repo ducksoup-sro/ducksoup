@@ -1,12 +1,13 @@
-﻿using SilkroadSecurityAPI.Message;
+﻿using PacketLibrary.ISRO_R.Gateway.Server;
+using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.ISRO_R.Gateway.Client;
 
 public class CLIENT_GATEWAY_LOGIN_PIN_RESPONSE : Packet
 {
     /// <summary>
-    /// 1. <see cref="PacketLibrary.ISRO_R.Gateway.Server.SERVER_GATEWAY_LOGIN_PIN_REQUEST"/>
-    /// 2. <see cref="PacketLibrary.ISRO_R.Gateway.Client.CLIENT_GATEWAY_LOGIN_PIN_RESPONSE"/>
+    /// 1. <see cref="SERVER_GATEWAY_LOGIN_PIN_REQUEST"/>
+    /// 2. <see cref="CLIENT_GATEWAY_LOGIN_PIN_RESPONSE"/>
     /// 3. <see cref="PacketLibrary.ISRO_R.Gateway.Server.SERVER_GATEWAY_LOGIN_PING_RESPONSE"/>
     /// </summary>
     public CLIENT_GATEWAY_LOGIN_PIN_RESPONSE() : base(0x6117, true, false)

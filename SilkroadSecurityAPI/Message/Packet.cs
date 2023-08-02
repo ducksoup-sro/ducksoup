@@ -26,6 +26,20 @@ public class Packet
         if (bytes != null) _writer.Write(bytes, offset, length);
     }
     
+    public Packet(Packet packet)
+    {
+        ValidatePacketParameters(packet.Encrypted, packet.Massive);
+
+        Opcode = packet.MsgId;
+        Encrypted = packet.Encrypted;
+        Massive = packet.Massive;
+        _writer = new PacketWriter();
+        _reader = null;
+        _readerBytes = null;
+
+        if (packet.GetBytes() != null) _writer.Write(packet.GetBytes(), 0, packet.GetBytes().Length);
+    }
+    
     public Packet()
     {
         

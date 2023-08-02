@@ -1,8 +1,5 @@
 ﻿using System.Linq;
-using API;
 using API.Command;
-using API.ServiceFactory;
-using API.Services;
 
 namespace DuckSoup.Library.Commands.Auth;
 

@@ -1,19 +1,19 @@
-﻿using API;
-using API.Session;
-using PacketLibrary.Agent.Server;
-using SilkroadSecurityAPI;
+﻿using API.Session;
+using PacketLibrary.VSRO188.Agent.Enums;
+using PacketLibrary.VSRO188.Agent.Server;
+using SilkroadSecurityAPI.Message;
 
 namespace DuckSoup.Library.Session;
 
 public class SpawnInfo : ISpawnInfo
 {
-    private SERVER_AGENT_ENTITY_GROUPSPAWN_BEGIN serverAgentEntity;
+    private SERVER_ENTITY_GROUPSPAWN_BEGIN serverAgentEntity;
     private Packet _packet;
     
     public void Read(Packet packet)
     {
-        serverAgentEntity = new SERVER_AGENT_ENTITY_GROUPSPAWN_BEGIN();
-        serverAgentEntity.Read(packet);
+        serverAgentEntity = new SERVER_ENTITY_GROUPSPAWN_BEGIN(packet);
+        serverAgentEntity.Read().Wait();
         _packet = new Packet(0x3019);
     }
 

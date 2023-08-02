@@ -12,6 +12,9 @@ using DuckSoup.Agent;
 using DuckSoup.Download;
 using DuckSoup.Gateway;
 using Microsoft.EntityFrameworkCore;
+using PacketLibrary.Handler;
+using SilkroadSecurityAPI;
+using SilkroadSecurityAPI.Message;
 
 #endregion
 
@@ -19,10 +22,17 @@ namespace DuckSoup.Library.Server
 {
     public class ServerManager : IServerManager
     {
+        private Dictionary<SecurityType, IServerFactory> serverFactories = new Dictionary<SecurityType, IServerFactory>
+        {
+            { SecurityType.VSRO188, new VSRO188_ServerFactory() },
+            { SecurityType.ISRO_R, new ISRO_R_ServerFactory() }
+        };        
+        public List<FakeServer> Servers { get; private set; }
+
         public ServerManager()
         {
             ServiceFactory.Register<IServerManager>(typeof(IServerManager), this);
-            Servers = new List<IAsyncServer>();
+            Servers = new List<FakeServer>();
             using var context = new API.Database.Context.DuckSoup();
             foreach (var contextService in context.Services.Include(b => b.LocalMachine_Machine)
                          .Include(b => b.RemoteMachine_Machine).Include(b => b.SpoofMachine_Machine))
@@ -33,7 +43,6 @@ namespace DuckSoup.Library.Server
             Start(true);
         }
 
-        public List<IAsyncServer> Servers { get; private set; }
 
         public void Start()
         {
@@ -80,7 +89,7 @@ namespace DuckSoup.Library.Server
 
         public void Stop(string name)
         {
-            IAsyncServer temp = null;
+            FakeServer temp = null;
             foreach (var asyncServer in Servers.Where(asyncServer =>
                          asyncServer.Service.Name.ToLower().Equals(name.ToLower())))
             {
@@ -98,7 +107,7 @@ namespace DuckSoup.Library.Server
 
         public void Stop(Service service)
         {
-            IAsyncServer temp = null;
+            FakeServer temp = null;
             foreach (var asyncServer in Servers.Where(asyncServer => asyncServer.Service.Equals(service)))
             {
                 temp = asyncServer;
@@ -113,41 +122,61 @@ namespace DuckSoup.Library.Server
             Servers.Remove(temp);
         }
 
-        public Task RegisterModuleHandler(ServerType serverType, ushort msgId, _PacketHandler packetHandler)
+        public Task RegisterModuleHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler) where T : Packet, new()
         {
             foreach (var asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
             {
-                asyncServer.PacketHandler.RegisterModuleHandler(msgId, packetHandler);
+                asyncServer.PacketHandler.RegisterModuleHandler(handler);
+            }
+
+            return Task.CompletedTask;
+        }
+        
+        public Task RegisterModuleHandler<T>(ServerType serverType, int priority, Func<T, ISession, Task<Packet>> handler) where T : Packet, new()
+        {
+            foreach (var asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
+            {
+                asyncServer.PacketHandler.RegisterModuleHandler(priority, handler);
             }
 
             return Task.CompletedTask;
         }
 
-        public Task RegisterClientHandler(ServerType serverType, ushort msgId, _PacketHandler packetHandler)
+        public Task RegisterClientHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler) where T : Packet, new()
         {
             foreach (var asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
             {
-                asyncServer.PacketHandler.RegisterClientHandler(msgId, packetHandler);
+                asyncServer.PacketHandler.RegisterClientHandler(handler);
+            }
+
+            return Task.CompletedTask;
+        }
+        
+        public Task RegisterClientHandler<T>(ServerType serverType, int priority, Func<T, ISession, Task<Packet>> handler) where T : Packet, new()
+        {
+            foreach (var asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
+            {
+                asyncServer.PacketHandler.RegisterClientHandler(priority, handler);
             }
 
             return Task.CompletedTask;
         }
 
-        public Task UnregisterModuleHandler(ServerType serverType, ushort msgId, _PacketHandler packetHandler)
+        public Task UnregisterModuleHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler) where T : Packet, new()
         {
             foreach (var asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
             {
-                asyncServer.PacketHandler.UnregisterModuleHandler(msgId, packetHandler);
+                asyncServer.PacketHandler.UnregisterModuleHandler(handler);
             }
 
             return Task.CompletedTask;
         }
 
-        public Task UnregisterClientHandler(ServerType serverType, ushort msgId, _PacketHandler packetHandler)
+        public Task UnregisterClientHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler) where T : Packet, new()
         {
             foreach (var asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
             {
-                asyncServer.PacketHandler.UnregisterClientHandler(msgId, packetHandler);
+                asyncServer.PacketHandler.UnregisterClientHandler(handler);
             }
 
             return Task.CompletedTask;
@@ -168,24 +197,16 @@ namespace DuckSoup.Library.Server
 
         public void AddServer(Service service)
         {
-            switch (service.ServerType)
+            if (!serverFactories.TryGetValue(service.SecurityType, out var serverFactory))
             {
-                case ServerType.GatewayServer:
-                    var gatewayServer = new GatewayServer(service);
-                    Servers.Add(gatewayServer);
-                    break;
-                case ServerType.DownloadServer:
-                    var downloadServer = new DownloadServer(service);
-                    Servers.Add(downloadServer);
-                    break;
-                case ServerType.AgentServer:
-                    var agentServer = new AgentServer(service);
-                    Servers.Add(agentServer);
-                    break;
-                case ServerType.None:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException();
+            }
+    
+            var server = serverFactory.Create(service, service.ServerType);
+    
+            if (server != null)
+            {
+                Servers.Add(server);
             }
         }
     }

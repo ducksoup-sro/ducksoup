@@ -37,6 +37,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Database\Database.csproj" />
+        <ProjectReference Include="..\PacketLibrary\PacketLibrary.csproj" />
         <ProjectReference Include="..\SilkroadSecurityAPI\SilkroadSecurityAPI.csproj" />
     </ItemGroup>
 

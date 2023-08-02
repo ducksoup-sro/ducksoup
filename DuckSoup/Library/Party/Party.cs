@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using API.Enums;
 using API.Party;
-using API.Session;
+using PacketLibrary.Handler;
 
 namespace DuckSoup.Library.Party;
 

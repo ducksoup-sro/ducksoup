@@ -117,4 +117,36 @@ public partial class _RefObjCommon
     public string AssocFile2_128 { get; set; } = null!;
 
     public int Link { get; set; }
+    
+    private _RefObjItem? _refObjItem;
+
+    public _RefObjItem GetRefObjItem
+    {
+        get
+        {
+            if (_refObjItem != null)
+            {
+                return _refObjItem;
+            }
+
+            _refObjItem = Cache.GetRefObjItemAsync(Link).Result;
+            return _refObjItem;
+        }
+    }
+        
+    private _RefObjChar? _refObjChar;
+
+    public _RefObjChar GetRefObjChar
+    {
+        get
+        {
+            if (_refObjChar != null)
+            {
+                return _refObjChar;
+            }
+            
+            _refObjChar = Cache.GetRefObjCharAsync(Link).Result;
+            return _refObjChar;
+        }
+    }
 }

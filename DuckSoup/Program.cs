@@ -6,11 +6,11 @@ using System.IO;
 using System.Reflection;
 using API;
 using API.Command;
-using API.Database;
 using API.Server;
 using API.ServiceFactory;
 using DuckSoup.Library;
 using DuckSoup.Library.Commands;
+using DuckSoup.Library.Database;
 using DuckSoup.Library.Event;
 using DuckSoup.Library.Party;
 using DuckSoup.Library.Plugins;
@@ -49,8 +49,7 @@ public static class Program
 
         var settingsManager = new SettingsManager();
         var databaseManager = new DatabaseManager();
-        if (!databaseManager.CheckConnection())
-            return;
+
 
         var sharedObjects = new SharedObjects();
         var userService = new UserService();

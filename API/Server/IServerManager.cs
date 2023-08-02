@@ -1,11 +1,11 @@
 ﻿using API.Database.DuckSoup;
+using PacketLibrary.Handler;
+using SilkroadSecurityAPI.Message;
 
 namespace API.Server;
 
 public interface IServerManager : IDisposable
 {
-    List<IAsyncServer> Servers { get; }
-
     void Start();
     void Start(bool firstStart);
     void Start(string name);
@@ -17,8 +17,10 @@ public interface IServerManager : IDisposable
     void AddServer(Service service);
 
     
-    Task RegisterModuleHandler(ServerType serverType, ushort msgId, _PacketHandler packetHandler);
-    Task RegisterClientHandler(ServerType serverType, ushort msgId, _PacketHandler packetHandler);
-    Task UnregisterModuleHandler(ServerType serverType, ushort msgId, _PacketHandler packetHandler);
-    Task UnregisterClientHandler(ServerType serverType, ushort msgId, _PacketHandler packetHandler);
+    Task RegisterModuleHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler) where T : Packet, new();
+    Task RegisterModuleHandler<T>(ServerType serverType, int priority, Func<T, ISession, Task<Packet>> handler) where T : Packet, new();
+    Task RegisterClientHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler) where T : Packet, new();
+    Task RegisterClientHandler<T>(ServerType serverType, int priority, Func<T, ISession, Task<Packet>> handler) where T : Packet, new();
+    Task UnregisterModuleHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler) where T : Packet, new();
+    Task UnregisterClientHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler) where T : Packet, new();
 }

@@ -29,8 +29,8 @@ public class SERVER_GATEWAY_LOGIN_IBUV_CHALLENGE : Packet
             .TryRead(out ImageUncompressed)
             .TryRead(out ImageWidth)
             .TryRead(out ImageHeight);
-        ImageCompressedData = new byte[this.RemainingRead()];
-        for (var i = 0; i < this.RemainingRead(); i++) TryRead(out ImageCompressedData[i]);
+        ImageCompressedData = new byte[RemainingRead()];
+        for (var i = 0; i < RemainingRead(); i++) TryRead(out ImageCompressedData[i]);
         // TODO :: check imageCompressedData - might be inserted wrongly
     }
 

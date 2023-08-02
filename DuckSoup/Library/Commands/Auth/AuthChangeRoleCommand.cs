@@ -2,7 +2,6 @@
 using API;
 using API.Command;
 using API.Enums;
-using API.Event;
 using API.ServiceFactory;
 using API.Services;
 

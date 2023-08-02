@@ -5,7 +5,8 @@ using System.Timers;
 using API;
 using API.ServiceFactory;
 using API.Session;
-using SilkroadSecurityAPI;
+using PacketLibrary.Handler;
+using SilkroadSecurityAPI.Message;
 
 namespace DuckSoup.Library.Session;
 
@@ -84,7 +85,12 @@ public class TimerManager : ITimerManager
             return;
         }
 
-        foreach (var agentSession in ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).AgentSessions.Where(agentSession => agentSession.CharacterGameReady))
+        foreach (var agentSession in ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).AgentSessions.Where(
+                     agentSession =>
+                     {
+                         agentSession.GetData<bool>(SessionConst.CHARACTER_GAME_READY, out var characterGameReady);
+                         return characterGameReady;
+                     }))
         {
             agentSession.SendToClient(packet);
         }
@@ -109,7 +115,11 @@ public class TimerManager : ITimerManager
             return;
         }
 
-        foreach (var agentSession in ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).AgentSessions.Where(agentSession => agentSession.CharacterGameReady))
+        foreach (var agentSession in ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).AgentSessions.Where(agentSession =>
+                     {
+                         agentSession.GetData<bool>(SessionConst.CHARACTER_GAME_READY, out var characterGameReady);
+                         return characterGameReady;
+                     }))
         {
             agentSession.SendToClient(packet);
         }
@@ -117,22 +127,23 @@ public class TimerManager : ITimerManager
     
     private Packet CreateStartPacket()
     {
+        _session.GetData<int>(SessionConst.UNIQUE_CHAR_ID, out var uniqueCharId);
         var packetTime = (int) _started.GetValueOrDefault().AddMilliseconds(_timerInterval).Subtract(DateTime.Now).TotalSeconds;
         var response = new Packet(0x3041, false, false);
-        response.WriteUInt32(_session.SessionData.UniqueCharId);
-        response.WriteUInt8(0x02);
-        response.WriteUInt8(0x02);
-        response.WriteUInt8(packetTime);
+        response.TryWrite<uint>((uint)uniqueCharId)
+            .TryWrite<byte>(0x02)
+            .TryWrite<byte>(0x02)
+            .TryWrite<byte>((byte)packetTime);
 
         return response;
     }
 
     private Packet CreateStopPacket()
     {
+        _session.GetData<int>(SessionConst.UNIQUE_CHAR_ID, out var uniqueCharId);
         var response = new Packet(0x3042, false, false);
-        response.WriteUInt32(_session.SessionData.UniqueCharId);
-        response.WriteUInt8(0x01);
-
+        response.TryWrite<uint>((uint)uniqueCharId)
+            .TryWrite(0x01);
         return response;
     }
 

@@ -9,9 +9,7 @@ public partial class DuckSoup : DuckContext
     public DuckSoup()
     {
     }
-
-    public virtual DbSet<Blacklist> Blacklists { get; set; }
-
+    
     public virtual DbSet<Database.DuckSoup.Event> Events { get; set; }
 
     public virtual DbSet<GlobalSetting> GlobalSettings { get; set; }
@@ -21,18 +19,9 @@ public partial class DuckSoup : DuckContext
     public virtual DbSet<Service> Services { get; set; }
     
     public virtual DbSet<User> Users { get; set; }
-
-    public virtual DbSet<Whitelist> Whitelists { get; set; }
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Blacklist>(entity =>
-        {
-            entity.HasKey(e => e.BlacklistId).HasName("PK_dbo.Blacklist");
-
-            entity.ToTable("Blacklist");
-        });
-
         modelBuilder.Entity<Database.DuckSoup.Event>(entity =>
         {
             entity.HasKey(e => e.EventId).HasName("PK_dbo.Event");
@@ -89,14 +78,7 @@ public partial class DuckSoup : DuckContext
             
             entity.ToTable("User");
         });
-
-        modelBuilder.Entity<Whitelist>(entity =>
-        {
-            entity.HasKey(e => e.WhitelistId).HasName("PK_dbo.Whitelist");
-
-            entity.ToTable("Whitelist");
-        });
-
+        
         OnModelCreatingPartial(modelBuilder);
     }
 
