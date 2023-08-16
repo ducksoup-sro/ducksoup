@@ -1,48 +1,50 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using API;
 using API.Database.DuckSoup;
-using Microsoft.IdentityModel.Tokens;
+using API.Server;
+using API.ServiceFactory;
 using NetCoreServer;
 using PacketLibrary.Handler;
-using SilkroadSecurityAPI;
-using Utility = SilkroadSecurityAPI.Utility;
 
 namespace DuckSoup.Library.Server;
 
-public class FakeServer : TcpServer
+public class FakeServer : TcpServer, IFakeServer
 {
     public Service Service { get; }
+    public IPacketHandler PacketHandler { get; }
+
+    public Task Start()
+    {
+        base.Start();
+        return Task.CompletedTask;
+    }
 
     public FakeServer(Service service) : base(service.LocalMachine_Machine.Address, service.BindPort)
     {
         Service = service;
-        
-        var defaultList = Utility.GetDefaultList(service.SecurityType);
+        var factory = ServiceFactory.Load<IServerManager>(typeof(IServerManager))
+            .GetServiceFactory(service.SecurityType);
 
-        switch (service.ServerType)
-        {
-            case ServerType.None:
-                break;
-            case ServerType.DownloadServer:
-                break;
-            case ServerType.GatewayServer:
-                break;
-            case ServerType.AgentServer:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-        
         PacketHandler = new PacketHandler(
-            new HashSet<ushort>(defaultList.ClientGlobalWhitelist().Concat(defaultList.ClientAgentWhitelist())),
-            new HashSet<ushort>(defaultList.ClientGlobalBlacklist().Concat(defaultList.ClientAgentBlacklist()))
+            factory.GetWhitelist(service.ServerType),
+            factory.GetWhitelist(service.ServerType)
         );
+
+        Global.Logger.InfoFormat("{0} - Debuglevel: {1}", Service.Name,
+            SharedObjects.DebugLevel);
+        Global.Logger.InfoFormat("{0} - Servertype: {1}", Service.Name,
+            Service.ServerType);
+        Global.Logger.InfoFormat("{0} - SecurityType: {1}", Service.Name,
+            Service.SecurityType);
+        Global.Logger.InfoFormat("{0} - Setting up Socket..", Service.Name);
+        Global.Logger.InfoFormat("{0} - Server bound to {1}", Service.Name,
+            Service.BindPort);
+        Global.Logger.InfoFormat("{0} - Redirecting Sessions to {1}", Service.Name,
+            Service.RemoteMachine_Machine.Address);
     }
 
-    public PacketHandler? PacketHandler { get; set; }
 
     protected override TcpSession CreateSession()
     {

@@ -8,9 +8,6 @@ using API;
 using API.Database.DuckSoup;
 using API.Server;
 using API.ServiceFactory;
-using DuckSoup.Agent;
-using DuckSoup.Download;
-using DuckSoup.Gateway;
 using Microsoft.EntityFrameworkCore;
 using PacketLibrary.Handler;
 using SilkroadSecurityAPI;
@@ -27,12 +24,12 @@ namespace DuckSoup.Library.Server
             { SecurityType.VSRO188, new VSRO188_ServerFactory() },
             { SecurityType.ISRO_R, new ISRO_R_ServerFactory() }
         };        
-        public List<FakeServer> Servers { get; private set; }
+        public List<IFakeServer> Servers { get; private set; }
 
         public ServerManager()
         {
             ServiceFactory.Register<IServerManager>(typeof(IServerManager), this);
-            Servers = new List<FakeServer>();
+            Servers = new List<IFakeServer>();
             using var context = new API.Database.Context.DuckSoup();
             foreach (var contextService in context.Services.Include(b => b.LocalMachine_Machine)
                          .Include(b => b.RemoteMachine_Machine).Include(b => b.SpoofMachine_Machine))
@@ -41,6 +38,12 @@ namespace DuckSoup.Library.Server
             }
 
             Start(true);
+        }
+
+        public IServerFactory GetServiceFactory(SecurityType securityType)
+        {
+            serverFactories.TryGetValue(securityType, out var result);
+            return result;
         }
 
 
@@ -89,7 +92,7 @@ namespace DuckSoup.Library.Server
 
         public void Stop(string name)
         {
-            FakeServer temp = null;
+            IFakeServer temp = null;
             foreach (var asyncServer in Servers.Where(asyncServer =>
                          asyncServer.Service.Name.ToLower().Equals(name.ToLower())))
             {
@@ -107,7 +110,7 @@ namespace DuckSoup.Library.Server
 
         public void Stop(Service service)
         {
-            FakeServer temp = null;
+            IFakeServer temp = null;
             foreach (var asyncServer in Servers.Where(asyncServer => asyncServer.Service.Equals(service)))
             {
                 temp = asyncServer;

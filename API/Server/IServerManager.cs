@@ -1,5 +1,8 @@
 ﻿using API.Database.DuckSoup;
+using API.ServiceFactory;
+using DuckSoup.Library.Server;
 using PacketLibrary.Handler;
+using SilkroadSecurityAPI;
 using SilkroadSecurityAPI.Message;
 
 namespace API.Server;
@@ -16,6 +19,7 @@ public interface IServerManager : IDisposable
     void Stop(Service service);
     void AddServer(Service service);
 
+    IServerFactory GetServiceFactory(SecurityType securityType);
     
     Task RegisterModuleHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler) where T : Packet, new();
     Task RegisterModuleHandler<T>(ServerType serverType, int priority, Func<T, ISession, Task<Packet>> handler) where T : Packet, new();
