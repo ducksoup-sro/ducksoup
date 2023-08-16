@@ -28,6 +28,7 @@ public interface ISession
     /// </summary>
     /// <param name="packet"></param>
     /// <returns></returns>
+    [Obsolete("This seems to bug alot. Don't use")]
     Task QueueToClient(Packet packet);
 
     /// <summary>
@@ -35,6 +36,7 @@ public interface ISession
     /// </summary>
     /// <param name="packet"></param>
     /// <returns></returns>
+    [Obsolete("This seems to bug alot. Don't use")]
     Task QueueToServer(Packet packet);
 
     /// <summary>

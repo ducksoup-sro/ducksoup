@@ -29,7 +29,7 @@ public class FakeServer : TcpServer, IFakeServer
 
         PacketHandler = new PacketHandler(
             factory.GetWhitelist(service.ServerType),
-            factory.GetWhitelist(service.ServerType)
+            factory.GetBlacklist(service.ServerType)
         );
 
         Global.Logger.InfoFormat("{0} - Debuglevel: {1}", Service.Name,

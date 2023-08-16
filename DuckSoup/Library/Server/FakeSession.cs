@@ -73,18 +73,19 @@ public class FakeSession : TcpSession
             if (packet.MsgId == 0x5000 || packet.MsgId == 0x9000 || packet.MsgId == 0x2001) continue;
 
             var packetResult = FakeServer.PacketHandler.HandleClient(packet, Session).Result;
-
+            
             switch (packetResult.ResultType)
             {
                 case PacketResultType.Block:
-                    Session.QueueToServer(packetResult);
+                    Session.SendToServer(packetResult);
                     Console.WriteLine($"Packet: 0x{packet.MsgId:X} not on whitelist!");
                     break;
-                case PacketResultType.Disconnect:
+                case PacketResultType.Disconnect: 
+                    Console.WriteLine($"Packet: 0x{packet.MsgId:X} is on blacklist!");
                     Session.Disconnect();
                     return;
                 case PacketResultType.Nothing:
-                    Session.QueueToServer(packetResult);
+                    Session.SendToServer(packetResult);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

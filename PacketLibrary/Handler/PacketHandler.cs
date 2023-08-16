@@ -193,10 +193,10 @@ public class PacketHandler : IPacketHandler
         if (packet.MsgId == 0x9000 || packet.MsgId == 0x5000 || packet.MsgId == 0x2001)
             return await _defaultHandler.Handle(packet, session);
         
-        // automatically blocks all packets that are not on the Whitelists!
         if (_clientBlacklist.Contains(packet.MsgId))
             return await _disconnectHandler.Handle(packet, session);
 
+        // automatically blocks all packets that are not on the Whitelists!
         if (!_clientWhitelist.Contains(packet.MsgId))
             return await _blockHandler.Handle(packet, session);
         

@@ -52,6 +52,13 @@ public class FakeClient : TcpClient
 
         foreach (var packet in receivedPackets)
         {
+            Console.Write("[S -> P]");
+            if (packet.Encrypted)
+                Console.Write("[E]");
+            if (packet.Massive)
+                Console.Write("[M]");
+            Console.WriteLine($" Packet: 0x{packet.MsgId:X} - {Id}");
+            
             if (packet.MsgId == 0x5000 || packet.MsgId == 0x9000) continue;
 
             var packetResult = FakeServer.PacketHandler.HandleServer(packet, Session).Result;
@@ -59,14 +66,15 @@ public class FakeClient : TcpClient
             switch (packetResult.ResultType)
             {
                 case PacketResultType.Block:
-                    Session.QueueToClient(packetResult);
+                    Session.SendToClient(packetResult);
                     Console.WriteLine($"Packet: 0x{packet.MsgId:X} not on whitelist!");
                     break;
                 case PacketResultType.Disconnect:
+                    Console.WriteLine($"Packet: 0x{packet.MsgId:X} is on blacklist!");
                     Session.Disconnect();
                     return;
                 case PacketResultType.Nothing:
-                    Session.QueueToClient(packetResult);
+                    Session.SendToClient(packetResult);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

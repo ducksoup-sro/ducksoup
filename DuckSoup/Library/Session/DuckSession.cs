@@ -36,12 +36,14 @@ public class DuckSession : ISession
         return Task.CompletedTask;
     }
 
+    [Obsolete("This seems to bug alot. Don't use")]
     public Task QueueToClient(Packet packet)
     {
         Client.Send(packet);
         return Task.CompletedTask;
     }
 
+    [Obsolete("This seems to bug alot. Don't use")]
     public Task QueueToServer(Packet packet)
     {
         Server.Send(packet);
