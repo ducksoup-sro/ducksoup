@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using API.Database.DuckSoup;
 using DuckSoup.Library.Session;
 using NetCoreServer;
+using PacketLibrary.Global.Client;
 using PacketLibrary.Handler;
 using SilkroadSecurityAPI;
 using SilkroadSecurityAPI.Message;
@@ -37,10 +38,12 @@ public class FakeSession : TcpSession
     protected override void OnConnected()
     {
         Console.WriteLine($"FakeSession connected with Id {Id} connected!");
+        FakeServer.AddSession(Session);
     }
 
     protected override void OnDisconnected()
     {
+        FakeServer.RemoveSession(Session);
         Console.WriteLine($"FakeSession disconnected with Id {Id} disconnected!");
         Session.Disconnect();
     }

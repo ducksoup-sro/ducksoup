@@ -55,4 +55,12 @@ public class FakeServer : TcpServer, IFakeServer
     {
         Console.WriteLine($"FakeServer caught an error with code {error}");
     }
+    
+    public virtual void RemoveSession(ISession session)
+    {
+    }
+
+    public virtual void AddSession(ISession session)
+    {
+    }
 }

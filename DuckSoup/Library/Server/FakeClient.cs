@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using API.Database.DuckSoup;
 using PacketLibrary.Handler;
+using PacketLibrary.VSRO188.Agent.Server;
 using SilkroadSecurityAPI;
 using SilkroadSecurityAPI.Message;
 using TcpClient = NetCoreServer.TcpClient;
@@ -58,7 +59,7 @@ public class FakeClient : TcpClient
             if (packet.Massive)
                 Console.Write("[M]");
             Console.WriteLine($" Packet: 0x{packet.MsgId:X} - {Id}");
-            
+
             if (packet.MsgId == 0x5000 || packet.MsgId == 0x9000) continue;
 
             var packetResult = FakeServer.PacketHandler.HandleServer(packet, Session).Result;
