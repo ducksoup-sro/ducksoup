@@ -872,7 +872,7 @@ public class AgentServer : AsyncServer
             if (itemRentType == 1)
             {
                 packet.ReadUInt16(); // 2 ushort item.RentInfo.CanDelete
-                packet.ReadUInt16(); // 4 uint item.RentInfo.PeriodBeginTime
+                packet.ReadUInt32(); // 4 uint item.RentInfo.PeriodBeginTime
                 packet.ReadUInt32(); // 4 uint item.RentInfo.PeriodEndTime
             }
             else if (itemRentType == 2)
