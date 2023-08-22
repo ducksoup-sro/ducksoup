@@ -38,6 +38,7 @@ public sealed class Session : ISession
     {
         _isTryCatchDebug = Convert.ToBoolean(DatabaseHelper.GetSettingOrDefault("DebugPacketHandler", "false"));
         SpawnInfo = new SpawnInfo();
+        CharInfo = new CharInfo(this);
         SessionData = new SessionData();
         AsyncServer = asyncServer;
         _clientTcpClient = clientTcpClient;
@@ -433,6 +434,7 @@ public sealed class Session : ISession
     public ITimerManager TimerManager { get; set; }
     public ICountdownManager CountdownManager { get; set; }
     public ISpawnInfo SpawnInfo { get; init; }
+    public ICharInfo CharInfo { get; init; }
     public string Hwid { get; set; }
     public bool CharacterGameReady { get; set; } = false;
     public bool FirstSpawn { get; set; } = false;
