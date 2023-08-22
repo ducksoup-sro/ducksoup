@@ -567,16 +567,12 @@ public class AgentServer : AsyncServer
 
     public override void AddSession(ISession session)
     {
-        base.AddSession(session);
         SharedObjects.AgentSessions.Add(session);
     }
 
     public override void RemoveSession(ISession session)
     {
-        base.RemoveSession(session);
-        if (SharedObjects.AgentSessions.Contains(session)) SharedObjects.AgentSessions.Remove(session);
-
-        //CustomTitles?.RemoveSession(session);
+        SharedObjects.AgentSessions.RemoveWhere(sess => sess.ClientGuid == session.ClientGuid);
     }
 
     public override void Dispose()
