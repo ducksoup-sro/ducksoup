@@ -452,6 +452,10 @@ public class AgentServer : AsyncServer
     {
         // Credits: Mostly taken from RSBot https://github.com/SDClowen/RSBot/
         var refObjId = packet.ReadUInt32();
+        if (refObjId == 19991)
+        {
+            Utility.HexDump(packet.GetBytes());
+        }
 
         if (refObjId == uint.MaxValue)
         {
@@ -464,7 +468,7 @@ public class AgentServer : AsyncServer
             packet.ReadUInt32();
             packet.ReadUInt32();
         }
-        
+
         var hasValue = SharedObjects.RefObjCommon.TryGetValue((int)refObjId, out var obj);
 
         if (!hasValue)
@@ -499,7 +503,7 @@ public class AgentServer : AsyncServer
                         }
                     }
                         break;
-                    case 2:
+                    case 2: // Moveable?
                         switch (obj.TypeID3)
                         {
                             case 1:
@@ -514,8 +518,12 @@ public class AgentServer : AsyncServer
                                 spawnedCos.Deserialize(packet);
                             }
                                 break;
-                            case 4:
+                            case 4: // cos guard
                             {
+                                var bionic = new SpawnedNpc(refObjId);
+                                bionic.ParseBionicDetails(packet);
+                                bionic.Deserialize(packet);
+
                                 var guildId = packet.ReadUInt32();
                                 var guildName = packet.ReadAscii();
                                 break;
@@ -684,7 +692,7 @@ public class AgentServer : AsyncServer
 
         return new PacketResult();
     }
-    
+
     private async Task<PacketResult> SERVER_AGENT_CHARACTER_DATA_BEGIN(Packet packet, ISession session, object obj)
     {
         session.CharInfo.Clear();
@@ -696,7 +704,7 @@ public class AgentServer : AsyncServer
         session.CharInfo.Read(packet);
         return new PacketResult();
     }
-    
+
     private async Task<PacketResult> SERVER_AGENT_CHARACTER_DATA_END(Packet packet, ISession session, object obj)
     {
         session.CharInfo.Process();
@@ -802,6 +810,7 @@ public class AgentServer : AsyncServer
             session.SessionData.FirstSpawn = true;
             EventFactory.Publish(EventFactoryNames.OnCharacterFirstSpawn, session);
         }
+
         EventFactory.Publish(EventFactoryNames.OnCharacterGameReadyChange, session, true);
 
         if (session.CountdownManager.IsStarted())
@@ -853,6 +862,7 @@ public class AgentServer : AsyncServer
         {
             EventFactory.Publish(EventFactoryNames.OnUserLeaveCharScreen, session);
         }
+
         session.CharScreen = false;
         //.CharacterData.UniqueCharId = packet.ReadUInt32();
         return new PacketResult();
@@ -1043,7 +1053,7 @@ public class AgentServer : AsyncServer
 
         session.CharnameSent = true;
         EventFactory.Publish(EventFactoryNames.OnUserCharnameSent, session);
-        
+
         using var db = new SRO_VT_SHARD();
         session.SessionData.Charid =
             (await db._Chars.Where(x => x.CharName16 == session.SessionData.Charname).FirstAsync()).CharID;
