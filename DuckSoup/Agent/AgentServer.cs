@@ -452,11 +452,6 @@ public class AgentServer : AsyncServer
     {
         // Credits: Mostly taken from RSBot https://github.com/SDClowen/RSBot/
         var refObjId = packet.ReadUInt32();
-        if (refObjId == 19991)
-        {
-            Utility.HexDump(packet.GetBytes());
-        }
-
         if (refObjId == uint.MaxValue)
         {
             return;
