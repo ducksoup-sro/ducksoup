@@ -9,6 +9,8 @@ namespace API.Server;
 
 public interface IServerManager : IDisposable
 {
+    List<IFakeServer> Servers { get; }
+
     void Start();
     void Start(bool firstStart);
     void Start(string name);
