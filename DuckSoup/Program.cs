@@ -15,6 +15,7 @@ using DuckSoup.Library.Event;
 using DuckSoup.Library.Party;
 using DuckSoup.Library.Plugins;
 using DuckSoup.Library.Server;
+using DuckSoup.Library.Services;
 using DuckSoup.Library.Settings;
 using DuckSoup.Library.Webserver;
 using log4net;
@@ -52,6 +53,8 @@ public static class Program
             return;
 
         var sharedObjects = new SharedObjects();
+        var userService = new UserService();
+        var authService = new AuthService();
         var partyManager = new PartyManager();
         var serverManager = new ServerManager();
         var webserverManager = new WebserverManager();

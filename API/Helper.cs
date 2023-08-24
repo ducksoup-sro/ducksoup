@@ -9,6 +9,11 @@ public static class Helper
     {
         return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     }
+    
+    public static long GetCurrentTimeSeconds()
+    {
+        return DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+    }
 
     public static Task<ISession?> GetSessionByGuid(Guid guid)
     {

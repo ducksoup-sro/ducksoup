@@ -78,17 +78,12 @@ namespace DuckSoup.Gateway
 
         public override void AddSession(ISession session)
         {
-            base.AddSession(session);
             SharedObjects.GatewaySessions.Add(session);
         }
 
         public override void RemoveSession(ISession session)
         {
-            base.RemoveSession(session);
-            if (SharedObjects.GatewaySessions.Contains(session))
-            {
-                SharedObjects.GatewaySessions.Remove(session);
-            }
+            SharedObjects.GatewaySessions.RemoveWhere(sess => sess.ClientGuid == session.ClientGuid);
         }
 
         public override void Dispose()

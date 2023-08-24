@@ -218,8 +218,12 @@ public class PartyManagerHandlers
         
         _partyManager.AddParty(party);
 
-        _partyManager.GetPartyMatchEntries()
-            .First(entry => entry.Party?.Leader.SessionData.JID == leaderSession.SessionData.JID).Party = party;
+        var partyMatchEntry = _partyManager.GetPartyMatchEntries()
+            .FirstOrDefault(entry => entry.Party?.Leader.SessionData.JID == leaderSession.SessionData.JID);
+        if (partyMatchEntry != null)
+        {
+            partyMatchEntry.Party = party;
+        }
         
         return new PacketResult();
     }

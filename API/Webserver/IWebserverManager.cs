@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using API.Enums;
 using WatsonWebserver;
 using HttpMethod = WatsonWebserver.HttpMethod;
 
@@ -8,7 +9,8 @@ public interface IWebserverManager
 {
     void Start(string hostname, int port);
     void Stop();
-    void addProtectedPrefix(string path);
+    void addProtectedPrefix(string path, List<UserRole> roles);
+    void addProtectedPrefix(string path, UserRole[] roles);
     void addStaticRoute(HttpMethod method, string path, Func<HttpContext, Task> handler);
     void addStaticRoute(string path, Func<HttpContext, Task> handler);
     void removeStaticRoute(HttpMethod method, string path);

@@ -6,7 +6,7 @@
         <RootNamespace>DuckSoup</RootNamespace>
         <ProductVersion>2.0.0</ProductVersion>
         <LangVersion>11</LangVersion>
-        <Version>1.8.0</Version>
+        <Version>1.8.6</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,6 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="JWT" Version="10.0.1" />
         <PackageReference Include="McMaster.NETCore.Plugins" Version="2.0.0-beta.130" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
         <PackageReference Include="Quartz" Version="3.5.0" />
@@ -27,5 +28,9 @@
         <None Update="log4net.config">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Library\Database" />
     </ItemGroup>
 </Project>

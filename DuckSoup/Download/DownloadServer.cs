@@ -64,17 +64,12 @@ namespace DuckSoup.Download
 
         public override void AddSession(ISession session)
         {
-            base.AddSession(session);
             SharedObjects.DownloadSessions.Add(session);
         }
 
         public override void RemoveSession(ISession session)
         {
-            base.RemoveSession(session);
-            if (SharedObjects.DownloadSessions.Contains(session))
-            {
-                SharedObjects.DownloadSessions.Remove(session);
-            }
+            SharedObjects.DownloadSessions.RemoveWhere(sess => sess.ClientGuid == session.ClientGuid);
         }
 
         public override void Dispose()

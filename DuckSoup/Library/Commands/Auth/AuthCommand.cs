@@ -1,5 +1,8 @@
 ﻿using System.Linq;
+using API;
 using API.Command;
+using API.ServiceFactory;
+using API.Services;
 
 namespace DuckSoup.Library.Commands.Auth;
 
@@ -11,6 +14,7 @@ public class AuthCommand : Command
         SubCommands.Add(new AuthInvalidateCommand());
         SubCommands.Add(new AuthRegisterCommand());
         SubCommands.Add(new AuthChangePasswordCommand());
+        SubCommands.Add(new AuthChangeRoleCommand());
         SubCommands.Add(new AuthDeleteCommand());
     }
 

@@ -1,7 +1,7 @@
-﻿using API.Database.Services;
-using API.ServiceFactory;
+﻿using API.ServiceFactory;
+using API.Services;
 
-namespace DuckSoup.Library.Database.Services;
+namespace DuckSoup.Library.Services;
 
 public class Service<T> : IService<T>
 {

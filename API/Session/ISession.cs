@@ -21,6 +21,7 @@ public interface ISession
     ITimerManager TimerManager { get; set; }
     ICountdownManager CountdownManager { get; set; }
     ISpawnInfo SpawnInfo { get; init; }
+    ICharInfo CharInfo { get; init; }
     string Hwid { get; set; }
     bool CharacterGameReady { get; set; }
     bool FirstSpawn { get; set; }
