@@ -18,14 +18,6 @@ public class VSRO188_AgentServer : FakeServer
     public VSRO188_AgentServer(Service service) : base(service)
     {
         _sharedObjects = ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
-        
-        PacketHandler.RegisterModuleHandler<SERVER_On3013>(SERVER_On3013); // Automatically redirect to the DownloadServer
-    }
-
-    private async Task<Packet> SERVER_On3013(SERVER_On3013 data, ISession session)
-    {
-        Global.Logger.Info($"Debug 3013 Size: {data.GetBytes().Length}");
-        return data;
     }
 
     public override void AddSession(ISession session)
