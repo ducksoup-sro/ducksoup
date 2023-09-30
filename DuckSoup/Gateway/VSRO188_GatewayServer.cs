@@ -66,6 +66,24 @@ public class VSRO188_GatewayServer : FakeServer
 
     private async Task<Packet> SERVER_GATEWAY_PATCH_RESPONSE(SERVER_GATEWAY_PATCH_RESPONSE data, ISession session)
     {
+        if (data.Result != 0x01)
+        {
+            return data;
+        }
+        
+        foreach (var agentServer in _serverManager.Servers.Where(agentServer =>
+                     agentServer.Service.RemotePort == data.DownloadServer.Port &&
+                     agentServer.Service.RemoteMachine_Machine.Address == data.DownloadServer.Host))
+        {
+            data.DownloadServer.Host = agentServer.Service.LocalMachine_Machine.Address;
+            data.DownloadServer.Port = (ushort)agentServer.Service.BindPort;
+
+            if (agentServer.Service.SpoofMachine_Machine != null && agentServer.Service.SpoofMachine_Machine.Address != "")
+            {
+                data.DownloadServer.Host = agentServer.Service.SpoofMachine_Machine.Address;
+            }
+        }
+
         return data;
     }
 }
