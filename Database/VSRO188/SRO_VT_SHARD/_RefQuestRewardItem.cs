@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefQuestRewardItem
+public class _RefQuestRewardItem
 {
     public byte Service { get; set; }
 

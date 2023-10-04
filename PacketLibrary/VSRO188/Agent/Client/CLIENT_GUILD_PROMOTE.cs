@@ -4,18 +4,18 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 
 public class CLIENT_GUILD_PROMOTE : Packet
 {
-    public CLIENT_GUILD_PROMOTE() : base(0x70FA, false, false)
+    public CLIENT_GUILD_PROMOTE() : base(0x70FA)
     {
     }
 
     public override PacketDirection FromDirection => PacketDirection.Client;
-    public override PacketDirection ToDirection => PacketDirection.Server
-;
+
+    public override PacketDirection ToDirection => PacketDirection.Server;
 
 
     public override async Task Read()
     {
-         //throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     public override async Task<Packet> Build()

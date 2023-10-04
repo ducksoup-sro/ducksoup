@@ -192,14 +192,14 @@ public class PacketHandler : IPacketHandler
     {
         if (packet.MsgId == 0x9000 || packet.MsgId == 0x5000 || packet.MsgId == 0x2001)
             return await _defaultHandler.Handle(packet, session);
-        
+
         // if (_clientBlacklist.Contains(packet.MsgId))
         //     return await _disconnectHandler.Handle(packet, session);
         //
         // // automatically blocks all packets that are not on the Whitelists!
         // if (!_clientWhitelist.Contains(packet.MsgId))
         //     return await _blockHandler.Handle(packet, session);
-        
+
         _clientHandlers.TryGetValue(packet.MsgId, out var handler);
 
         var outcome = await _defaultHandler.Handle(packet, session);
@@ -212,13 +212,13 @@ public class PacketHandler : IPacketHandler
         foreach (var packetHandler in handler)
         {
             outcome = await packetHandler.Value.Handle(outcome, session);
-            
+
             if (packetHandler.Key == last)
             {
                 await outcome.Build();
                 outcome.ToReadOnly();
             }
-            
+
             switch (outcome.ResultType)
             {
                 case PacketResultType.Disconnect:
@@ -259,7 +259,7 @@ public class PacketHandler : IPacketHandler
                 await outcome.Build();
                 outcome.ToReadOnly();
             }
-            
+
             switch (outcome.ResultType)
             {
                 case PacketResultType.Disconnect:

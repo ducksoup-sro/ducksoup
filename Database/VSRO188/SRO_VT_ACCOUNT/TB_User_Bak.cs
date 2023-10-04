@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class TB_User_Bak
+public class TB_User_Bak
 {
     public int JID { get; set; }
 

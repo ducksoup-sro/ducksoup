@@ -6,18 +6,18 @@ namespace PacketLibrary.VSRO188.Agent.Objects.Inventory.Item;
 // https://github.com/SDClowen/RSBot/
 public class BindingOption
 {
-    public BindingOptionType Type;
-    public byte Slot;
     public uint Id;
+    public byte Slot;
+    public BindingOptionType Type;
     public uint Value;
-    
-    
+
+
     public static BindingOption FromPacket(Packet packet, BindingOptionType type)
     {
         packet.TryRead<byte>(out var slot)
-        .TryRead<uint>(out var id)
-        .TryRead<uint>(out var value);
-            
+            .TryRead<uint>(out var id)
+            .TryRead<uint>(out var value);
+
         return new BindingOption
         {
             Type = type,

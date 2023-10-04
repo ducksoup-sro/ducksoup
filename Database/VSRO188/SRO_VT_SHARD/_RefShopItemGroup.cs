@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefShopItemGroup
+public class _RefShopItemGroup
 {
     public int Service { get; set; }
 

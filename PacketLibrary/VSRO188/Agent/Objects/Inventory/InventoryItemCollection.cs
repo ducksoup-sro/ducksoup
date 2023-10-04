@@ -8,9 +8,20 @@ public class InventoryItemCollection : IEnumerable
 {
     protected List<InventoryItem> _collection;
 
+    public InventoryItemCollection(byte size)
+    {
+        _collection = new List<InventoryItem>(size + 1);
+    }
+
+    public InventoryItemCollection(Packet packet)
+    {
+        _collection = new List<InventoryItem>();
+        Deserialize(packet);
+    }
+
     public byte Capacity
     {
-        get => (byte) (_collection.Capacity - 1);
+        get => (byte)(_collection.Capacity - 1);
         set => _collection.Capacity = value + 1;
     }
 
@@ -26,34 +37,41 @@ public class InventoryItemCollection : IEnumerable
         set => _collection[index] = value;
     }
 
-    public InventoryItemCollection(byte size)
+    IEnumerator IEnumerable.GetEnumerator()
     {
-        _collection = new List<InventoryItem>(size + 1);
-    }
-
-    public InventoryItemCollection(Packet packet)
-    {
-        _collection = new List<InventoryItem>();
-        Deserialize(packet);
+        //OrderBySlot();
+        return _collection.GetEnumerator();
     }
 
     public void Add(InventoryItem newItem)
-        => _collection.Add(newItem);
+    {
+        _collection.Add(newItem);
+    }
 
     public bool Remove(InventoryItem item)
-        => _collection.Remove(item);
+    {
+        return _collection.Remove(item);
+    }
 
     public void RemoveAt(byte slot)
-        => _collection.RemoveAll(p => p.Slot == slot);
+    {
+        _collection.RemoveAll(p => p.Slot == slot);
+    }
 
     public InventoryItem GetItemAt(byte slot)
-        => GetItem(item => item.Slot == slot);
+    {
+        return GetItem(item => item.Slot == slot);
+    }
 
     public bool Contains(InventoryItem item)
-        => _collection.Contains(item);
+    {
+        return _collection.Contains(item);
+    }
 
     public bool Contains(byte slot)
-        => GetItem(item => item.Slot == slot) != null;
+    {
+        return GetItem(item => item.Slot == slot) != null;
+    }
 
     public void UpdateItemSlot(byte slot, byte newSlot)
     {
@@ -74,7 +92,9 @@ public class InventoryItemCollection : IEnumerable
     }
 
     protected void OrderBySlot()
-        => _collection.Sort((a, b) => a.Slot.CompareTo(b.Slot));
+    {
+        _collection.Sort((a, b) => a.Slot.CompareTo(b.Slot));
+    }
 
     public IList<InventoryItem> GetItems(Predicate<InventoryItem> predicate)
     {
@@ -83,31 +103,49 @@ public class InventoryItemCollection : IEnumerable
     }
 
     public ICollection<InventoryItem> GetItems(uint objId)
-        => GetItems(item => item.Record.ID == objId);
+    {
+        return GetItems(item => item.Record.ID == objId);
+    }
 
     public ICollection<InventoryItem> GetItems(string recordCodeName)
-        => GetItems(item => item.Record.GetRefObjCommon.CodeName128 == recordCodeName);
+    {
+        return GetItems(item => item.Record.GetRefObjCommon.CodeName128 == recordCodeName);
+    }
 
     public ICollection<InventoryItem> GetItems(TypeIdFilter filter)
-        => GetItems(item => filter.EqualsRefItem(item.Record.GetRefObjCommon));
+    {
+        return GetItems(item => filter.EqualsRefItem(item.Record.GetRefObjCommon));
+    }
 
     public ICollection<InventoryItem> GetItems(TypeIdFilter filter, Predicate<InventoryItem> action)
-        => GetItems(item => filter.EqualsRefItem(item.Record.GetRefObjCommon) && action(item));
+    {
+        return GetItems(item => filter.EqualsRefItem(item.Record.GetRefObjCommon) && action(item));
+    }
 
     public InventoryItem GetItem(Predicate<InventoryItem> predicate)
-        => GetItems(predicate).FirstOrDefault();
+    {
+        return GetItems(predicate).FirstOrDefault();
+    }
 
     public InventoryItem GetItem(uint objId)
-        => GetItem(item => item.Record.ID == objId);
+    {
+        return GetItem(item => item.Record.ID == objId);
+    }
 
     public InventoryItem GetItem(TypeIdFilter filter)
-        => GetItem(item => filter.EqualsRefItem(item.Record.GetRefObjCommon));
+    {
+        return GetItem(item => filter.EqualsRefItem(item.Record.GetRefObjCommon));
+    }
 
     public InventoryItem GetItem(TypeIdFilter filter, Predicate<InventoryItem> action)
-        => GetItem(item => filter.EqualsRefItem(item.Record.GetRefObjCommon) && action(item));
+    {
+        return GetItem(item => filter.EqualsRefItem(item.Record.GetRefObjCommon) && action(item));
+    }
 
     public InventoryItem GetItem(string recordCodeName)
-        => GetItem(item => item.Record.GetRefObjCommon.CodeName128 == recordCodeName);
+    {
+        return GetItem(item => item.Record.GetRefObjCommon.CodeName128 == recordCodeName);
+    }
 
     public int GetSumAmount(string recordCodeName)
     {
@@ -130,27 +168,23 @@ public class InventoryItemCollection : IEnumerable
     public virtual byte GetFreeSlot()
     {
         for (byte slot = 0; slot < Capacity; slot++)
-        {
             if (GetItemAt(slot) == null)
                 return slot;
-        }
 
         return 0xFF;
     }
 
     public void CopyTo(InventoryItem[] array, int arrayIndex)
-        => _collection.CopyTo(array, arrayIndex);
-
-    public void Clear()
-        => _collection.Clear();
-
-    public IEnumerator<InventoryItem> GetEnumerator()
     {
-        //OrderBySlot();
-        return _collection.GetEnumerator();
+        _collection.CopyTo(array, arrayIndex);
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
+    public void Clear()
+    {
+        _collection.Clear();
+    }
+
+    public IEnumerator<InventoryItem> GetEnumerator()
     {
         //OrderBySlot();
         return _collection.GetEnumerator();

@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _TimedJob
+public class _TimedJob
 {
     public int ID { get; set; }
 

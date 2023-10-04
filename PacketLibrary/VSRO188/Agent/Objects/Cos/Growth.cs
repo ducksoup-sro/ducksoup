@@ -10,14 +10,13 @@ public class Growth : Cos
 
     public override void Deserialize(Packet packet)
     {
-        packet.TryRead<long>(out Experience)
-            .TryRead<byte>(out Level)
-            .TryRead<ushort>(out CurrentHungerPoints)
-            .TryRead<int>(out Settings)
+        packet.TryRead(out Experience)
+            .TryRead(out Level)
+            .TryRead(out CurrentHungerPoints)
+            .TryRead(out Settings)
             .TryRead(out Name)
             .TryRead<byte>(out var unk1)
-            .TryRead<uint>(out OwnerUniqueId)
+            .TryRead(out OwnerUniqueId)
             .TryRead<byte>(out var inventorySlot);
-        
     }
 }

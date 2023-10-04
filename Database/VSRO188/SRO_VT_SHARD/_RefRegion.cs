@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefRegion
+public class _RefRegion
 {
     public short wRegionID { get; set; }
 

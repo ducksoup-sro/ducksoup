@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_LOG;
 
-public partial class _LogSchedule
+public class _LogSchedule
 {
     public int ID { get; set; }
 

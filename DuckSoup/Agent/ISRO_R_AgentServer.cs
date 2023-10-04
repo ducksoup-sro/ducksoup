@@ -9,12 +9,12 @@ namespace DuckSoup.Agent;
 public class ISRO_R_AgentServer : FakeServer
 {
     private readonly ISharedObjects _sharedObjects;
-    
+
     public ISRO_R_AgentServer(Service service) : base(service)
     {
         _sharedObjects = ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
     }
-    
+
     public override void AddSession(ISession session)
     {
         base.AddSession(session);
@@ -24,9 +24,6 @@ public class ISRO_R_AgentServer : FakeServer
     public override void RemoveSession(ISession session)
     {
         base.RemoveSession(session);
-        if (_sharedObjects.AgentSessions.Contains(session))
-        {
-            _sharedObjects.AgentSessions.Remove(session);
-        }
+        if (_sharedObjects.AgentSessions.Contains(session)) _sharedObjects.AgentSessions.Remove(session);
     }
 }

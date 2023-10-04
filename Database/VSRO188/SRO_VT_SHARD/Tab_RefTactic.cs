@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class Tab_RefTactic
+public class Tab_RefTactic
 {
     public int dwTacticsID { get; set; }
 

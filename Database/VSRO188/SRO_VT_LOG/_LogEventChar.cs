@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_LOG;
 
-public partial class _LogEventChar
+public class _LogEventChar
 {
     public int CharID { get; set; }
 

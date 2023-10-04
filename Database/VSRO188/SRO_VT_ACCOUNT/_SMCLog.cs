@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class _SMCLog
+public class _SMCLog
 {
     public string szUserID { get; set; } = null!;
 

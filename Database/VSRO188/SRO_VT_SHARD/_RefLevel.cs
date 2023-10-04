@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefLevel
+public class _RefLevel
 {
     public byte Lvl { get; set; }
 

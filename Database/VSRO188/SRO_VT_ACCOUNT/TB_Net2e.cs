@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class TB_Net2e
+public class TB_Net2e
 {
     public int JID { get; set; }
 

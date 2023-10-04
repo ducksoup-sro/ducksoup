@@ -4,7 +4,7 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 
 public class SERVER_JOB_UPDATE_EXP : Packet
 {
-    public SERVER_JOB_UPDATE_EXP() : base(0x30E6, false, false)
+    public SERVER_JOB_UPDATE_EXP() : base(0x30E6)
     {
     }
 
@@ -14,7 +14,7 @@ public class SERVER_JOB_UPDATE_EXP : Packet
 
     public override async Task Read()
     {
-         //throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     public override async Task<Packet> Build()

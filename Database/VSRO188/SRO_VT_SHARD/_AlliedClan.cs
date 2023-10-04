@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _AlliedClan
+public class _AlliedClan
 {
     public int ID { get; set; }
 

@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefDropItemGroup
+public class _RefDropItemGroup
 {
     public byte Service { get; set; }
 

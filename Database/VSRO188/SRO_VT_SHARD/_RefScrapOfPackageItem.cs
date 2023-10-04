@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefScrapOfPackageItem
+public class _RefScrapOfPackageItem
 {
     public byte Service { get; set; }
 

@@ -25,7 +25,7 @@ public class Packet
 
         if (bytes != null) _writer.Write(bytes, offset, length);
     }
-    
+
     public Packet(Packet packet)
     {
         ValidatePacketParameters(packet.Encrypted, packet.Massive);
@@ -39,10 +39,9 @@ public class Packet
 
         if (packet.GetBytes() != null) _writer.Write(packet.GetBytes(), 0, packet.GetBytes().Length);
     }
-    
+
     public Packet()
     {
-        
     }
 
     #endregion
@@ -147,10 +146,12 @@ public class Packet
 
     private void InitializePacketReader()
     {
-        if(_writer != null) {
+        if (_writer != null)
+        {
             _readerBytes = _writer.GetBytes();
             _writer?.Close();
         }
+
         _writer = null;
         _reader = new PacketReader(_readerBytes);
     }

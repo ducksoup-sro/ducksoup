@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class SK_ITEM_GuardLog
+public class SK_ITEM_GuardLog
 {
     public int autoID { get; set; }
 

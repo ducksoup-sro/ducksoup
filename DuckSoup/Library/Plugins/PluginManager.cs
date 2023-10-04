@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using API;
 using API.Command;
 using API.Plugin;
 using API.ServiceFactory;
@@ -14,8 +13,6 @@ namespace DuckSoup.Library.Plugins;
 
 public class PluginManager : IPluginManager
 {
-    public Dictionary<PluginLoader, IPlugin> Loaders { get; private set; }
-
     public PluginManager()
     {
         ServiceFactory.Register<IPluginManager>(typeof(IPluginManager), this);
@@ -24,15 +21,13 @@ public class PluginManager : IPluginManager
         Setup();
     }
 
+    public Dictionary<PluginLoader, IPlugin> Loaders { get; private set; }
+
     public bool IsLoaded(string name)
     {
         foreach (var (_, value) in Loaders)
-        {
             if (value.Name.ToLower().Equals(name.ToLower()))
-            {
                 return true;
-            }
-        }
 
         return false;
     }
@@ -40,7 +35,7 @@ public class PluginManager : IPluginManager
     public PluginLoader LoadPlugin(string file)
     {
         return PluginLoader.CreateFromAssemblyFile(Directory.GetCurrentDirectory() + "\\" + file,
-            configure: config =>
+            config =>
             {
                 config.IsUnloadable = true;
                 config.LoadInMemory = true;
@@ -51,7 +46,7 @@ public class PluginManager : IPluginManager
     public IPlugin StartPlugin(PluginLoader pluginLoader)
     {
         var commandManager = ServiceFactory.Load<ICommandManager>(typeof(ICommandManager));
-        
+
         IPlugin plugin = null;
         foreach (var pluginType in pluginLoader
                      .LoadDefaultAssembly()
@@ -59,7 +54,7 @@ public class PluginManager : IPluginManager
                      .Where(t => typeof(IPlugin).IsAssignableFrom(t) && !t.IsAbstract))
         {
             // This assumes the implementation of IPlugin has a parameterless constructor
-            plugin = (IPlugin) Activator.CreateInstance(pluginType)!;
+            plugin = (IPlugin)Activator.CreateInstance(pluginType)!;
             plugin.OnEnable();
             var tempPlugin = new InternalPluginCommand(plugin.Name, plugin.Name + " <command>", "");
             tempPlugin.AddCommands(plugin.RegisterCommands());
@@ -75,22 +70,16 @@ public class PluginManager : IPluginManager
         var commandManager = ServiceFactory.Load<ICommandManager>(typeof(ICommandManager));
         var removePlugins = new Dictionary<PluginLoader, IPlugin>();
         var removeCommands = new List<Command>();
-        
+
         foreach (var (key, value) in Loaders)
-        {
             if (value.Name.ToLower().Equals(name.ToLower()))
-            {
                 removePlugins.Add(key, value);
-            }
-        }
 
         foreach (var (_, value) in removePlugins)
         {
-            removeCommands.AddRange(commandManager._commands.Where(commandManagerCommand => commandManagerCommand.GetName().Equals(value.Name)));
-            foreach (var removeCommand in removeCommands)
-            {
-                commandManager._commands.Remove(removeCommand);
-            }
+            removeCommands.AddRange(commandManager._commands.Where(commandManagerCommand =>
+                commandManagerCommand.GetName().Equals(value.Name)));
+            foreach (var removeCommand in removeCommands) commandManager._commands.Remove(removeCommand);
             return UnloadPlugin(value);
         }
 
@@ -101,19 +90,16 @@ public class PluginManager : IPluginManager
     {
         foreach (var (key, value) in Loaders)
         {
-            if (!value.Name.ToLower().Equals(plugin.Name.ToLower()))
-            {
-                continue;
-            }
-    
+            if (!value.Name.ToLower().Equals(plugin.Name.ToLower())) continue;
+
             plugin.Dispose();
             key.Dispose();
             return UnloadPlugin(key);
         }
-    
+
         return false;
     }
-    
+
     public bool UnloadPlugin(PluginLoader pluginLoader)
     {
         pluginLoader.Dispose();
@@ -131,29 +117,27 @@ public class PluginManager : IPluginManager
 
     public string SearchPlugin(string directory, string pluginName)
     {
-        if (!Directory.Exists(directory))
-        {
-            return null;
-        }
+        if (!Directory.Exists(directory)) return null;
 
         foreach (var file in Directory.GetFiles(directory))
         {
-            if (!file.EndsWith(".dll"))
-            {
-                continue;
-            }
+            if (!file.EndsWith(".dll")) continue;
 
             var replace = file.ToLower().Replace("plugin.", "").Replace(".dll", "").Replace(directory, "")
                 .Replace("\\", "");
             var searchName = pluginName.Replace("plugin.", "").Replace(".dll", "");
 
-            if (replace.ToLower().Equals(searchName.ToLower()))
-            {
-                return file;
-            }
+            if (replace.ToLower().Equals(searchName.ToLower())) return file;
         }
 
         return null;
+    }
+
+    public void Dispose()
+    {
+        foreach (var (_, value) in Loaders) value.Dispose();
+
+        Loaders = null;
     }
 
     private void Setup()
@@ -180,15 +164,5 @@ public class PluginManager : IPluginManager
             var plugin = StartPlugin(pluginLoader);
             Log.Information("Plugin: {0} ({1}) by [{2}] started.", plugin.Name, plugin.Version, plugin.Author);
         }
-    }
-
-    public void Dispose()
-    {
-        foreach (var (_, value) in Loaders)
-        {
-            value.Dispose();
-        }
-
-        Loaders = null;
     }
 }

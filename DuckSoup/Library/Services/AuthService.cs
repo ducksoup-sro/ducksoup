@@ -11,13 +11,7 @@ namespace DuckSoup.Library.Services;
 
 public class AuthService : Service<IAuthService>, IAuthService
 {
-    private string RefreshSecret { get; }
-    private string AccessSecret { get; }
-    private long RefreshTokenExpiry { get; }
-    private long AccessTokenExpiry { get; }
-    private string Issuer { get; }
-
-    public AuthService() : base()
+    public AuthService()
     {
         RefreshSecret = DatabaseHelper.GetSettingOrDefault("AuthRefreshSecret", Guid.NewGuid().ToString());
         AccessSecret = DatabaseHelper.GetSettingOrDefault("AuthAccessSecret", Guid.NewGuid().ToString());
@@ -27,6 +21,12 @@ public class AuthService : Service<IAuthService>, IAuthService
             Convert.ToInt64(DatabaseHelper.GetSettingOrDefault("AuthAccessTokenExpiry", (1 * 5).ToString()));
         Issuer = DatabaseHelper.GetSettingOrDefault("AuthIssuer", "https://ducksoup.cc");
     }
+
+    private string RefreshSecret { get; }
+    private string AccessSecret { get; }
+    private long RefreshTokenExpiry { get; }
+    private long AccessTokenExpiry { get; }
+    private string Issuer { get; }
 
     public string GenerateRefreshToken(User user)
     {

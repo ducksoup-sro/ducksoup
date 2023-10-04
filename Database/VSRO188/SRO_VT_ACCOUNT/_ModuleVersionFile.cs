@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class _ModuleVersionFile
+public class _ModuleVersionFile
 {
     public int nID { get; set; }
 

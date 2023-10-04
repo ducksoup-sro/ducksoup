@@ -41,7 +41,8 @@ public class PartyManager : IPartyManager
 
     public IParty GetParty(ISession session)
     {
-        return _parties.Values.FirstOrDefault(party => party.Members.Any(partyMember => partyMember.Guid == session.Guid));
+        return _parties.Values.FirstOrDefault(party =>
+            party.Members.Any(partyMember => partyMember.Guid == session.Guid));
     }
 
     public void AddParty(IParty party)
@@ -83,7 +84,7 @@ public class PartyManager : IPartyManager
     {
         return _parties.Values.Any(party => party.Members.Any(partyMember => partyMember.Guid == session.Guid));
     }
-    
+
     public bool HasPartyMatchEntry(string charname)
     {
         return _partyMatchEntries.Values.Any(entry => entry.Party.Members.Any(partyMember =>
@@ -95,7 +96,8 @@ public class PartyManager : IPartyManager
 
     public bool HasPartyMatchEntry(ISession session)
     {
-        return _partyMatchEntries.Values.Any(entry => entry.Party.Members.Any(partyMember => partyMember.Guid == session.Guid));
+        return _partyMatchEntries.Values.Any(entry =>
+            entry.Party.Members.Any(partyMember => partyMember.Guid == session.Guid));
     }
 
     public List<IPartyMatchEntry> GetPartyMatchEntries()
@@ -125,16 +127,15 @@ public class PartyManager : IPartyManager
 
     public void RemovePartyMatchEntry(IParty party)
     {
-        var removingEntry = _partyMatchEntries.Values.FirstOrDefault(partyMatchEntry => partyMatchEntry.Party.PartyId == party.PartyId);
-        if (removingEntry != null)
-        {
-            _partyMatchEntries.Remove(removingEntry.MatchId, out _);
-        }
+        var removingEntry =
+            _partyMatchEntries.Values.FirstOrDefault(partyMatchEntry => partyMatchEntry.Party.PartyId == party.PartyId);
+        if (removingEntry != null) _partyMatchEntries.Remove(removingEntry.MatchId, out _);
     }
 
     public bool HasPartyMatchEntry(IParty party)
     {
-        var removingEntry = _partyMatchEntries.Values.FirstOrDefault(partyMatchEntry => partyMatchEntry.Party.PartyId == party.PartyId);
+        var removingEntry =
+            _partyMatchEntries.Values.FirstOrDefault(partyMatchEntry => partyMatchEntry.Party.PartyId == party.PartyId);
         return removingEntry != null;
     }
 

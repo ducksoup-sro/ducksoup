@@ -9,12 +9,12 @@ namespace DuckSoup.Download;
 public class ISRO_R_DownloadServer : FakeServer
 {
     private readonly ISharedObjects _sharedObjects;
-    
+
     public ISRO_R_DownloadServer(Service service) : base(service)
     {
         _sharedObjects = ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
     }
-    
+
     public override void AddSession(ISession session)
     {
         base.AddSession(session);
@@ -24,9 +24,6 @@ public class ISRO_R_DownloadServer : FakeServer
     public override void RemoveSession(ISession session)
     {
         base.RemoveSession(session);
-        if (_sharedObjects.DownloadSessions.Contains(session))
-        {
-            _sharedObjects.DownloadSessions.Remove(session);
-        }
+        if (_sharedObjects.DownloadSessions.Contains(session)) _sharedObjects.DownloadSessions.Remove(session);
     }
 }

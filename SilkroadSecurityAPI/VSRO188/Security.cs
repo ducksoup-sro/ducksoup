@@ -92,20 +92,6 @@ public class Security : ISecurity
         m_class_lock = new object();
     }
 
-    private bool IsEncrypted(ushort msgId)
-    {
-        return msgId switch
-        {
-            0x2001 => true,
-            0x6100 => true,
-            0x6101 => true,
-            0x6102 => true,
-            0x6103 => true,
-            0x6107 => true,
-            _ => false
-        };
-    }
-
     // Changes the 0x2001 identify packet data that will be sent out by
     // this security object.
     public void ChangeIdentity(string name, byte flag)
@@ -394,23 +380,6 @@ public class Security : ISecurity
         }
     }
 
-    // Returns a list of buffers that is ready to be sent. These buffers must be sent in order.
-    // If no buffers are available for sending, null is returned.
-    public List<KeyValuePair<TransferBuffer, Packet>> TransferOutgoing()
-    {
-        List<KeyValuePair<TransferBuffer, Packet>> buffers = null;
-        lock (m_class_lock)
-        {
-            if (HasPacketToSend())
-            {
-                buffers = new List<KeyValuePair<TransferBuffer, Packet>>();
-                while (HasPacketToSend()) buffers.Add(GetPacketToSend());
-            }
-        }
-
-        return buffers;
-    }
-
     public void TransferOutgoing(TcpSession session)
     {
         if (!HasPacketToSend()) return;
@@ -454,6 +423,37 @@ public class Security : ISecurity
         }
 
         return packets;
+    }
+
+    private bool IsEncrypted(ushort msgId)
+    {
+        return msgId switch
+        {
+            0x2001 => true,
+            0x6100 => true,
+            0x6101 => true,
+            0x6102 => true,
+            0x6103 => true,
+            0x6107 => true,
+            _ => false
+        };
+    }
+
+    // Returns a list of buffers that is ready to be sent. These buffers must be sent in order.
+    // If no buffers are available for sending, null is returned.
+    public List<KeyValuePair<TransferBuffer, Packet>> TransferOutgoing()
+    {
+        List<KeyValuePair<TransferBuffer, Packet>> buffers = null;
+        lock (m_class_lock)
+        {
+            if (HasPacketToSend())
+            {
+                buffers = new List<KeyValuePair<TransferBuffer, Packet>>();
+                while (HasPacketToSend()) buffers.Add(GetPacketToSend());
+            }
+        }
+
+        return buffers;
     }
 
     #region SecurityFlags

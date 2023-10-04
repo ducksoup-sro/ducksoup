@@ -2,14 +2,15 @@
 
 public abstract class IEvent : IDisposable
 {
-    
     public abstract string Name { get; }
     public abstract string Version { get; }
     public abstract string Author { get; }
 
     protected IEventState[]? EventStates { get; set; }
     protected IEventState? CurrentEventState { get; set; }
-    
+
+    public abstract void Dispose();
+
     public abstract void OnEnable();
 
     public IEvent OnTimerTick()
@@ -22,14 +23,14 @@ public abstract class IEvent : IDisposable
 
     protected IEvent AddEventState(IEventState eventState, EventStateEnum eventStateEnumEnum)
     {
-        if (EventStates != null) EventStates[(int) eventStateEnumEnum] = eventState;
+        if (EventStates != null) EventStates[(int)eventStateEnumEnum] = eventState;
         return this;
     }
-    
+
     public void SetEventState(EventStateEnum eventStateEnumEnum)
     {
         CurrentEventState?.Stop();
-        CurrentEventState = EventStates?[(int) eventStateEnumEnum];
+        CurrentEventState = EventStates?[(int)eventStateEnumEnum];
         CurrentEventState?.Start();
     }
 
@@ -38,6 +39,4 @@ public abstract class IEvent : IDisposable
         CurrentEventState?.Stop();
         CurrentEventState = null;
     }
-
-    public abstract void Dispose();
 }

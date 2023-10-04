@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class SK_SubtractSilk_VA
+public class SK_SubtractSilk_VA
 {
     public int BuyNo { get; set; }
 

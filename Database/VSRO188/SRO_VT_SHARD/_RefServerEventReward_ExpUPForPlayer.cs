@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefServerEventReward_ExpUPForPlayer
+public class _RefServerEventReward_ExpUPForPlayer
 {
     public int OwnerRewardID { get; set; }
 

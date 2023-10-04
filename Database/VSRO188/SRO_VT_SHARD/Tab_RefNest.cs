@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class Tab_RefNest
+public class Tab_RefNest
 {
     public int dwNestID { get; set; }
 

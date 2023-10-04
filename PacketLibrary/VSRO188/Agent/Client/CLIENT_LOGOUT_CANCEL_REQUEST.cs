@@ -4,18 +4,18 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 
 public class CLIENT_LOGOUT_CANCEL_REQUEST : Packet
 {
-    public CLIENT_LOGOUT_CANCEL_REQUEST() : base(0x7006, false, false)
+    public CLIENT_LOGOUT_CANCEL_REQUEST() : base(0x7006)
     {
     }
 
     public override PacketDirection FromDirection => PacketDirection.Client;
-    public override PacketDirection ToDirection => PacketDirection.Server
-;
+
+    public override PacketDirection ToDirection => PacketDirection.Server;
 
 
     public override async Task Read()
     {
-         //throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     public override async Task<Packet> Build()

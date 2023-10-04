@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _TrijobRanking4WEB
+public class _TrijobRanking4WEB
 {
     public byte TrijobType { get; set; }
 

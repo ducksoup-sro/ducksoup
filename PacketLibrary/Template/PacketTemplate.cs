@@ -5,8 +5,10 @@ namespace PacketLibrary.Template;
 // Original Link - Example: https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/GATEWAY_LOGIN#ibuv-confirm-request
 public class PacketTemplate : Packet
 {
+    public uint Test123;
+
     // msgId, encrypted, massive
-    public PacketTemplate() : base(0x0000, false, false)
+    public PacketTemplate() : base(0x0000)
     {
     }
 
@@ -16,9 +18,6 @@ public class PacketTemplate : Packet
     public override PacketDirection FromDirection => PacketDirection.None;
     public override PacketDirection ToDirection => PacketDirection.None;
 
-
-    public uint Test123;
-    
     // Design how the packet is read by default.. There multiple ways to do this
     // 1. write //empty if its empty
     // 2. throw NotImplementedException if its not read
@@ -31,10 +30,10 @@ public class PacketTemplate : Packet
         // 3. nothing
         // 4. Example 1. - Read it locally 
         TryRead<byte>(out var test);
-        TryRead(out string ThisIsAString);
-        
+        TryRead(out var ThisIsAString);
+
         // 4. Example 2. - Read it in a way it can be modified and rebuild
-        TryRead<uint>(out Test123);
+        TryRead(out Test123);
     }
 
     // If you choose to use 3. nothing do NOT reset() the packet. It will empty the current PacketPayload.
@@ -44,11 +43,11 @@ public class PacketTemplate : Packet
         // 1. Reset first to empty out the old data
         // 2. write your package contents, usually its the reversed read version. The If's should be the same
         // 3. return this packet
-        
+
         Reset();
-        
-        TryWrite<uint>(Test123);
-        
+
+        TryWrite(Test123);
+
         return this;
     }
 
@@ -57,7 +56,7 @@ public class PacketTemplate : Packet
     {
         return new PacketTemplate();
     }
-    
+
     public static Packet of(uint test123)
     {
         return new PacketTemplate

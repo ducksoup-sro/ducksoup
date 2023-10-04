@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class Tab_RefRanking_RobberActivity
+public class Tab_RefRanking_RobberActivity
 {
     public byte Rank { get; set; }
 

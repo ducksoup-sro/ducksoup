@@ -5,10 +5,14 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 
 public class SERVER_ENTITY_GROUPSPAWN_BEGIN : Packet
 {
-    public SERVER_ENTITY_GROUPSPAWN_BEGIN() : base(0x3017, false, false)
+    public ushort Amount;
+
+    public SpawnInfoType SpawnInfoType;
+
+    public SERVER_ENTITY_GROUPSPAWN_BEGIN() : base(0x3017)
     {
     }
-    
+
     public SERVER_ENTITY_GROUPSPAWN_BEGIN(Packet packet) : base(packet)
     {
     }
@@ -16,20 +20,17 @@ public class SERVER_ENTITY_GROUPSPAWN_BEGIN : Packet
     public override PacketDirection FromDirection => PacketDirection.Server;
     public override PacketDirection ToDirection => PacketDirection.Client;
 
-    public SpawnInfoType SpawnInfoType;
-    public ushort Amount;
-
     public override async Task Read()
     {
-        TryRead<SpawnInfoType>(out SpawnInfoType);
-        TryRead<ushort>(out Amount);
+        TryRead(out SpawnInfoType);
+        TryRead(out Amount);
     }
 
     public override async Task<Packet> Build()
     {
         Reset();
-        TryWrite<SpawnInfoType>(SpawnInfoType);
-        TryRead<ushort>(out Amount);
+        TryWrite(SpawnInfoType);
+        TryRead(out Amount);
 
         return this;
     }

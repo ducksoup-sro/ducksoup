@@ -4,18 +4,18 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 
 public class SERVER_On3049 : Packet
 {
-    public SERVER_On3049() : base(0x3049, false, false)
+    public SERVER_On3049() : base(0x3049)
     {
     }
 
     public override PacketDirection FromDirection => PacketDirection.Server;
-    public override PacketDirection ToDirection => PacketDirection.Client
-;
+
+    public override PacketDirection ToDirection => PacketDirection.Client;
 
 
     public override async Task Read()
     {
-         //throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     public override async Task<Packet> Build()

@@ -8,10 +8,10 @@ public class Ability : Cos
 {
     public override void Deserialize(Packet packet)
     {
-        packet.TryRead<int>(out Settings)
+        packet.TryRead(out Settings)
             .TryRead(out Name);
         Inventory = new InventoryItemCollection(packet);
-        packet.TryRead<uint>(out OwnerUniqueId)
+        packet.TryRead(out OwnerUniqueId)
             .TryRead<byte>(out var inventorySlot);
     }
 }

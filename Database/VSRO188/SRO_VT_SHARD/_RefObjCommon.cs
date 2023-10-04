@@ -1,7 +1,10 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefObjCommon
+public class _RefObjCommon
 {
+    private _RefObjChar? _refObjChar;
+
+    private _RefObjItem? _refObjItem;
     public int Service { get; set; }
 
     public int ID { get; set; }
@@ -117,34 +120,24 @@ public partial class _RefObjCommon
     public string AssocFile2_128 { get; set; } = null!;
 
     public int Link { get; set; }
-    
-    private _RefObjItem? _refObjItem;
 
     public _RefObjItem GetRefObjItem
     {
         get
         {
-            if (_refObjItem != null)
-            {
-                return _refObjItem;
-            }
+            if (_refObjItem != null) return _refObjItem;
 
             _refObjItem = Cache.GetRefObjItemAsync(Link).Result;
             return _refObjItem;
         }
     }
-        
-    private _RefObjChar? _refObjChar;
 
     public _RefObjChar GetRefObjChar
     {
         get
         {
-            if (_refObjChar != null)
-            {
-                return _refObjChar;
-            }
-            
+            if (_refObjChar != null) return _refObjChar;
+
             _refObjChar = Cache.GetRefObjCharAsync(Link).Result;
             return _refObjChar;
         }

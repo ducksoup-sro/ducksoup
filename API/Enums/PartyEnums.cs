@@ -6,9 +6,9 @@ public class PartyEnums
     public enum PartyInfoFlag : byte
     {
         Options = 1,
-        MemberList = 2,
+        MemberList = 2
     }
-    
+
     public enum PartyLeaveType : byte
     {
         //UIIT_MSG_PARTY_LOGOUT
@@ -24,25 +24,16 @@ public class PartyEnums
 
         //UIIT_MSG_PARTY_BOOTED
         //[%s] is banned from the party.
-        Banned = 4,
+        Banned = 4
     }
-    
+
     public enum PartyMatchingJoinResult : ushort
     {
         Denied = 1,
         Accepted = 2,
-        TimedOut = 3,
+        TimedOut = 3
     }
-    
-    public enum PartyUpdateType : byte
-    {
-        Dismissed = 1,
-        Joined = 2,
-        Leave = 3,
-        Member = 6,
-        Leader = 9 // vsro
-    }
-    
+
     [Flags]
     public enum PartyMemberInfoFlag : byte
     {
@@ -53,9 +44,9 @@ public class PartyEnums
         JID = 16,
         Position = 32,
         Guild = 64,
-        JobState = 128,
+        JobState = 128
     }
-    
+
     public enum PartyPurposeType : byte
     {
         Hunting = 0,
@@ -63,13 +54,22 @@ public class PartyEnums
         Trader = 2,
         Thief = 3
     }
-    
+
     [Flags]
     public enum PartySettingsFlag : byte
     {
         None = 0,
         ExpShare = 1,
         ItemShare = 2,
-        InviteWithoutMaster = 4,    
+        InviteWithoutMaster = 4
+    }
+
+    public enum PartyUpdateType : byte
+    {
+        Dismissed = 1,
+        Joined = 2,
+        Leave = 3,
+        Member = 6,
+        Leader = 9 // vsro
     }
 }

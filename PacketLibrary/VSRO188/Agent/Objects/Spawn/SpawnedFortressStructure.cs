@@ -5,16 +5,20 @@ namespace PacketLibrary.VSRO188.Agent.Objects.Spawn;
 // https://github.com/SDClowen/RSBot/
 public sealed class SpawnedFortressStructure : SpawnedNpc
 {
+    public ushort CurrentState;
     public uint HP;
     public uint RefEventStructID;
-    public ushort CurrentState;
+
     public SpawnedFortressStructure(uint objId) :
-        base(objId) { }
+        base(objId)
+    {
+    }
+
     internal override void Deserialize(Packet packet)
     {
-        packet.TryRead<uint>(out HP)
-            .TryRead<uint>(out RefEventStructID)
-            .TryRead<ushort>(out CurrentState);
+        packet.TryRead(out HP)
+            .TryRead(out RefEventStructID)
+            .TryRead(out CurrentState);
 
         ParseBionicDetails(packet);
 

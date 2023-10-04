@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefGame_World_Config
+public class _RefGame_World_Config
 {
     public int Service { get; set; }
 

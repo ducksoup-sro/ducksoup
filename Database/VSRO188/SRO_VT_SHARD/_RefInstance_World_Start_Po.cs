@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefInstance_World_Start_Po
+public class _RefInstance_World_Start_Po
 {
     public int WorldID { get; set; }
 

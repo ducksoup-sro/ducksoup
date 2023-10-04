@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefShardContentConfig
+public class _RefShardContentConfig
 {
     public int Service { get; set; }
 

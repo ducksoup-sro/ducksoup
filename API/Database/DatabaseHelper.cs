@@ -8,10 +8,10 @@ public static class DatabaseHelper
     {
         using var context = new Context.DuckSoup();
         var setting = context.GlobalSettings.FirstOrDefault(o => o.key == key);
-        
+
         if (setting != null) return setting.value;
-        
-        context.GlobalSettings.Add(new GlobalSetting {key = key, value = defaultValue});
+
+        context.GlobalSettings.Add(new GlobalSetting { key = key, value = defaultValue });
         context.SaveChanges();
         return defaultValue;
     }

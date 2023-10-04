@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefShopGood
+public class _RefShopGood
 {
     public byte Service { get; set; }
 

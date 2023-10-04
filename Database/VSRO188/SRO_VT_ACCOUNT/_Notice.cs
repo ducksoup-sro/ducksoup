@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class _Notice
+public class _Notice
 {
     public int ID { get; set; }
 

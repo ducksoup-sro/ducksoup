@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefSiegeFortressGuard
+public class _RefSiegeFortressGuard
 {
     public byte Service { get; set; }
 

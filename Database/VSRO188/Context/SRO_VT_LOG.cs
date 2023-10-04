@@ -5,11 +5,6 @@ namespace Database.VSRO188.Context;
 
 public partial class SRO_VT_LOG : DuckContext
 {
-    public SRO_VT_LOG()
-    {
-    }
-    
-
     public virtual DbSet<_LogCashItem> _LogCashItems { get; set; }
 
     public virtual DbSet<_LogEventChar> _LogEventChars { get; set; }
@@ -135,6 +130,6 @@ public partial class SRO_VT_LOG : DuckContext
 
         OnModelCreatingPartial(modelBuilder);
     }
-    
+
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

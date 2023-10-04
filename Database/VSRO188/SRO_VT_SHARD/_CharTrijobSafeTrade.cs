@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _CharTrijobSafeTrade
+public class _CharTrijobSafeTrade
 {
     public int CharID { get; set; }
 

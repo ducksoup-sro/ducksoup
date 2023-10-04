@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_LOG;
 
-public partial class _LogServerEvent
+public class _LogServerEvent
 {
     public int ID { get; set; }
 

@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _GuildMember
+public class _GuildMember
 {
     public int GuildID { get; set; }
 

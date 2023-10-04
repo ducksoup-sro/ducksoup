@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _ShopItemStockQuantity
+public class _ShopItemStockQuantity
 {
     public byte Service { get; set; }
 

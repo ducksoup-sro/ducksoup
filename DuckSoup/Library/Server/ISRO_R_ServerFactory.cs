@@ -7,7 +7,6 @@ using API.Server;
 using DuckSoup.Agent;
 using DuckSoup.Download;
 using DuckSoup.Gateway;
-using NetCoreServer;
 using SilkroadSecurityAPI;
 
 namespace DuckSoup.Library.Server;
@@ -22,7 +21,7 @@ public class ISRO_R_ServerFactory : IServerFactory
             ServerType.DownloadServer => new ISRO_R_DownloadServer(service),
             ServerType.AgentServer => new ISRO_R_AgentServer(service),
             ServerType.None => null,
-            _ => throw new ArgumentOutOfRangeException(),
+            _ => throw new ArgumentOutOfRangeException()
         };
     }
 

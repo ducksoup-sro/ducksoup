@@ -4,7 +4,7 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 
 public class CLIENT_ACADEMY_0089B7B0 : Packet
 {
-    public CLIENT_ACADEMY_0089B7B0() : base(0x7483, false, false)
+    public CLIENT_ACADEMY_0089B7B0() : base(0x7483)
     {
     }
 
@@ -14,7 +14,7 @@ public class CLIENT_ACADEMY_0089B7B0 : Packet
 
     public override async Task Read()
     {
-         //throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     public override async Task<Packet> Build()

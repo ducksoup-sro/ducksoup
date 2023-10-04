@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _TrainingCampBuffStatus
+public class _TrainingCampBuffStatus
 {
     public int CampID { get; set; }
 

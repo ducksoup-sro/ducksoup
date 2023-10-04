@@ -9,7 +9,7 @@
         <Title>DuckSoup API</Title>
         <Authors>b0ykoe</Authors>
         <Description>DuckSoup API</Description>
-        <Copyright>DON'T BE A DICK PUBLIC LICENSE </Copyright>
+        <Copyright>DON'T BE A DICK PUBLIC LICENSE</Copyright>
         <PackageProjectUrl>https://github.com/b0ykoe/ducksoup</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/b0ykoe/ducksoup/blob/main/LICENSE.txt</PackageLicenseUrl>
         <PackageIcon>DuckSoup.png</PackageIcon>
@@ -20,34 +20,34 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="LanguageExt.Core" Version="4.4.6" />
-        <PackageReference Include="McMaster.NETCore.Plugins" Version="2.0.0-beta.130" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0-preview.6.23329.4" />
+        <PackageReference Include="LanguageExt.Core" Version="4.4.6"/>
+        <PackageReference Include="McMaster.NETCore.Plugins" Version="2.0.0-beta.130"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0-preview.6.23329.4"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0-preview.6.23329.4">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0-preview.6.23329.4" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0-preview.6.23329.4"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0-preview.6.23329.4">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Serilog" Version="3.1.0-dev-02071" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.2.0-dev-00918" />
-        <PackageReference Include="Watson" Version="5.1.1" />
+        <PackageReference Include="Serilog" Version="3.1.0-dev-02071"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.2.0-dev-00918"/>
+        <PackageReference Include="Watson" Version="5.1.1"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Database\Database.csproj" />
-        <ProjectReference Include="..\PacketLibrary\PacketLibrary.csproj" />
-        <ProjectReference Include="..\SilkroadSecurityAPI\SilkroadSecurityAPI.csproj" />
+        <ProjectReference Include="..\Database\Database.csproj"/>
+        <ProjectReference Include="..\PacketLibrary\PacketLibrary.csproj"/>
+        <ProjectReference Include="..\SilkroadSecurityAPI\SilkroadSecurityAPI.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="DuckSoup.png">
-        <Pack>True</Pack>
-        <PackagePath></PackagePath>
-      </None>
+        <None Update="DuckSoup.png">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
     </ItemGroup>
 
 </Project>

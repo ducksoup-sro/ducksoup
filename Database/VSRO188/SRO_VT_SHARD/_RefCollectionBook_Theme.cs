@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefCollectionBook_Theme
+public class _RefCollectionBook_Theme
 {
     public byte Service { get; set; }
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using API;
 using API.Command;
 using API.EventFactory;
 using API.Exceptions;

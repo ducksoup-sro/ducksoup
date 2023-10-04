@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class _CasDatum
+public class _CasDatum
 {
     public int nSerial { get; set; }
 

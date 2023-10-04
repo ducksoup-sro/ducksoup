@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class SK_PK_UpdateLog
+public class SK_PK_UpdateLog
 {
     public int ID { get; set; }
 

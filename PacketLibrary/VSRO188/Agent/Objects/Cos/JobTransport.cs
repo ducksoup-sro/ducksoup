@@ -3,5 +3,4 @@
 // https://github.com/SDClowen/RSBot/
 public class JobTransport : Cos
 {
-    
 }

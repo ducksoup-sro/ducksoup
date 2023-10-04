@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class tb_paygate_tran
+public class tb_paygate_tran
 {
     public int trans_ID { get; set; }
 

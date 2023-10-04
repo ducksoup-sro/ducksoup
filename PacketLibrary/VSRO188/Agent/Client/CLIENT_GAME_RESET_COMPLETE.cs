@@ -4,18 +4,18 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 
 public class CLIENT_GAME_RESET_COMPLETE : Packet
 {
-    public CLIENT_GAME_RESET_COMPLETE() : base(0x35B6, false, false)
+    public CLIENT_GAME_RESET_COMPLETE() : base(0x35B6)
     {
     }
 
     public override PacketDirection FromDirection => PacketDirection.Client;
-    public override PacketDirection ToDirection => PacketDirection.Server
-;
+
+    public override PacketDirection ToDirection => PacketDirection.Server;
 
 
     public override async Task Read()
     {
-         //throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     public override async Task<Packet> Build()

@@ -61,15 +61,9 @@ public class AuthRoutes
         foreach (var cookie in cookies)
         {
             var split = cookie.Split("=");
-            if (split.Length != 2)
-            {
-                continue;
-            }
+            if (split.Length != 2) continue;
 
-            if (!split[0].Equals("refresh_token"))
-            {
-                continue;
-            }
+            if (!split[0].Equals("refresh_token")) continue;
 
             refreshToken = split[1];
             break;
@@ -137,7 +131,7 @@ public class AuthRoutes
 
         // TODO :: probably should enable secure if https is available
         // ctx.Response.Headers["Set-Cookie"] = $"refresh_token=deleted;Secure; HttpOnly; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-        ctx.Response.Headers["Set-Cookie"] = $"refresh_token=deleted; HttpOnly; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        ctx.Response.Headers["Set-Cookie"] = "refresh_token=deleted; HttpOnly; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         ctx.Response.StatusCode = 200;
         await ctx.Response.Send("{ \"status\": \"ok\"}");
     }
@@ -194,12 +188,12 @@ public class AuthRoutes
 // do not make an abstract class - it will crash the serialization
 internal class LoginRequest
 {
-    public string Username { get; }
-    public string Password { get; }
-
     public LoginRequest(string username, string password)
     {
         Username = username;
         Password = password;
     }
+
+    public string Username { get; }
+    public string Password { get; }
 }

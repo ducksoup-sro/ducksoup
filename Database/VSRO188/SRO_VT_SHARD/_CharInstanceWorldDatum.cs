@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _CharInstanceWorldDatum
+public class _CharInstanceWorldDatum
 {
     public int CharID { get; set; }
 

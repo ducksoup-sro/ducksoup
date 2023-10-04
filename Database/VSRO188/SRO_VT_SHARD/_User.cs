@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _User
+public class _User
 {
     public int UserJID { get; set; }
 

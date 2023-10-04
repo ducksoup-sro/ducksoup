@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_LOG;
 
-public partial class _LogEventItem
+public class _LogEventItem
 {
     public DateTime EventTime { get; set; }
 

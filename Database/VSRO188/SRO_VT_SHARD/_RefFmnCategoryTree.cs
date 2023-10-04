@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefFmnCategoryTree
+public class _RefFmnCategoryTree
 {
     public byte Service { get; set; }
 

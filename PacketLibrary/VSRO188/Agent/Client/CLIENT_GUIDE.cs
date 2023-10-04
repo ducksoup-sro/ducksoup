@@ -4,18 +4,18 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 
 public class CLIENT_GUIDE : Packet
 {
-    public CLIENT_GUIDE() : base(0x70EA, false, false)
+    public CLIENT_GUIDE() : base(0x70EA)
     {
     }
 
     public override PacketDirection FromDirection => PacketDirection.Client;
-    public override PacketDirection ToDirection => PacketDirection.Server
-;
+
+    public override PacketDirection ToDirection => PacketDirection.Server;
 
 
     public override async Task Read()
     {
-         //throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     public override async Task<Packet> Build()

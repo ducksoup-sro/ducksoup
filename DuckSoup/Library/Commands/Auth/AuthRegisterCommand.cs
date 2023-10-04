@@ -1,5 +1,4 @@
-﻿using API;
-using API.Command;
+﻿using API.Command;
 using API.Database.DuckSoup;
 using API.ServiceFactory;
 using API.Services;

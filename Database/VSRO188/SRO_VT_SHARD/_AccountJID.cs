@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _AccountJID
+public class _AccountJID
 {
     public string AccountID { get; set; } = null!;
 

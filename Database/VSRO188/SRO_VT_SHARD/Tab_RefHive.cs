@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class Tab_RefHive
+public class Tab_RefHive
 {
     public int dwHiveID { get; set; }
 

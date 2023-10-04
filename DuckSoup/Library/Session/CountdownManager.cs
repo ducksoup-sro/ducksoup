@@ -9,12 +9,12 @@ namespace DuckSoup.Library.Session;
 
 public class CountdownManager : ICountdownManager
 {
+    private readonly ISession _session;
+    private DateTime? _started;
     private bool _stopOnDead;
     private bool _stopOnTeleport;
     private Timer _timer;
-    private DateTime? _started;
     private int _timerInterval;
-    private readonly ISession _session;
 
     public CountdownManager(ISession session)
     {
@@ -28,25 +28,21 @@ public class CountdownManager : ICountdownManager
     {
         Start(timeInSeconds, true, true, action);
     }
-    
+
     public void Start(int timeInSeconds, bool stopOnTeleport, bool stopOnDead, ICountdownManager.Action action)
     {
         Start(timeInSeconds, stopOnTeleport, stopOnDead, true, action);
     }
 
-    
-    public void Start(int timeInSeconds, bool stopOnTeleport, bool stopOnDead, bool stopOldTimer, ICountdownManager.Action action)
+
+    public void Start(int timeInSeconds, bool stopOnTeleport, bool stopOnDead, bool stopOldTimer,
+        ICountdownManager.Action action)
     {
-        if(stopOldTimer) {
-            Stop();
-        }
-        
+        if (stopOldTimer) Stop();
+
         timeInSeconds *= 1000;
-        
-        if (timeInSeconds> 1200000)
-        {
-            timeInSeconds = 1200000;
-        }
+
+        if (timeInSeconds > 1200000) timeInSeconds = 1200000;
 
         _stopOnDead = stopOnDead;
         _stopOnTeleport = stopOnTeleport;
@@ -56,10 +52,8 @@ public class CountdownManager : ICountdownManager
         _timer.AutoReset = true;
         _timer.Elapsed += (_, _) =>
         {
-            if (_started.GetValueOrDefault().AddMilliseconds(_timerInterval).Subtract(DateTime.Now).TotalMilliseconds > 0)
-            {
-                return;
-            }
+            if (_started.GetValueOrDefault().AddMilliseconds(_timerInterval).Subtract(DateTime.Now).TotalMilliseconds >
+                0) return;
             Task.Run(async () =>
             {
                 Stop();
@@ -77,26 +71,7 @@ public class CountdownManager : ICountdownManager
     {
         _session.SendToClient(CreateStartPacket());
     }
-    
-    
-    private Packet CreateStartPacket()
-    {
-        var packetTime = 1200000 - (int) _started.GetValueOrDefault().AddMilliseconds(_timerInterval).Subtract(DateTime.Now).TotalMilliseconds;
-        
-        var response = new Packet(0x34B1, false, false);
-        response.TryWrite<byte>(0xFF)
-            .TryWrite<byte>(0x0E)
-            .TryWrite<uint>((uint)packetTime);
-        return response;
-    }
 
-    private Packet CreateStopPacket()
-    {
-        var response = new Packet(0x34B1, false, false);
-        response.TryWrite<byte>(0x05);
-        return response;
-    }
-    
     public void Stop()
     {
         _timer?.Stop();
@@ -105,13 +80,14 @@ public class CountdownManager : ICountdownManager
         _timerInterval = -1;
         _stopOnDead = true;
         _stopOnTeleport = true;
-        
+
         _session.SendToClient(CreateStopPacket());
     }
 
     public bool IsStarted()
     {
-        return _timer != null && _started != null && _timerInterval != -1 && _started.GetValueOrDefault().AddSeconds(_timerInterval) >= DateTime.Now;
+        return _timer != null && _started != null && _timerInterval != -1 &&
+               _started.GetValueOrDefault().AddSeconds(_timerInterval) >= DateTime.Now;
     }
 
     public bool IsStopOnTeleport()
@@ -126,11 +102,29 @@ public class CountdownManager : ICountdownManager
 
     public TimeSpan LeftTime()
     {
-        if (!IsStarted())
-        {
-            return TimeSpan.FromSeconds(0);
-        }
+        if (!IsStarted()) return TimeSpan.FromSeconds(0);
 
-        return TimeSpan.FromSeconds(_started.GetValueOrDefault().AddSeconds(_timerInterval).Subtract(DateTime.Now).TotalSeconds);
+        return TimeSpan.FromSeconds(_started.GetValueOrDefault().AddSeconds(_timerInterval).Subtract(DateTime.Now)
+            .TotalSeconds);
+    }
+
+
+    private Packet CreateStartPacket()
+    {
+        var packetTime = 1200000 - (int)_started.GetValueOrDefault().AddMilliseconds(_timerInterval)
+            .Subtract(DateTime.Now).TotalMilliseconds;
+
+        var response = new Packet(0x34B1);
+        response.TryWrite<byte>(0xFF)
+            .TryWrite<byte>(0x0E)
+            .TryWrite((uint)packetTime);
+        return response;
+    }
+
+    private Packet CreateStopPacket()
+    {
+        var response = new Packet(0x34B1);
+        response.TryWrite<byte>(0x05);
+        return response;
     }
 }

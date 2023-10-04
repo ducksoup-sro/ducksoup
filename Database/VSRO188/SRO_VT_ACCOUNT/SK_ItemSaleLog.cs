@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class SK_ItemSaleLog
+public class SK_ItemSaleLog
 {
     public int ID { get; set; }
 

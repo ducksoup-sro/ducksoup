@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class _BlockedUser_bak
+public class _BlockedUser_bak
 {
     public int UserJID { get; set; }
 

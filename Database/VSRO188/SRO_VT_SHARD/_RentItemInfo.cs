@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RentItemInfo
+public class _RentItemInfo
 {
     public long nItemDBID { get; set; }
 

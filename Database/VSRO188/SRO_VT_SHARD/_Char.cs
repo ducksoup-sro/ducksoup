@@ -1,7 +1,10 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _Char
+public class _Char
 {
+    private _RefObjChar? _refObjChar;
+
+    public _RefObjCommon? _refObjCommon;
     public int CharID { get; set; }
 
     public byte Deleted { get; set; }
@@ -105,33 +108,23 @@ public partial class _Char
     public short DiedWorldID { get; set; }
 
     public byte HwanLevel { get; set; }
-    
-    public _RefObjCommon? _refObjCommon;
 
     public _RefObjCommon RefObjCommon
     {
         get
         {
-            if (_refObjCommon != null)
-            {
-                return _refObjCommon;
-            }
+            if (_refObjCommon != null) return _refObjCommon;
 
             _refObjCommon = Cache.GetRefObjCommonAsync(RefObjID).Result;
             return _refObjCommon;
         }
     }
 
-    private _RefObjChar? _refObjChar;
-    
     public _RefObjChar? RefObjChar
     {
-         get
+        get
         {
-            if (_refObjChar != null)
-            {
-                return _refObjChar;
-            }
+            if (_refObjChar != null) return _refObjChar;
 
             _refObjChar = Cache.GetRefObjCharAsync(RefObjID).Result;
             return _refObjChar;
@@ -142,7 +135,7 @@ public partial class _Char
     {
         return RefObjChar.CharGender == 1;
     }
-        
+
     public bool IsFemale()
     {
         return RefObjChar.CharGender == 0;

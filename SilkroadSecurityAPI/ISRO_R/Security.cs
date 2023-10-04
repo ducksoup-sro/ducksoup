@@ -93,22 +93,6 @@ public class Security : ISecurity
         m_class_lock = new object();
     }
 
-    private bool IsEncrypted(ushort msgId)
-    {
-        return msgId switch
-        {
-            0x2001 => true,
-            0x6100 => true,
-            0x6101 => true,
-            0x6102 => true,
-            0x6103 => true,
-            0x6107 => true,
-            _ => false
-        };
-    }
-
-    public void SetTrusted() => _isTrusted = true;
-
     // Changes the 0x2001 identify packet data that will be sent out by
     // this security object.
     public void ChangeIdentity(string name, byte flag)
@@ -307,7 +291,9 @@ public class Security : ISecurity
                     if (_mClientSecurity)
                         if (_mSecurityFlags.security_bytes == 1)
                         {
-                            byte expected_count = packet_opcode == 0x1001 || _isTrusted ? (byte)0 : GenerateCountByte(true);
+                            var expected_count = packet_opcode == 0x1001 || _isTrusted
+                                ? (byte)0
+                                : GenerateCountByte(true);
                             if (packet_security_count != expected_count)
                                 throw new Exception("[SecurityAPI::Recv] Count byte mismatch.");
 
@@ -322,7 +308,9 @@ public class Security : ISecurity
 
                             buffer.Buffer[5] = 0;
 
-                            byte expected_crc = packet_opcode == 0x1001 || _isTrusted ? (byte)0 : GenerateCheckByte(buffer.Buffer);
+                            var expected_crc = packet_opcode == 0x1001 || _isTrusted
+                                ? (byte)0
+                                : GenerateCheckByte(buffer.Buffer);
                             if (packet_security_crc != expected_crc)
                                 throw new Exception("[SecurityAPI::Recv] CRC byte mismatch.");
 
@@ -398,23 +386,6 @@ public class Security : ISecurity
         }
     }
 
-    // Returns a list of buffers that is ready to be sent. These buffers must be sent in order.
-    // If no buffers are available for sending, null is returned.
-    public List<KeyValuePair<TransferBuffer, Packet>> TransferOutgoing()
-    {
-        List<KeyValuePair<TransferBuffer, Packet>> buffers = null;
-        lock (m_class_lock)
-        {
-            if (HasPacketToSend())
-            {
-                buffers = new List<KeyValuePair<TransferBuffer, Packet>>();
-                while (HasPacketToSend()) buffers.Add(GetPacketToSend());
-            }
-        }
-
-        return buffers;
-    }
-
     public void TransferOutgoing(TcpSession session)
     {
         if (!HasPacketToSend()) return;
@@ -458,6 +429,42 @@ public class Security : ISecurity
         }
 
         return packets;
+    }
+
+    private bool IsEncrypted(ushort msgId)
+    {
+        return msgId switch
+        {
+            0x2001 => true,
+            0x6100 => true,
+            0x6101 => true,
+            0x6102 => true,
+            0x6103 => true,
+            0x6107 => true,
+            _ => false
+        };
+    }
+
+    public void SetTrusted()
+    {
+        _isTrusted = true;
+    }
+
+    // Returns a list of buffers that is ready to be sent. These buffers must be sent in order.
+    // If no buffers are available for sending, null is returned.
+    public List<KeyValuePair<TransferBuffer, Packet>> TransferOutgoing()
+    {
+        List<KeyValuePair<TransferBuffer, Packet>> buffers = null;
+        lock (m_class_lock)
+        {
+            if (HasPacketToSend())
+            {
+                buffers = new List<KeyValuePair<TransferBuffer, Packet>>();
+                while (HasPacketToSend()) buffers.Add(GetPacketToSend());
+            }
+        }
+
+        return buffers;
     }
 
     #region SecurityFlags
@@ -1110,12 +1117,12 @@ public class Security : ISecurity
         {
             var seek_index = writer.BaseStream.Seek(0, SeekOrigin.Current);
 
-            byte sb1 = msgId == 0x1001 || _isTrusted ? (byte)0 : GenerateCountByte(true);
+            var sb1 = msgId == 0x1001 || _isTrusted ? (byte)0 : GenerateCountByte(true);
             writer.BaseStream.Seek(4, SeekOrigin.Begin);
             writer.Write(sb1);
             writer.Flush();
 
-            byte sb2 = msgId == 0x1001 || _isTrusted ? (byte)0 : GenerateCheckByte(writer.GetBytes());
+            var sb2 = msgId == 0x1001 || _isTrusted ? (byte)0 : GenerateCheckByte(writer.GetBytes());
             writer.BaseStream.Seek(5, SeekOrigin.Begin);
             writer.Write(sb2);
             writer.Flush();

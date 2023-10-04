@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _CharQuest
+public class _CharQuest
 {
     public int CharID { get; set; }
 

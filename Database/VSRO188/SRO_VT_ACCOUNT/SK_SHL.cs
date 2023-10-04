@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class SK_SHL
+public class SK_SHL
 {
     public int idx { get; set; }
 

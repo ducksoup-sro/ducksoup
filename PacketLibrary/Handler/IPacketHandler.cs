@@ -20,8 +20,8 @@ public class _PacketHandler<T> : IBasePacketHandler where T : Packet, new()
             await x.Read();
             return await _handlerAction(x, session);
         }
-        
-        return await _handlerAction((T) packet, session);
+
+        return await _handlerAction((T)packet, session);
     }
 }
 
@@ -32,7 +32,6 @@ public interface IBasePacketHandler
 
 public class PacketResult : IDisposable
 {
-    
     public PacketResult(PacketResultType packetResultType = PacketResultType.Nothing)
     {
         PacketResultType = packetResultType;

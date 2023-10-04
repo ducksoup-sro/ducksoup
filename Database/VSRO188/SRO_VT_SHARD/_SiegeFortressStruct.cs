@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _SiegeFortressStruct
+public class _SiegeFortressStruct
 {
     public int FortressID { get; set; }
 

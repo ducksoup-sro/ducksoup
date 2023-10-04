@@ -1,6 +1,4 @@
 ﻿using API.Database.DuckSoup;
-using API.ServiceFactory;
-using DuckSoup.Library.Server;
 using PacketLibrary.Handler;
 using SilkroadSecurityAPI;
 using SilkroadSecurityAPI.Message;
@@ -22,11 +20,22 @@ public interface IServerManager : IDisposable
     void AddServer(Service service);
 
     IServerFactory GetServiceFactory(SecurityType securityType);
-    
-    Task RegisterModuleHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler) where T : Packet, new();
-    Task RegisterModuleHandler<T>(ServerType serverType, int priority, Func<T, ISession, Task<Packet>> handler) where T : Packet, new();
-    Task RegisterClientHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler) where T : Packet, new();
-    Task RegisterClientHandler<T>(ServerType serverType, int priority, Func<T, ISession, Task<Packet>> handler) where T : Packet, new();
-    Task UnregisterModuleHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler) where T : Packet, new();
-    Task UnregisterClientHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler) where T : Packet, new();
+
+    Task RegisterModuleHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler)
+        where T : Packet, new();
+
+    Task RegisterModuleHandler<T>(ServerType serverType, int priority, Func<T, ISession, Task<Packet>> handler)
+        where T : Packet, new();
+
+    Task RegisterClientHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler)
+        where T : Packet, new();
+
+    Task RegisterClientHandler<T>(ServerType serverType, int priority, Func<T, ISession, Task<Packet>> handler)
+        where T : Packet, new();
+
+    Task UnregisterModuleHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler)
+        where T : Packet, new();
+
+    Task UnregisterClientHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler)
+        where T : Packet, new();
 }

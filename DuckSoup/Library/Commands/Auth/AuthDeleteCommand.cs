@@ -1,5 +1,4 @@
-﻿using API;
-using API.Command;
+﻿using API.Command;
 using API.ServiceFactory;
 using API.Services;
 using Serilog;

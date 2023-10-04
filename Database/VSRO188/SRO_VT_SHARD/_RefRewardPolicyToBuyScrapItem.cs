@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefRewardPolicyToBuyScrapItem
+public class _RefRewardPolicyToBuyScrapItem
 {
     public byte Service { get; set; }
 

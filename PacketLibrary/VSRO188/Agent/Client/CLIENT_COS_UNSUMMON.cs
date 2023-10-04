@@ -4,18 +4,18 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 
 public class CLIENT_COS_UNSUMMON : Packet
 {
-    public CLIENT_COS_UNSUMMON() : base(0x7116, false, false)
+    public CLIENT_COS_UNSUMMON() : base(0x7116)
     {
     }
 
     public override PacketDirection FromDirection => PacketDirection.Client;
-    public override PacketDirection ToDirection => PacketDirection.Server
-;
+
+    public override PacketDirection ToDirection => PacketDirection.Server;
 
 
     public override async Task Read()
     {
-         //throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     public override async Task<Packet> Build()

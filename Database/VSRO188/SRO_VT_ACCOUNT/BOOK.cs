@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class BOOK
+public class BOOK
 {
     public int id { get; set; }
 

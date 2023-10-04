@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class _ServiceManagerLog
+public class _ServiceManagerLog
 {
     public int nUserID { get; set; }
 

@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefTriggerBindAction
+public class _RefTriggerBindAction
 {
     public int Service { get; set; }
 

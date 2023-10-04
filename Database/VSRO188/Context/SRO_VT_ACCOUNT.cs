@@ -5,11 +5,6 @@ namespace Database.VSRO188.Context;
 
 public partial class SRO_VT_ACCOUNT : DuckContext
 {
-    public SRO_VT_ACCOUNT()
-    {
-    }
-    
-
     public virtual DbSet<BOOK> BOOKs { get; set; }
 
     public virtual DbSet<QuaySoEpoint> QuaySoEpoints { get; set; }

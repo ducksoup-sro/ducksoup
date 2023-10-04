@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class _PrivilegedIP
+public class _PrivilegedIP
 {
     public byte IP1 { get; set; }
 

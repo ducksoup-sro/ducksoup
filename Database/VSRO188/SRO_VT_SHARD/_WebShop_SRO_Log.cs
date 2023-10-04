@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _WebShop_SRO_Log
+public class _WebShop_SRO_Log
 {
     public long ID { get; set; }
 

@@ -3,9 +3,7 @@ using System.Net.Sockets;
 using API.Database.DuckSoup;
 using DuckSoup.Library.Session;
 using NetCoreServer;
-using PacketLibrary.Global.Client;
 using PacketLibrary.Handler;
-using Serilog;
 using SilkroadSecurityAPI;
 using SilkroadSecurityAPI.Message;
 
@@ -21,10 +19,10 @@ public class FakeSession : TcpSession
     public FakeSession(FakeServer server, Service service) : base(server)
     {
         FakeServer = server;
-        
+
         ClientSecurity = Utility.GetSecurity(service.SecurityType);
         ClientSecurity.GenerateSecurity(true, true, true);
-        
+
         var fakeRemoteClient = new FakeClient(server, service);
         fakeRemoteClient.ConnectAsync();
 
@@ -77,14 +75,14 @@ public class FakeSession : TcpSession
             if (packet.MsgId == 0x5000 || packet.MsgId == 0x9000 || packet.MsgId == 0x2001) continue;
 
             var packetResult = FakeServer.PacketHandler.HandleClient(packet, Session).Result;
-            
+
             switch (packetResult.ResultType)
             {
                 case PacketResultType.Block:
                     Session.SendToServer(packetResult);
                     Console.WriteLine($"Packet: 0x{packet.MsgId:X} not on whitelist!");
                     break;
-                case PacketResultType.Disconnect: 
+                case PacketResultType.Disconnect:
                     Console.WriteLine($"Packet: 0x{packet.MsgId:X} is on blacklist!");
                     Session.Disconnect();
                     return;

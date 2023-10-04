@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefMagicOpt
+public class _RefMagicOpt
 {
     public int Service { get; set; }
 

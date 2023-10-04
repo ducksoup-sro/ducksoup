@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefTriggerConditionParam
+public class _RefTriggerConditionParam
 {
     public int Service { get; set; }
 

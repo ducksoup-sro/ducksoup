@@ -6,8 +6,8 @@ namespace PacketLibrary.VSRO188.Agent.Objects.Spawn;
 // https://www.elitepvpers.com/forum/sro-coding-corner/3970615-release-characterdata-entityspawn.html
 public sealed class SpawnedCos : SpawnedNpc
 {
-    public string Name;
     public string GuildName;
+    public string Name;
     public string OwnerName;
     public uint OwnerUniqueId;
 
@@ -33,14 +33,10 @@ public sealed class SpawnedCos : SpawnedNpc
             || refObj.TypeID4 == 9) // COS_PET2
         {
             if (refObj.TypeID4 == 5)
-            {
                 //NPC_COS_GUILD
                 packet.TryRead(out GuildName);
-            }
             else
-            {
                 packet.TryRead(out OwnerName);
-            }
 
             // if (refObj.TypeID4 == 3 ||  // NPC_COS_P_GROWTH
             //     refObj.TypeID4 == 4 ||  //NPC_COS_P_ABILITY
@@ -79,19 +75,15 @@ public sealed class SpawnedCos : SpawnedNpc
                 //     }
                 // }
                 if (refObj.TypeID4 != 4) //NO NPC_COS_P (Ability)
-                {
                     packet.TryRead<byte>(out var murderFlag); //0 = White, 1 = Purple, 2 = Red
-                }
-                
-                if(refObj.TypeID4 == 5)
-                {
+
+                if (refObj.TypeID4 == 5)
                     //NPC_COS_GUILD
                     packet.TryRead<uint>(out var ownerRegObjId);
-                }
             }
             // }
 
-            packet.TryRead<uint>(out OwnerUniqueId);
+            packet.TryRead(out OwnerUniqueId);
             if (refObj.TypeID4 == 9)
                 packet.TryRead<byte>(out var unk1);
         }

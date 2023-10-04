@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_LOG;
 
-public partial class _LogCashItem
+public class _LogCashItem
 {
     public int RefItemID { get; set; }
 

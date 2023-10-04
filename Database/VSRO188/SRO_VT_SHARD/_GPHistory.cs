@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _GPHistory
+public class _GPHistory
 {
     public int ID { get; set; }
 

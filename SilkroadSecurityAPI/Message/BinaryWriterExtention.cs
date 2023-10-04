@@ -11,7 +11,7 @@ public static class BinaryWriterExtensions
         var byteSpan = MemoryMarshal.AsBytes(MemoryMarshal.CreateReadOnlySpan(ref value, 1));
         writer.Write(byteSpan);
     }
-    
+
     public static string ToJsonString<T>(this T obj)
     {
         if (obj == null) return string.Empty;

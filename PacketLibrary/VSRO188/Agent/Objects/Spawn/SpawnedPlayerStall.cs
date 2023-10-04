@@ -20,7 +20,7 @@ public class SpawnedPlayerStall
         return new SpawnedPlayerStall
         {
             Name = name,
-            DecorationId = decorationId,
+            DecorationId = decorationId
         };
     }
 }

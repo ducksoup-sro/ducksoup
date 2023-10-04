@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefMonster_AssignedItemRndDrop
+public class _RefMonster_AssignedItemRndDrop
 {
     public byte Service { get; set; }
 

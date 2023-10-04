@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _BindingOptionWithItem
+public class _BindingOptionWithItem
 {
     public long nItemDBID { get; set; }
 

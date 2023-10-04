@@ -30,7 +30,7 @@ public class CLIENT_CHAT_REQUEST : Packet
     public override async Task<Packet> Build()
     {
         Reset();
-        
+
         TryWrite(ChatType);
         TryWrite(ChatIndex);
         if (ChatType == ChatType.PM) TryWrite(Receiver);

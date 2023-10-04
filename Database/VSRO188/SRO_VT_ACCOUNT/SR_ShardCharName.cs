@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class SR_ShardCharName
+public class SR_ShardCharName
 {
     public int UserJID { get; set; }
 

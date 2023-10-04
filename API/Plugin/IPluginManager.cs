@@ -5,7 +5,7 @@ namespace API.Plugin;
 public interface IPluginManager : IDisposable
 {
     Dictionary<PluginLoader, IPlugin> Loaders { get; }
-    
+
     bool IsLoaded(string name);
     PluginLoader LoadPlugin(string file);
     IPlugin StartPlugin(PluginLoader pluginLoader);

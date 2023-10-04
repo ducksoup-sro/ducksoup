@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class SK_gamebang_ip
+public class SK_gamebang_ip
 {
     public short nID { get; set; }
 

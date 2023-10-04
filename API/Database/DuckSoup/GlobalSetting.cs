@@ -1,6 +1,6 @@
 ﻿namespace API.Database.DuckSoup;
 
-public partial class GlobalSetting
+public class GlobalSetting
 {
     public int SettingsId { get; set; }
 

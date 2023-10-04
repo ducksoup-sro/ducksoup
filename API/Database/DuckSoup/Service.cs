@@ -2,7 +2,7 @@
 
 namespace API.Database.DuckSoup;
 
-public partial class Service
+public class Service
 {
     public int ServiceId { get; set; }
 

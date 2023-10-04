@@ -7,29 +7,30 @@ namespace PacketLibrary.VSRO188.Agent.Objects;
 // Partially from: https://github.com/SDClowen/RSBot/
 public class State
 {
+    public List<SkillInfo> ActiveBuffs = new();
+    public BattleState BattleState = BattleState.InPeace;
+    public float BerzerkSpeed;
+    public BodyState BodyState;
     public LifeState LifeState;
     public MotionState MotionState;
     public MovementType MovementType;
-    public BodyState BodyState;
-    public PvpState PvpState;
-    public BattleState BattleState = BattleState.InPeace;
-    public ScrollState ScrollState = ScrollState.Cancel;
     public PVPCape PvpCape;
-    public float WalkSpeed;
+    public PvpState PvpState;
     public float RunSpeed;
-    public float BerzerkSpeed;
-    public List<SkillInfo> ActiveBuffs = new();
+    public ScrollState ScrollState = ScrollState.Cancel;
+    public float WalkSpeed;
+
     public void Deserialize(Packet packet)
     {
-        packet.TryRead<LifeState>(out LifeState)
+        packet.TryRead(out LifeState)
             .TryRead<byte>(out var unk0)
-            .TryRead<MotionState>(out MotionState)
-            .TryRead<BodyState>(out BodyState)
-            .TryRead<float>(out WalkSpeed)
-            .TryRead<float>(out RunSpeed)
-            .TryRead<float>(out BerzerkSpeed)
+            .TryRead(out MotionState)
+            .TryRead(out BodyState)
+            .TryRead(out WalkSpeed)
+            .TryRead(out RunSpeed)
+            .TryRead(out BerzerkSpeed)
             .TryRead<byte>(out var buffCount);
-            
+
         for (var i = 0; i < buffCount; i++)
         {
             packet.TryRead<uint>(out var id)

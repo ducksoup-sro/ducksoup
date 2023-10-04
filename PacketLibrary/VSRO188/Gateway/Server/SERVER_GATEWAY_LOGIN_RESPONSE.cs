@@ -61,7 +61,7 @@ public class SERVER_GATEWAY_LOGIN_RESPONSE : Packet
     public override async Task<Packet> Build()
     {
         Reset();
-        
+
         TryWrite(Result);
         if (Result == 0x01)
         {
@@ -89,7 +89,7 @@ public class SERVER_GATEWAY_LOGIN_RESPONSE : Packet
             // response.WriteAscii();
             // response.WriteUInt16();
         }
-        
+
         return this;
     }
 

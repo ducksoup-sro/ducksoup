@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefDropClassSel_Reinforce
+public class _RefDropClassSel_Reinforce
 {
     public int MonLevel { get; set; }
 

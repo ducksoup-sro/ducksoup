@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class SK_Silk
+public class SK_Silk
 {
     public int JID { get; set; }
 

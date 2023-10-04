@@ -8,14 +8,14 @@ namespace PacketLibrary.VSRO188.Agent.Objects.Spawn;
 public class SpawnedSpellArea : SpawnedEntity
 {
     public uint SkillId;
-    public _RefSkill Record => Cache.GetRefSkillAsync((int) SkillId).Result;
+    public _RefSkill Record => Cache.GetRefSkillAsync((int)SkillId).Result;
 
     internal static SpawnedSpellArea FromPacket(Packet packet)
     {
         packet.TryRead<ushort>(out var unk0)
             .TryRead<uint>(out var skillId)
             .TryRead<uint>(out var uniqueId);
-        
+
         var spellArea = new SpawnedSpellArea
         {
             SkillId = skillId,

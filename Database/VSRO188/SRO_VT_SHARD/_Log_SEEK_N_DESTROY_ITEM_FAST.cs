@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _Log_SEEK_N_DESTROY_ITEM_FAST
+public class _Log_SEEK_N_DESTROY_ITEM_FAST
 {
     public DateTime? DeletedTime { get; set; }
 

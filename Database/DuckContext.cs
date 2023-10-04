@@ -5,10 +5,9 @@ namespace Database;
 public class DuckContext : DbContext
 {
     public static string ConnectionString = "";
-    
+
     protected DuckContext()
     {
-        
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

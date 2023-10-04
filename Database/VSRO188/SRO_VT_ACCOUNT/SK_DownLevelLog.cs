@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class SK_DownLevelLog
+public class SK_DownLevelLog
 {
     public int id { get; set; }
 

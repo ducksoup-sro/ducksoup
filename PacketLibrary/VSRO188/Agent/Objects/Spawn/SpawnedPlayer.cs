@@ -8,26 +8,26 @@ namespace PacketLibrary.VSRO188.Agent.Objects.Spawn;
 // https://github.com/SDClowen/RSBot/
 public sealed class SpawnedPlayer : SpawnedBionic
 {
-    public string Name;
-    public Job Job;
-    public byte JobLevel;
-    public ScrollState ScrollMode;
-    public PvpState PvpState;
-    public bool InCombat;
-    public bool OnTransport;
-    public uint TransportUniqueId;
-    public byte PKFlag;
-    public InteractMode InteractMode;
-    public byte Scale;
-    public byte HwanLevel;
-    public PvpState PvpCape;
     public ExpIcon AutoInverstExp;
-    public byte InventorySize;
-    public Dictionary<_RefObjCommon, byte> Inventory;
     public byte AvatarInventorySize;
     public Dictionary<_RefObjCommon, byte> Avatars;
-    public SpawnedPlayerStall Stall;
     public SpawnedPlayerGuild Guild;
+    public byte HwanLevel;
+    public bool InCombat;
+    public InteractMode InteractMode;
+    public Dictionary<_RefObjCommon, byte> Inventory;
+    public byte InventorySize;
+    public Job Job;
+    public byte JobLevel;
+    public string Name;
+    public bool OnTransport;
+    public byte PKFlag;
+    public PvpState PvpCape;
+    public PvpState PvpState;
+    public byte Scale;
+    public ScrollState ScrollMode;
+    public SpawnedPlayerStall Stall;
+    public uint TransportUniqueId;
     public bool WearsJobSuite;
 
     public SpawnedPlayer(uint objId)
@@ -37,11 +37,11 @@ public sealed class SpawnedPlayer : SpawnedBionic
 
     internal void Deserialize(Packet packet)
     {
-        packet.TryRead<byte>(out Scale);
-        packet.TryRead<byte>(out HwanLevel);
-        packet.TryRead<PvpState>(out PvpCape);
-        packet.TryRead<ExpIcon>(out AutoInverstExp);
-        packet.TryRead<byte>(out InventorySize);
+        packet.TryRead(out Scale);
+        packet.TryRead(out HwanLevel);
+        packet.TryRead(out PvpCape);
+        packet.TryRead(out AutoInverstExp);
+        packet.TryRead(out InventorySize);
 
         packet.TryRead<byte>(out var itemCount);
         Inventory = new Dictionary<_RefObjCommon, byte>();
@@ -70,8 +70,8 @@ public sealed class SpawnedPlayer : SpawnedBionic
 
         Avatars = new Dictionary<_RefObjCommon, byte>();
 
-        packet.TryRead<byte>(out AvatarInventorySize);
-        packet.TryRead<byte>(out itemCount);
+        packet.TryRead(out AvatarInventorySize);
+        packet.TryRead(out itemCount);
 
         for (var i = 0; i < itemCount; i++)
         {
@@ -93,39 +93,30 @@ public sealed class SpawnedPlayer : SpawnedBionic
         {
             packet.TryRead<uint>(out var maskId);
             var maskObj = Cache.GetRefObjCommonAsync(c => c.ID == maskId).Result;
-            if (maskObj == null)
-            {
-                return;
-            }
+            if (maskObj == null) return;
 
             if (maskObj.TypeID1 == RefObjCommon.TypeID1 || maskObj.TypeID2 == RefObjCommon.TypeID2)
             {
                 //duplicated player!
                 packet.TryRead<byte>(out var scale);
-                packet.TryRead<byte>(out itemCount);
-                for (var i = 0; i < itemCount; i++)
-                {
-                    packet.TryRead<uint>(out var itemId);
-                }
+                packet.TryRead(out itemCount);
+                for (var i = 0; i < itemCount; i++) packet.TryRead<uint>(out var itemId);
             }
         }
 
         ParseBionicDetails(packet);
-        
+
         packet.TryRead(out Name);
-        packet.TryRead<Job>(out Job);
-        packet.TryRead<byte>(out JobLevel);
-        packet.TryRead<PvpState>(out PvpState);
-        packet.TryRead<bool>(out OnTransport);
-        packet.TryRead<bool>(out InCombat);
+        packet.TryRead(out Job);
+        packet.TryRead(out JobLevel);
+        packet.TryRead(out PvpState);
+        packet.TryRead(out OnTransport);
+        packet.TryRead(out InCombat);
 
-        if (OnTransport)
-        {
-            packet.TryRead<uint>(out TransportUniqueId);
-        }
+        if (OnTransport) packet.TryRead(out TransportUniqueId);
 
-        packet.TryRead<ScrollState>(out ScrollMode);
-        packet.TryRead<InteractMode>(out InteractMode);
+        packet.TryRead(out ScrollMode);
+        packet.TryRead(out InteractMode);
 
         packet.TryRead<byte>(out var unkByte4); //unkByte4
 
@@ -139,15 +130,12 @@ public sealed class SpawnedPlayer : SpawnedBionic
         }
         else
         {
-            Guild = new SpawnedPlayerGuild {Name = guildName};
+            Guild = new SpawnedPlayerGuild { Name = guildName };
         }
 
-        if (InteractMode == InteractMode.P2N_TALK)
-        {
-            Stall = SpawnedPlayerStall.FromPacket(packet);
-        }
+        if (InteractMode == InteractMode.P2N_TALK) Stall = SpawnedPlayerStall.FromPacket(packet);
 
         packet.TryRead<byte>(out var equipmentCooldown); //Equipment Cooldown
-        packet.TryRead<byte>(out PKFlag); //PKFlag
+        packet.TryRead(out PKFlag); //PKFlag
     }
 }

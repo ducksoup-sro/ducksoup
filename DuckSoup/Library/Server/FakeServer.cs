@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using API;
 using API.Database.DuckSoup;
 using API.Server;
 using API.ServiceFactory;
@@ -13,15 +12,6 @@ namespace DuckSoup.Library.Server;
 
 public class FakeServer : TcpServer, IFakeServer
 {
-    public Service Service { get; }
-    public IPacketHandler PacketHandler { get; }
-
-    public Task Start()
-    {
-        base.Start();
-        return Task.CompletedTask;
-    }
-
     public FakeServer(Service service) : base(service.LocalMachine_Machine.Address, service.BindPort)
     {
         Service = service;
@@ -46,6 +36,15 @@ public class FakeServer : TcpServer, IFakeServer
             Service.RemoteMachine_Machine.Address);
     }
 
+    public Service Service { get; }
+    public IPacketHandler PacketHandler { get; }
+
+    public Task Start()
+    {
+        base.Start();
+        return Task.CompletedTask;
+    }
+
 
     protected override TcpSession CreateSession()
     {
@@ -56,7 +55,7 @@ public class FakeServer : TcpServer, IFakeServer
     {
         Console.WriteLine($"FakeServer caught an error with code {error}");
     }
-    
+
     public virtual void RemoveSession(ISession session)
     {
     }

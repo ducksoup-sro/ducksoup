@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="NetCoreServer" Version="7.0.0" />
+        <PackageReference Include="NetCoreServer" Version="7.0.0"/>
     </ItemGroup>
 
 </Project>

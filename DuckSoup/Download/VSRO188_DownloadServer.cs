@@ -14,7 +14,7 @@ public class VSRO188_DownloadServer : FakeServer
     {
         _sharedObjects = ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
     }
-    
+
     public override void AddSession(ISession session)
     {
         base.AddSession(session);
@@ -24,9 +24,6 @@ public class VSRO188_DownloadServer : FakeServer
     public override void RemoveSession(ISession session)
     {
         base.RemoveSession(session);
-        if (_sharedObjects.DownloadSessions.Contains(session))
-        {
-            _sharedObjects.DownloadSessions.Remove(session);
-        }
+        if (_sharedObjects.DownloadSessions.Contains(session)) _sharedObjects.DownloadSessions.Remove(session);
     }
 }

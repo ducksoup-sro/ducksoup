@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using SilkroadSecurityAPI.VSRO188;
 
 namespace SilkroadSecurityAPI;
 
@@ -48,25 +49,25 @@ public class Utility
 
         return output.ToString();
     }
-    
-    
+
+
     public static ISecurity GetSecurity(SecurityType securityType)
     {
         return securityType switch
         {
-            SecurityType.VSRO188 => new VSRO188.Security(),
+            SecurityType.VSRO188 => new Security(),
             SecurityType.ISRO_R => new ISRO_R.Security(),
-            _ => new VSRO188.Security()
+            _ => new Security()
         };
     }
-    
+
     public static IDefaultList GetDefaultList(SecurityType securityType)
     {
         return securityType switch
         {
-            SecurityType.VSRO188 => new VSRO188.DefaultList(),
+            SecurityType.VSRO188 => new DefaultList(),
             SecurityType.ISRO_R => new ISRO_R.DefaultList(),
-            _ => new VSRO188.DefaultList()
+            _ => new DefaultList()
         };
     }
 }

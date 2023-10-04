@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _FleaMarketNetwork
+public class _FleaMarketNetwork
 {
     public byte AbleOpen { get; set; }
 

@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class SK_SilkChange_BY_Web
+public class SK_SilkChange_BY_Web
 {
     public int ID { get; set; }
 

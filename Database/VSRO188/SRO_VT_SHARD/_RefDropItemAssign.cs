@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefDropItemAssign
+public class _RefDropItemAssign
 {
     public int Service { get; set; }
 

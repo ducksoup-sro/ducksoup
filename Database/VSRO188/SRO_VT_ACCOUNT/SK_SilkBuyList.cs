@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class SK_SilkBuyList
+public class SK_SilkBuyList
 {
     public int BuyNo { get; set; }
 

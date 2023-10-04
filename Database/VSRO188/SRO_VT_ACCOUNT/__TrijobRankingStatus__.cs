@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class __TrijobRankingStatus__
+public class __TrijobRankingStatus__
 {
     public int ShardID { get; set; }
 

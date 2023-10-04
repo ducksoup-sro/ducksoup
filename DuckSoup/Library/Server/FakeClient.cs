@@ -2,8 +2,6 @@
 using System.Net.Sockets;
 using API.Database.DuckSoup;
 using PacketLibrary.Handler;
-using PacketLibrary.VSRO188.Agent.Server;
-using Serilog;
 using SilkroadSecurityAPI;
 using SilkroadSecurityAPI.Message;
 using TcpClient = NetCoreServer.TcpClient;
@@ -15,7 +13,8 @@ namespace DuckSoup.Library.Server;
 /// </summary>
 public class FakeClient : TcpClient
 {
-    public FakeClient(FakeServer fakeServer, Service service) : base(service.RemoteMachine_Machine.Address, service.RemotePort)
+    public FakeClient(FakeServer fakeServer, Service service) : base(service.RemoteMachine_Machine.Address,
+        service.RemotePort)
     {
         ServerSecurity = Utility.GetSecurity(service.SecurityType);
         FakeServer = fakeServer;

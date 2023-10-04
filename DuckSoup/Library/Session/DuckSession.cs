@@ -11,17 +11,18 @@ namespace DuckSoup.Library.Session;
 
 public class DuckSession : ISession
 {
-    public Guid Guid { get; }
-    private Dictionary<string, object> SessionData { get; }
-    private FakeSession Client { get; }
-    private FakeClient Server { get; }
-    
     public DuckSession(FakeSession fakeSession, FakeClient fakeClient)
     {
         Client = fakeSession;
         Server = fakeClient;
         Guid = Guid.NewGuid();
-        SessionData = new Dictionary<string, object>();    }
+        SessionData = new Dictionary<string, object>();
+    }
+
+    private Dictionary<string, object> SessionData { get; }
+    private FakeSession Client { get; }
+    private FakeClient Server { get; }
+    public Guid Guid { get; }
 
     public Task SendToClient(Packet packet)
     {
@@ -82,7 +83,7 @@ public class DuckSession : ISession
         Disconnect();
         return Task.CompletedTask;
     }
-    
+
     public ISession GetData<T>(string key, out T value)
     {
         SessionData.TryGetValue(key, out var val);
@@ -110,7 +111,7 @@ public class DuckSession : ISession
             value = defaultValue;
             return this;
         }
-        
+
         SessionData.TryGetValue(key, out var val);
         value = (T)val;
         return this;

@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class tb_partnerInfo
+public class tb_partnerInfo
 {
     public string partnerID { get; set; } = null!;
 

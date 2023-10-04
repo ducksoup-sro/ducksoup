@@ -7,10 +7,10 @@ namespace PacketLibrary.VSRO188.Agent.Objects.Spawn;
 public class SpawnedBionic : SpawnedEntity
 {
     public bool AttackingPlayer;
-    public bool HasHealth => Health > 0;
-    public int Health;
     public BadStatus BadEffect;
+    public int Health;
     public uint TargetId;
+
     public SpawnedBionic(uint objId)
     {
         Id = objId;
@@ -19,9 +19,11 @@ public class SpawnedBionic : SpawnedEntity
             Health = RefObjChar.MaxHP;
     }
 
+    public bool HasHealth => Health > 0;
+
     public void ParseBionicDetails(Packet packet)
     {
-        packet.TryRead<uint>(out UniqueId);
+        packet.TryRead(out UniqueId);
 
         var movement = Movement.FromPacket(packet);
         State.Deserialize(packet);

@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _ClientConfig
+public class _ClientConfig
 {
     public int CharID { get; set; }
 

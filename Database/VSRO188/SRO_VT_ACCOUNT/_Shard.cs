@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class _Shard
+public class _Shard
 {
     public short nID { get; set; }
 

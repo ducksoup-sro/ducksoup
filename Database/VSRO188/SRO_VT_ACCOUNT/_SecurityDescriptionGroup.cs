@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class _SecurityDescriptionGroup
+public class _SecurityDescriptionGroup
 {
     public byte nID { get; set; }
 

@@ -7,6 +7,12 @@ namespace PacketLibrary.VSRO188.Agent.Objects.Spawn;
 public sealed class SpawnedMonster : SpawnedNpc
 {
     public MonsterRarity Rarity;
+
+    public SpawnedMonster(uint objId) :
+        base(objId)
+    {
+    }
+
     public int MaxHealth
     {
         get
@@ -40,26 +46,19 @@ public sealed class SpawnedMonster : SpawnedNpc
             }
         }
     }
-    public SpawnedMonster(uint objId) :
-        base(objId) { }
+
     internal override void Deserialize(Packet packet)
     {
         ParseBionicDetails(packet);
 
         base.Deserialize(packet);
 
-        packet.TryRead<MonsterRarity>(out Rarity);
-            
+        packet.TryRead(out Rarity);
+
         // IsEventMob
-        if (RefObjCommon.CodeName128.StartsWith("MOB_EV"))
-        {
-            Rarity = MonsterRarity.Event;
-        }
+        if (RefObjCommon.CodeName128.StartsWith("MOB_EV")) Rarity = MonsterRarity.Event;
 
         //NPC_MOB_TIEF, NPC_MOB_HUNTER
-        if (RefObjCommon.TypeID4 == 2 || RefObjCommon.TypeID4 == 3)
-        {
-            packet.TryRead<byte>(out var appearance);
-        }
+        if (RefObjCommon.TypeID4 == 2 || RefObjCommon.TypeID4 == 3) packet.TryRead<byte>(out var appearance);
     }
 }

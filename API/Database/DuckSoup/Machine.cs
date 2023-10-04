@@ -1,6 +1,6 @@
 ﻿namespace API.Database.DuckSoup;
 
-public partial class Machine
+public class Machine
 {
     public int MachineId { get; set; }
 

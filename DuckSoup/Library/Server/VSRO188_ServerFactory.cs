@@ -7,7 +7,6 @@ using API.Server;
 using DuckSoup.Agent;
 using DuckSoup.Download;
 using DuckSoup.Gateway;
-using NetCoreServer;
 using SilkroadSecurityAPI;
 
 namespace DuckSoup.Library.Server;
@@ -22,10 +21,10 @@ public class VSRO188_ServerFactory : IServerFactory
             ServerType.DownloadServer => new VSRO188_DownloadServer(service),
             ServerType.AgentServer => new VSRO188_AgentServer(service),
             ServerType.None => null,
-            _ => throw new ArgumentOutOfRangeException(),
+            _ => throw new ArgumentOutOfRangeException()
         };
     }
-    
+
     public HashSet<ushort> GetWhitelist(ServerType serverType)
     {
         var defaultList = Utility.GetDefaultList(SecurityType.VSRO188);

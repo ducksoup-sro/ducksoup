@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefGame_World
+public class _RefGame_World
 {
     public int ID { get; set; }
 

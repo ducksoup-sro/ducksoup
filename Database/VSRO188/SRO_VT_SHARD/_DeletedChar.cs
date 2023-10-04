@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _DeletedChar
+public class _DeletedChar
 {
     public int CharID { get; set; }
 

@@ -14,6 +14,7 @@ public struct Region
     [FieldOffset(sizeof(byte))] private byte Y;
 
     public bool IsDungeon => Y == 0x80;
+
     public ushort GetId()
     {
         return Id;
@@ -41,7 +42,7 @@ public struct Region
 
     public void SetY(byte y)
     {
-        Y = y; 
+        Y = y;
     }
 
     public Region(ushort id)
@@ -69,22 +70,22 @@ public struct Region
     {
         return new Region[]
         {
-            new Region((byte) (X - 1), (byte) (Y + 1)), //TL
-            new Region(X, (byte) (Y + 1)), //TC
-            new Region((byte) (X + 1), (byte) (Y + 1)), //TR
-            new Region((byte) (X - 1), Y), //CL
-            new Region(X, Y), //CC
-            new Region((byte) (X + 1), Y), //CR
-            new Region((byte) (X - 1), (byte) (Y - 1)), //BL
-            new Region(X, (byte) (Y - 1)), //BC
-            new Region((byte) (X + 1), (byte) (Y - 1)) //BR
+            new((byte)(X - 1), (byte)(Y + 1)), //TL
+            new(X, (byte)(Y + 1)), //TC
+            new((byte)(X + 1), (byte)(Y + 1)), //TR
+            new((byte)(X - 1), Y), //CL
+            new(X, Y), //CC
+            new((byte)(X + 1), Y), //CR
+            new((byte)(X - 1), (byte)(Y - 1)), //BL
+            new(X, (byte)(Y - 1)), //BC
+            new((byte)(X + 1), (byte)(Y - 1)) //BR
         };
     }
 
     public void Serialize(Packet packet)
     {
-        packet.TryWrite<byte>(X)
-            .TryWrite<byte>(Y);
+        packet.TryWrite(X)
+            .TryWrite(Y);
     }
 
     public override string ToString()

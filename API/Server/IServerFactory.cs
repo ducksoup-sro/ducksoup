@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using API;
-using API.Database.DuckSoup;
-using API.Server;
-using NetCoreServer;
+﻿using API.Database.DuckSoup;
 
-namespace DuckSoup.Library.Server;
+namespace API.Server;
 
 public interface IServerFactory
 {
@@ -12,5 +8,4 @@ public interface IServerFactory
 
     HashSet<ushort> GetWhitelist(ServerType serverType);
     HashSet<ushort> GetBlacklist(ServerType serverType);
-
 }

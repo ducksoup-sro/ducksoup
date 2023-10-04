@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class _Punishment
+public class _Punishment
 {
     public int SerialNo { get; set; }
 

@@ -6,10 +6,6 @@ namespace API.Database.Context;
 
 public partial class DuckSoup : DuckContext
 {
-    public DuckSoup()
-    {
-    }
-    
     public virtual DbSet<Database.DuckSoup.Event> Events { get; set; }
 
     public virtual DbSet<GlobalSetting> GlobalSettings { get; set; }
@@ -17,9 +13,9 @@ public partial class DuckSoup : DuckContext
     public virtual DbSet<Machine> Machines { get; set; }
 
     public virtual DbSet<Service> Services { get; set; }
-    
+
     public virtual DbSet<User> Users { get; set; }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Database.DuckSoup.Event>(entity =>
@@ -71,14 +67,14 @@ public partial class DuckSoup : DuckContext
                 .HasForeignKey(d => d.SpoofMachine_MachineId)
                 .HasConstraintName("FK_dbo.Service_dbo.Machine_SpoofMachine_MachineId");
         });
-        
+
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.userId).HasName("PK_dbo.User");
-            
+
             entity.ToTable("User");
         });
-        
+
         OnModelCreatingPartial(modelBuilder);
     }
 

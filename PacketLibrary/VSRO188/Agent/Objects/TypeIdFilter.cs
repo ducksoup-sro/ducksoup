@@ -5,18 +5,15 @@ namespace PacketLibrary.VSRO188.Agent.Objects;
 // https://github.com/SDClowen/RSBot/
 public class TypeIdFilter
 {
+    public bool CompareByTypeID1;
+    public bool CompareByTypeID2;
+    public bool CompareByTypeID3;
+    public bool CompareByTypeID4;
     public byte TypeID1;
     public byte TypeID2;
     public byte TypeID3;
     public byte TypeID4;
 
-    public bool CompareByTypeID1;
-    public bool CompareByTypeID2;
-    public bool CompareByTypeID3;
-    public bool CompareByTypeID4;
-
-    public Predicate<_RefObjCommon> _condition { get; set; }
-        
     public TypeIdFilter(byte t1, byte t2, byte t3, byte t4)
     {
         TypeID1 = t1;
@@ -33,7 +30,9 @@ public class TypeIdFilter
     public TypeIdFilter()
     {
     }
-        
+
+    public Predicate<_RefObjCommon> _condition { get; set; }
+
     public bool EqualsRefItem(_RefObjCommon item)
     {
         if (_condition != null && _condition(item))

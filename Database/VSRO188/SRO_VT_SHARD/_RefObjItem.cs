@@ -1,7 +1,8 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefObjItem
+public class _RefObjItem
 {
+    private _RefObjCommon? _refObjCommon;
     public int ID { get; set; }
 
     public int MaxStack { get; set; }
@@ -211,17 +212,12 @@ public partial class _RefObjItem
     public byte ChildItemCount { get; set; }
 
     public int Link { get; set; }
-    
-     private _RefObjCommon? _refObjCommon;
 
     public _RefObjCommon GetRefObjCommon
     {
         get
         {
-            if (_refObjCommon != null)
-            {
-                return _refObjCommon;
-            }
+            if (_refObjCommon != null) return _refObjCommon;
 
 
             _refObjCommon = Cache.GetRefObjCommonAsync(c => c.Link == ID).Result;
@@ -265,10 +261,10 @@ public partial class _RefObjItem
     public bool IsRepairKit => IsPotion && GetRefObjCommon.TypeID4 == 10;
 
     public bool IsArmor =>
-        IsEquip && GetRefObjCommon.TypeID3 == 1 || GetRefObjCommon.TypeID3 is 2 or 3 or 9 or 10 or 11;
+        (IsEquip && GetRefObjCommon.TypeID3 == 1) || GetRefObjCommon.TypeID3 is 2 or 3 or 9 or 10 or 11;
 
     public bool IsShield => IsEquip && GetRefObjCommon.TypeID3 == 4;
-    public bool IsAccessory => IsEquip && GetRefObjCommon.TypeID3 == 5 || GetRefObjCommon.TypeID3 == 12;
+    public bool IsAccessory => (IsEquip && GetRefObjCommon.TypeID3 == 5) || GetRefObjCommon.TypeID3 == 12;
     public bool IsWeapon => IsEquip && GetRefObjCommon.TypeID3 == 6;
     public int Degree => (ItemClass - 1) / 3 + 1;
     public int DegreeOffset => ItemClass - 3 * ((ItemClass - 1) / 3) - 1; //sro_client.sub_8BA6E0

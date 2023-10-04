@@ -7,20 +7,20 @@ public enum ObjectCountry : byte
     Islam = 2,
     Unassigned = 3
 }
-    
+
 public enum ObjectGender : byte
 {
     Female = 0,
     Male = 1,
     Neutral = 2
 }
-    
+
 public enum SpawnInfoType : byte
 {
     Spawn = 0x01,
     Despawn = 0x02
 }
-    
+
 public enum MovementType : byte
 {
     Walking = 0,
@@ -60,7 +60,7 @@ public enum BodyState : byte
     Stealth = 6,
     Invisible = 7
 }
-    
+
 public enum FortSiegeAuthority
 {
     None = 0,
@@ -71,7 +71,7 @@ public enum FortSiegeAuthority
     TrainingAdministrator = 16,
     MilitaryEngineer = 32
 }
-    
+
 [Flags]
 public enum ObjectRarity : byte
 {
@@ -83,7 +83,7 @@ public enum ObjectRarity : byte
     ClassF = 5, //                   MOB=Titan
     ClassG = 6, //ITEM=ROC,SET_11_B  MOB=Elite
     ClassH = 7, //ITEM=LEGEND        MOB=Elite (Strong)
-    ClassI = 8, //                    MOB=Unique (TQ, GOD, SD)
+    ClassI = 8 //                    MOB=Unique (TQ, GOD, SD)
 
     //Party = 10
     //For ITEM_: see above, this rarity is also used in SERVER_AGENT_OBJECT_SPAWN when OBJECT equals ITEM...
@@ -110,7 +110,7 @@ public enum MonsterRarity : byte
     Unique2Party = 24,
     Event = 0xFF
 }
-    
+
 public enum BadStatus : uint
 {
     None = 0,
@@ -155,7 +155,7 @@ public enum CharacterAction : byte
     SkillCast = 4,
     SkillRemove = 5
 }
-    
+
 public enum PVPCape : byte
 {
     None = 0,
@@ -189,7 +189,7 @@ public enum InteractMode
     P2N_TALK = 4,
     OPNMKT_DEAL = 6
 }
-    
+
 public enum PvpState : byte
 {
     Neutral = 0,
@@ -218,29 +218,29 @@ public enum CaptureTheFlag : byte
     Red = 1,
     Blue = 2
 }
-    
+
 public enum ScrollState
 {
     Cancel = 0,
     NormalScroll = 1,
-    ThiefScroll = 2, //able to move
+    ThiefScroll = 2 //able to move
 }
-    
+
 public enum BattleState
 {
     InPeace = 0,
-    InBattle = 1,
+    InBattle = 1
 }
-    
+
 public enum CosCommand : byte
 {
     Move = 1,
     Attack = 2,
     Pickup = 8,
     Follow = 9,
-    Charm = 11,
+    Charm = 11
 }
-    
+
 [Flags]
 public enum ItemUpdateFlag : byte
 {
@@ -251,14 +251,15 @@ public enum ItemUpdateFlag : byte
     Quanity = 8,
     Durability = 16,
     MagParams = 32,
-    State = 64,
+    State = 64
 }
-    
+
 public enum BindingOptionType : byte
 {
     Socket = 1,
     AdvancedElixir = 2
 }
+
 public enum InventoryItemState
 {
     Inactive = 1,
@@ -266,7 +267,7 @@ public enum InventoryItemState
     Active = 3,
     Dead = 4
 }
-    
+
 public enum ItemAttributeGroup
 {
     Durability,

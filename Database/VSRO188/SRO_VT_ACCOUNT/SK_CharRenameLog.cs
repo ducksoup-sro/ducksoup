@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class SK_CharRenameLog
+public class SK_CharRenameLog
 {
     public int id { get; set; }
 

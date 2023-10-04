@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class _CasGMChatLog
+public class _CasGMChatLog
 {
     public int nSerial { get; set; }
 

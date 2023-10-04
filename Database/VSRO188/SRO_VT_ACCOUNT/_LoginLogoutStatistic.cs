@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class _LoginLogoutStatistic
+public class _LoginLogoutStatistic
 {
     public int nIdx { get; set; }
 

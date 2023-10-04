@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _ServerEventReward
+public class _ServerEventReward
 {
     public int ServerEventID { get; set; }
 

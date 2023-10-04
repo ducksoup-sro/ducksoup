@@ -78,16 +78,10 @@ public struct Position
         if (!Region.IsDungeon)
         {
             var xOffset = (int)(Math.Abs(x) % 192 * 10);
-            if (x < 0)
-            {
-                xOffset = 1920 - xOffset;
-            }
+            if (x < 0) xOffset = 1920 - xOffset;
 
             var yOffset = (int)(Math.Abs(y) % 192 * 10);
-            if (y < 0)
-            {
-                yOffset = 1920 - yOffset;
-            }
+            if (y < 0) yOffset = 1920 - yOffset;
 
             Region.SetX((byte)Math.Round((x - xOffset / 10f) / 192f + 135));
             Region.SetY((byte)Math.Round((y - yOffset / 10f) / 192f + 92));
@@ -136,7 +130,7 @@ public struct Position
             .TryRead<float>(out var yOffset)
             .TryRead<short>(out var angle);
 
-        return new Position()
+        return new Position
         {
             Region = new Region(region),
             XOffset = xOffset,
@@ -153,7 +147,7 @@ public struct Position
             .TryRead<float>(out var zOffset)
             .TryRead<float>(out var yOffset);
 
-        return new Position()
+        return new Position
         {
             Region = new Region(region),
             XOffset = xOffset,
@@ -191,17 +185,15 @@ public struct Position
         }
 
         if (parseLayerWorldId)
-        {
-            packet.TryRead<short>(out position.WorldId)
-                .TryRead<short>(out position.LayerId);
-        }
+            packet.TryRead(out position.WorldId)
+                .TryRead(out position.LayerId);
 
         return position;
     }
 
     public byte GetSectorFromOffset(float offset)
     {
-        return (byte)(((128.0 * 192.0 + (128 * 192 + offset / 10)) / 192.0) - 128);
+        return (byte)((128.0 * 192.0 + (128 * 192 + offset / 10)) / 192.0 - 128);
     }
 
     public override string ToString()

@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _ItemQuotation
+public class _ItemQuotation
 {
     public int ID { get; set; }
 

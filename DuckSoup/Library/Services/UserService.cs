@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using API.Database.DuckSoup;
 using API.Services;
 
 namespace DuckSoup.Library.Services;
 
-public class UserService : Service<IUserService>, IUserService 
+public class UserService : Service<IUserService>, IUserService
 {
     public User GetUser(string username)
     {
@@ -32,13 +33,9 @@ public class UserService : Service<IUserService>, IUserService
         using var db = new API.Database.Context.DuckSoup();
         var tempUser = GetUser(user.userId);
         if (tempUser == null)
-        {
             db.Users.Add(user);
-        }
         else
-        {
             db.Users.Update(user);
-        }
         db.SaveChanges();
     }
 
@@ -53,13 +50,13 @@ public class UserService : Service<IUserService>, IUserService
     {
         using var hmac = new HMACSHA512();
         passwordSalt = hmac.Key;
-        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+        passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
     }
 
     public bool VerifyPassword(string password, byte[] passwordHash, byte[] passwordSalt)
     {
         using var hmac = new HMACSHA512(passwordSalt);
-        var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
         return computedHash.SequenceEqual(passwordHash);
     }
 }

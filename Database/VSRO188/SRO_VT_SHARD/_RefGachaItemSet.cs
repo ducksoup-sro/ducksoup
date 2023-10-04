@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefGachaItemSet
+public class _RefGachaItemSet
 {
     public byte Service { get; set; }
 

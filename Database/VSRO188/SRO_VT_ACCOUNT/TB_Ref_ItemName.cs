@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_ACCOUNT;
 
-public partial class TB_Ref_ItemName
+public class TB_Ref_ItemName
 {
     public double? ITEM_ID { get; set; }
 

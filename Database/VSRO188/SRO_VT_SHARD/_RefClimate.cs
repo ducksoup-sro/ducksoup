@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefClimate
+public class _RefClimate
 {
     public int ID { get; set; }
 

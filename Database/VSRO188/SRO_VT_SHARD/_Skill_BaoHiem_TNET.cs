@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _Skill_BaoHiem_TNET
+public class _Skill_BaoHiem_TNET
 {
     public int CharID { get; set; }
 

@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefServerEventReward
+public class _RefServerEventReward
 {
     public byte Service { get; set; }
 

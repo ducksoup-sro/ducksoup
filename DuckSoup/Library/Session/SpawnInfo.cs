@@ -7,9 +7,9 @@ namespace DuckSoup.Library.Session;
 
 public class SpawnInfo : ISpawnInfo
 {
-    private SERVER_ENTITY_GROUPSPAWN_BEGIN serverAgentEntity;
     private Packet _packet;
-    
+    private SERVER_ENTITY_GROUPSPAWN_BEGIN serverAgentEntity;
+
     public void Read(Packet packet)
     {
         serverAgentEntity = new SERVER_ENTITY_GROUPSPAWN_BEGIN(packet);

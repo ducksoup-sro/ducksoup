@@ -1,6 +1,6 @@
 ﻿namespace Database.VSRO188.SRO_VT_SHARD;
 
-public partial class _RefDropClassSel_Alchemy_ATTRStone
+public class _RefDropClassSel_Alchemy_ATTRStone
 {
     public int MonLevel { get; set; }
 
