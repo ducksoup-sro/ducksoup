@@ -78,7 +78,7 @@ public class DuckSession : ISession
         }
 
         var notice = SERVER_CHAT_UPDATE.of(ChatType.Notice, reason);
-        QueueToClient(notice);
+        SendToClient(notice);
 
         Disconnect();
         return Task.CompletedTask;
