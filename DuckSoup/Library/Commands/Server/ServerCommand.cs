@@ -5,7 +5,7 @@ namespace DuckSoup.Library.Commands.Server;
 
 public class ServerCommand : Command
 {
-    public ServerCommand() : base("server", "server <subcommand>", "none", new []{"ser"})
+    public ServerCommand() : base("server", "server <subcommand>", "none", new[] { "ser" })
     {
         var helpCommand = new HelpCommand(SubCommands);
         SubCommands.Add(new ServerListCommand());

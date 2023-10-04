@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using API;
 using API.Database;
 using API.Database.DuckSoup;
 using API.Enums;
 using API.ServiceFactory;
 using API.Services;
 using API.Webserver;
+using Serilog;
 using WatsonWebserver;
 using HttpMethod = WatsonWebserver.HttpMethod;
 
@@ -37,7 +37,7 @@ public class WebserverManager : IWebserverManager
         _server = new WatsonWebserver.Server("*", port, false, DefaultRoute);
         _server.Routes.PreRouting = PreRoutingHandler;
         _server?.Start();
-        Global.Logger.InfoFormat("Webserver on http://{0}:{1} started", hostname, port);
+        Log.Information("Webserver on http://{0}:{1} started", hostname, port);
         var authRoutes = new AuthRoutes(this);
     }
 

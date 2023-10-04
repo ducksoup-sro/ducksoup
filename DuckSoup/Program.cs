@@ -18,12 +18,9 @@ using DuckSoup.Library.Server;
 using DuckSoup.Library.Services;
 using DuckSoup.Library.Settings;
 using DuckSoup.Library.Webserver;
-using log4net;
-using log4net.Config;
+using Serilog;
 
 #endregion
-
-[assembly: XmlConfigurator(Watch = true)]
 
 namespace DuckSoup;
 
@@ -31,18 +28,28 @@ public static class Program
 {
     private static void Main()
     {
-        var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
-        XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.Console(
+                outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {Message}{NewLine}{Exception}"
+            )
+            .CreateLogger();
+
+        Log.Debug("Testing: Debug");
+        Log.Information("Testing: Information");
+        Log.Warning("Testing: Warning");
+        Log.Error("Testing: Error");
+        Log.Fatal("Testing: Fatal");
 
         // prints out logo + version
-        Global.Logger.InfoFormat("\n\n" +
-                                 ",--.          .   .---.             \n" +
-                                 "|   \\ . . ,-. | , \\___  ,-. . . ,-. \n" +
-                                 "|   / | | |   |<      \\ | | | | | | \n" +
-                                 "^--'  `-^ `-' ' ` `---' `-' `-^ |-' \n" +
-                                 "                                |   \n" +
-                                 "         Version  {0}         ' \n" +
-                                 "\n",
+        Log.Information("\n\n" +
+                        ",--.          .   .---.             \n" +
+                        "|   \\ . . ,-. | , \\___  ,-. . . ,-. \n" +
+                        "|   / | | |   |<      \\ | | | | | | \n" +
+                        "^--'  `-^ `-' ' ` `---' `-' `-^ |-' \n" +
+                        "                                |   \n" +
+                        "         Version  {0}         ' \n" +
+                        "\n",
             FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location)
                 .ProductVersion);
         Console.Title = "Starting up...";

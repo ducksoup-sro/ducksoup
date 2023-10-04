@@ -1,8 +1,7 @@
-﻿using System.Linq;
-using API;
-using API.Command;
+﻿using API.Command;
 using API.Server;
 using API.ServiceFactory;
+using Serilog;
 
 namespace DuckSoup.Library.Commands.Server;
 
@@ -10,7 +9,7 @@ public class ServerStopCommand : Command
 {
     private readonly IServerManager _serverManager;
 
-    public ServerStopCommand() : base("stop", "stop <id>", "Stops a given server", new []{"close"})
+    public ServerStopCommand() : base("stop", "stop <id>", "Stops a given server", new[] { "close" })
     {
         _serverManager = ServiceFactory.Load<IServerManager>(typeof(IServerManager));
     }
@@ -28,7 +27,7 @@ public class ServerStopCommand : Command
         if (isNumber == false)
         {
             ExecuteHelpCommand();
-            return; 
+            return;
         }
 
         // var temp = _serverManager.Servers.Where(asyncServer => asyncServer.Service.ServiceId == id).ToList();
@@ -37,6 +36,6 @@ public class ServerStopCommand : Command
         //     _serverManager.Stop(asyncServer.Service);
         // }
         // temp.Clear();
-        Global.Logger.InfoFormat("Server with the ID {0} was stopped and removed", id);
+        Log.Information("Server with the ID {0} was stopped and removed", id);
     }
 }

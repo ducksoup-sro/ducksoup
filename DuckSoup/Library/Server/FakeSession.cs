@@ -5,6 +5,7 @@ using DuckSoup.Library.Session;
 using NetCoreServer;
 using PacketLibrary.Global.Client;
 using PacketLibrary.Handler;
+using Serilog;
 using SilkroadSecurityAPI;
 using SilkroadSecurityAPI.Message;
 

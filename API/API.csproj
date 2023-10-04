@@ -20,7 +20,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="log4net" Version="2.0.15" />
+        <PackageReference Include="LanguageExt.Core" Version="4.4.6" />
         <PackageReference Include="McMaster.NETCore.Plugins" Version="2.0.0-beta.130" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0-preview.6.23329.4" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0-preview.6.23329.4">
@@ -32,6 +32,8 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Serilog" Version="3.1.0-dev-02071" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.2.0-dev-00918" />
         <PackageReference Include="Watson" Version="5.1.1" />
     </ItemGroup>
 

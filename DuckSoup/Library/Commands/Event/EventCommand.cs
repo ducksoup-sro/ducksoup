@@ -5,12 +5,12 @@ namespace DuckSoup.Library.Commands.Event;
 
 public class EventCommand : Command
 {
-    public EventCommand() : base("event", "event <subcommand>", "none", new[] {"ec"})
+    public EventCommand() : base("event", "event <subcommand>", "none", new[] { "ec" })
     {
-            var helpCommand = new HelpCommand(SubCommands);
-            SubCommands.Add(new EventListCommand());
-            SubCommands.Add(new EventLoadCommand());
-            SubCommands.Add(new EventUnloadCommand());
+        var helpCommand = new HelpCommand(SubCommands);
+        SubCommands.Add(new EventListCommand());
+        SubCommands.Add(new EventLoadCommand());
+        SubCommands.Add(new EventUnloadCommand());
     }
 
     public override void Execute(string[]? args)

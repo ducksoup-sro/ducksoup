@@ -5,7 +5,7 @@ namespace DuckSoup.Library.Commands.Plugin;
 
 public class PluginCommand : Command
 {
-    public PluginCommand() : base("plugin", "plugin <subcommand>", "none", new[] {"pl"})
+    public PluginCommand() : base("plugin", "plugin <subcommand>", "none", new[] { "pl" })
     {
         var helpCommand = new HelpCommand(SubCommands);
         SubCommands.Add(new PluginListCommand());

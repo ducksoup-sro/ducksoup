@@ -7,6 +7,7 @@ using API.Server;
 using API.ServiceFactory;
 using NetCoreServer;
 using PacketLibrary.Handler;
+using Serilog;
 
 namespace DuckSoup.Library.Server;
 
@@ -32,16 +33,16 @@ public class FakeServer : TcpServer, IFakeServer
             factory.GetBlacklist(service.ServerType)
         );
 
-        Global.Logger.InfoFormat("{0} - Debuglevel: {1}", Service.Name,
+        Log.Information("{0} - Debuglevel: {1}", Service.Name,
             SharedObjects.DebugLevel);
-        Global.Logger.InfoFormat("{0} - Servertype: {1}", Service.Name,
+        Log.Information("{0} - Servertype: {1}", Service.Name,
             Service.ServerType);
-        Global.Logger.InfoFormat("{0} - SecurityType: {1}", Service.Name,
+        Log.Information("{0} - SecurityType: {1}", Service.Name,
             Service.SecurityType);
-        Global.Logger.InfoFormat("{0} - Setting up Socket..", Service.Name);
-        Global.Logger.InfoFormat("{0} - Server bound to {1}", Service.Name,
+        Log.Information("{0} - Setting up Socket..", Service.Name);
+        Log.Information("{0} - Server bound to {1}", Service.Name,
             Service.BindPort);
-        Global.Logger.InfoFormat("{0} - Redirecting Sessions to {1}", Service.Name,
+        Log.Information("{0} - Redirecting Sessions to {1}", Service.Name,
             Service.RemoteMachine_Machine.Address);
     }
 

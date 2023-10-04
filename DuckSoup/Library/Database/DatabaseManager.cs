@@ -4,6 +4,7 @@ using API.ServiceFactory;
 using API.Settings;
 using Database.VSRO188.Context;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace DuckSoup.Library.Database;
 
@@ -31,7 +32,7 @@ public class DatabaseManager
         }
         catch (Exception ex)
         {
-            Global.Logger.Error(ex + " An error occurred while migrating the database");
+            Log.Error("An error occurred while migrating the database: {@e}", ex);
         }
     }
 }

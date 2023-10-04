@@ -8,6 +8,7 @@ using API.Plugin;
 using API.ServiceFactory;
 using DuckSoup.Library.Commands;
 using McMaster.NETCore.Plugins;
+using Serilog;
 
 namespace DuckSoup.Library.Plugins;
 
@@ -157,11 +158,11 @@ public class PluginManager : IPluginManager
 
     private void Setup()
     {
-        Global.Logger.InfoFormat("Loading plugins..");
+        Log.Information("Loading plugins..");
         var pluginFiles = GetFilesInDirectory("plugins");
         if (pluginFiles == null)
         {
-            Global.Logger.InfoFormat("No pluginfolder found. Creating one..");
+            Log.Information("No pluginfolder found. Creating one..");
             Directory.CreateDirectory("plugins");
             return;
         }
@@ -170,14 +171,14 @@ public class PluginManager : IPluginManager
         foreach (var file in pluginFiles)
         {
             temp.Add(LoadPlugin(file));
-            Global.Logger.InfoFormat("Plugin: {0} loaded.", file.Replace("\\plugins", ""));
+            Log.Information("Plugin: {0} loaded.", file.Replace("\\plugins", ""));
         }
 
-        Global.Logger.InfoFormat("Starting plugins..");
+        Log.Information("Starting plugins..");
         foreach (var pluginLoader in temp)
         {
             var plugin = StartPlugin(pluginLoader);
-            Global.Logger.InfoFormat("Plugin: {0} ({1}) by [{2}] started.", plugin.Name, plugin.Version, plugin.Author);
+            Log.Information("Plugin: {0} ({1}) by [{2}] started.", plugin.Name, plugin.Version, plugin.Author);
         }
     }
 

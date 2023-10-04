@@ -10,6 +10,7 @@ using DuckSoup.Library.Commands.Auth;
 using DuckSoup.Library.Commands.Event;
 using DuckSoup.Library.Commands.Plugin;
 using DuckSoup.Library.Commands.Server;
+using Serilog;
 
 namespace DuckSoup.Library.Commands;
 
@@ -35,14 +36,11 @@ public class CommandManager : ICommandManager
 
     public void StartCommandLoop()
     {
-        Global.Logger.Info("Enter `help` to see all commands!");
+        Log.Information("Enter `help` to see all commands!");
         while (!_stopped)
         {
-            if (_commands == null)
-            {
-                throw new DisposedException(nameof(CommandManager));
-            }
-            
+            if (_commands == null) throw new DisposedException(nameof(CommandManager));
+
             var consoleInput = Console.ReadLine();
             ExecuteCommand(consoleInput);
         }
@@ -59,7 +57,7 @@ public class CommandManager : ICommandManager
             _helpCommand.Execute(null);
             return;
         }
-            
+
         var commandFound = false;
         foreach (var command in _commands)
         {
@@ -71,21 +69,16 @@ public class CommandManager : ICommandManager
 
             if (!command.GetName()!.ToLower().Equals(split[0].ToLower()) &&
                 !command.GetAliases()!.Contains(split[0].ToLower()))
-            {
                 continue;
-            }
-                
+
             command.Execute(split.Skip(1).ToArray());
             commandFound = true;
             EventFactory.Publish(EventFactoryNames.OnCommandExecution, input, command);
             break;
         }
 
-        foreach (var command in removeList)
-        {
-            _commands.Remove(command);
-        }
-            
+        foreach (var command in removeList) _commands.Remove(command);
+
         removeList.Clear();
 
         if (!commandFound)

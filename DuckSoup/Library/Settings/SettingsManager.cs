@@ -5,6 +5,7 @@ using API;
 using API.ServiceFactory;
 using API.Settings;
 using Newtonsoft.Json;
+using Serilog;
 
 #endregion
 
@@ -21,7 +22,7 @@ namespace DuckSoup.Library.Settings
                 Settings = new Settings().Init();
                 File.WriteAllText(@"./Settings.json",
                     JsonConvert.SerializeObject(Settings, Formatting.Indented));
-                Global.Logger.WarnFormat("Settings.json created. Please stop the Proxy and configure the file.");
+                Log.Warning("Settings.json created. Please stop the Proxy and configure the file.");
             }
 
             // if a config file exists deserialize and initialize it

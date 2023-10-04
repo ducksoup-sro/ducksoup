@@ -8,6 +8,7 @@ using API.ServiceFactory;
 using McMaster.NETCore.Plugins;
 using Quartz;
 using Quartz.Impl;
+using Serilog;
 
 namespace DuckSoup.Library.Event;
 
@@ -72,13 +73,13 @@ public class EventManager : IEventManager
             var tableList = eventTable.Where(s => s.Eventname.Equals(eEvent.Name)).ToList();
             if (tableList.Count == 0)
             {
-                Global.Logger.InfoFormat(
+                Log.Information(
                     "Event {0} ({1}) by [{2}] has no cronjob entry. Please add one and unload, load again. Otherwise it won't be triggered",
                     eEvent.Name, eEvent.Version, eEvent.Author);
             }
             else
             {
-                Global.Logger.InfoFormat("Event {0} ({1}) by [{2}] has {3} cronjob entry/s.", eEvent.Name,
+                Log.Information("Event {0} ({1}) by [{2}] has {3} cronjob entry/s.", eEvent.Name,
                     eEvent.Version, eEvent.Author, tableList.Count);
 
                 for (var i = 0; i < tableList.Count; i++)
@@ -205,11 +206,11 @@ public class EventManager : IEventManager
 
     private void Setup()
     {
-        Global.Logger.InfoFormat("Loading events..");
+        Log.Information("Loading events..");
         var pluginFiles = GetFilesInDirectory("events");
         if (pluginFiles == null)
         {
-            Global.Logger.InfoFormat("No eventfolder found. Creating one..");
+            Log.Information("No eventfolder found. Creating one..");
             Directory.CreateDirectory("events");
             return;
         }
@@ -218,14 +219,14 @@ public class EventManager : IEventManager
         foreach (var file in pluginFiles)
         {
             temp.Add(LoadEvent(file));
-            Global.Logger.InfoFormat("Plugin: {0} loaded.", file.Replace("\\events", ""));
+            Log.Information("Plugin: {0} loaded.", file.Replace("\\events", ""));
         }
 
-        Global.Logger.InfoFormat("Starting events..");
+        Log.Information("Starting events..");
         foreach (var pluginLoader in temp)
         {
             var eEvent = StartEvent(pluginLoader);
-            Global.Logger.InfoFormat("Event: {0} ({1}) by [{2}] started.", eEvent.Name, eEvent.Version, eEvent.Author);
+            Log.Information("Event: {0} ({1}) by [{2}] started.", eEvent.Name, eEvent.Version, eEvent.Author);
         }
     }
 

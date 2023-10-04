@@ -1,7 +1,7 @@
 ﻿#region
 
 using System.Reflection;
-using log4net;
+
 
 #endregion
 
@@ -9,9 +9,6 @@ namespace API
 {
     public static class Global
     {
-        public static readonly ILog Logger =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
-
         public static double CurrentMillis()
         {
             return (TimeZoneInfo.ConvertTimeToUtc(DateTime.Now) -
