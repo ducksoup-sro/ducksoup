@@ -17,6 +17,7 @@ using DuckSoup.Library.Services;
 using DuckSoup.Library.Settings;
 using DuckSoup.Library.Webserver;
 using Serilog;
+using Serilog.Events;
 
 #endregion
 
@@ -28,6 +29,7 @@ public static class Program
     {
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
+            .MinimumLevel.Override("Quartz", LogEventLevel.Warning)
             .WriteTo.Console(
                 outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {Message}{NewLine}{Exception}"
             )
