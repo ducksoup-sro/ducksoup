@@ -105,14 +105,15 @@ public class Packet
         return (int)(_reader.BaseStream.Length - _reader.BaseStream.Position);
     }
 
-    public virtual Task Read()
+    public async virtual Task Read()
     {
-        throw new NotImplementedException();
+        // throw new NotImplementedException();
     }
 
-    public virtual Task<Packet> Build()
+    public virtual async Task<Packet> Build()
     {
-        throw new NotImplementedException();
+        // throw new NotImplementedException();
+        return this;
     }
 
     public T CreateCopy<T>() where T : Packet, new()
