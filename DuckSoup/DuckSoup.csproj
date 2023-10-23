@@ -5,7 +5,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <RootNamespace>DuckSoup</RootNamespace>
         <ProductVersion>2.0.0</ProductVersion>
-        <LangVersion>latestmajor</LangVersion>
+        <LangVersion>12</LangVersion>
         <Version>2.0.0-ALPHA</Version>
     </PropertyGroup>
 

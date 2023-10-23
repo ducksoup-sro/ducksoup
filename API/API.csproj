@@ -14,7 +14,7 @@
         <PackageLicenseUrl>https://github.com/b0ykoe/ducksoup/blob/main/LICENSE.txt</PackageLicenseUrl>
         <PackageIcon>DuckSoup.png</PackageIcon>
         <RepositoryUrl>https://github.com/b0ykoe/ducksoup</RepositoryUrl>
-        <LangVersion>latestmajor</LangVersion>
+        <LangVersion>12</LangVersion>
         <Version>2.0.0-ALPHA</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
