@@ -4,11 +4,12 @@ namespace PacketLibrary.Handler;
 
 public class PacketHandler : IPacketHandler
 {
-    public PacketHandler(HashSet<ushort> clientWhitelist, HashSet<ushort> clientBlacklist)
+    public PacketHandler(HashSet<ushort> clientWhitelist, HashSet<ushort> clientBlacklist, PacketResultType unknownClientResult = PacketResultType.Block)
     {
         SetDefaultHandler(HandleDefault);
         SetBlockHandler(HandleBlock);
         SetDisconnectHandler(HandleDisconnect);
+        SetUnknownClientHandler(unknownClientResult);
         _clientWhitelist = clientWhitelist;
         _clientBlacklist = clientBlacklist;
     }
@@ -45,6 +46,7 @@ public class PacketHandler : IPacketHandler
     public _PacketHandler<Packet> _blockHandler { get; set; }
     public _PacketHandler<Packet> _defaultHandler { get; set; }
     public _PacketHandler<Packet> _disconnectHandler { get; set; }
+    public _PacketHandler<Packet> _unknownClientHandler { get; set; }
 
     public void SetDefaultHandler(Func<Packet, ISession, Task<Packet>> handler)
     {
@@ -77,6 +79,17 @@ public class PacketHandler : IPacketHandler
     {
         packet.ResultType = PacketResultType.Disconnect;
         return packet;
+    }
+    
+    public void SetUnknownClientHandler(PacketResultType resultType)
+    {
+        _unknownClientHandler = resultType switch
+        {
+            PacketResultType.Disconnect => _disconnectHandler,
+            PacketResultType.Block => _blockHandler,
+            PacketResultType.Nothing => _defaultHandler,
+            _ => _blockHandler
+        };
     }
 
     public void RegisterModuleHandler<T>(Func<T, ISession, Task<Packet>> handler) where T : Packet, new()
@@ -193,12 +206,12 @@ public class PacketHandler : IPacketHandler
         if (packet.MsgId == 0x9000 || packet.MsgId == 0x5000 || packet.MsgId == 0x2001)
             return await _defaultHandler.Handle(packet, session);
 
-        // if (_clientBlacklist.Contains(packet.MsgId))
-        //     return await _disconnectHandler.Handle(packet, session);
-        //
-        // // automatically blocks all packets that are not on the Whitelists!
-        // if (!_clientWhitelist.Contains(packet.MsgId))
-        //     return await _blockHandler.Handle(packet, session);
+        if (_clientBlacklist.Contains(packet.MsgId))
+            return await _disconnectHandler.Handle(packet, session);
+        
+        // automatically decides what to do with the clients
+        if (!_clientWhitelist.Contains(packet.MsgId))
+            return await _unknownClientHandler.Handle(packet, session);
 
         _clientHandlers.TryGetValue(packet.MsgId, out var handler);
 
@@ -248,7 +261,7 @@ public class PacketHandler : IPacketHandler
         if (handler == null) return outcome;
         var last = 0;
         if (handler.Count > 0) last = handler.Last().Key;
-
+        
         var oldIndex = -1;
         foreach (var packetHandler in handler)
         {

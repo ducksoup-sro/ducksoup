@@ -8,6 +8,7 @@ using DuckSoup.Agent;
 using DuckSoup.Download;
 using DuckSoup.Gateway;
 using SilkroadSecurityAPI;
+using SilkroadSecurityAPI.Message;
 
 namespace DuckSoup.Library.Server;
 
@@ -59,5 +60,10 @@ public class ISRO_R_ServerFactory : IServerFactory
             ServerType.None => throw new ArgumentOutOfRangeException(),
             _ => throw new ArgumentOutOfRangeException()
         };
+    }
+    
+    public PacketResultType GetDefaultUnknownClientResult(ServerType serviceServerType)
+    {
+        return PacketResultType.Nothing; // TODO :: Temporary for testing purp.
     }
 }

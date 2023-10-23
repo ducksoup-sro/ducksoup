@@ -79,11 +79,12 @@ public class FakeSession : TcpSession
             switch (packetResult.ResultType)
             {
                 case PacketResultType.Block:
-                    Session.SendToServer(packetResult);
-                    Console.WriteLine($"Packet: 0x{packet.MsgId:X} not on whitelist!");
+                    // TODO :: Temporary for testing purp.
+                    // Session.SendToServer(packetResult);
+                    Console.WriteLine($"Client Packet: 0x{packet.MsgId:X} is perhaps not on whitelist!");
                     break;
                 case PacketResultType.Disconnect:
-                    Console.WriteLine($"Packet: 0x{packet.MsgId:X} is on blacklist!");
+                    // Console.WriteLine($"Packet: 0x{packet.MsgId:X} is on blacklist!");
                     Session.Disconnect();
                     return;
                 case PacketResultType.Nothing:

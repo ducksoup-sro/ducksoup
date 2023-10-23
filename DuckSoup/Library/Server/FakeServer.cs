@@ -7,6 +7,7 @@ using API.ServiceFactory;
 using NetCoreServer;
 using PacketLibrary.Handler;
 using Serilog;
+using SilkroadSecurityAPI.Message;
 
 namespace DuckSoup.Library.Server;
 
@@ -20,7 +21,8 @@ public class FakeServer : TcpServer, IFakeServer
 
         PacketHandler = new PacketHandler(
             factory.GetWhitelist(service.ServerType),
-            factory.GetBlacklist(service.ServerType)
+            factory.GetBlacklist(service.ServerType),
+            factory.GetDefaultUnknownClientResult(service.ServerType)
         );
 
         Log.Information("{0} - Debuglevel: {1}", Service.Name,
