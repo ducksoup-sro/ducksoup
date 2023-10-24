@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace SilkroadSecurityAPI.Message;
 
@@ -70,6 +71,7 @@ public class Packet
 
     public PacketResultType ResultType { get; set; } = PacketResultType.Nothing;
     public ushort Status { get; set; } = 0;
+    public bool DebugPacket { get; set; } = false;
 
     #endregion
 
@@ -164,7 +166,18 @@ public class Packet
     public Packet TryRead<T>(out T value)
         where T : unmanaged
     {
+        // var size = (ushort)Unsafe.SizeOf<T>();
+        // MemoryMarshal.TryRead(_reader.ReadBytes(size), out value);
+        // return this;
+        
         var size = (ushort)Unsafe.SizeOf<T>();
+        var availableBytes = ((MemoryStream)_reader.BaseStream).Length - ((MemoryStream)_reader.BaseStream).Position;
+
+        if (size > availableBytes && DebugPacket)
+        {
+            Log.Debug("Attempting to read {0} bytes, but only {1} bytes available.", size, availableBytes);
+        }
+
         MemoryMarshal.TryRead(_reader.ReadBytes(size), out value);
         return this;
     }
@@ -204,6 +217,16 @@ public class Packet
 
     public Packet TryRead(out string value, ushort length, Encoding encoding)
     {
+        // value = encoding.GetString(_reader.ReadBytes(length));
+        // return this;
+        
+        var availableBytes = ((MemoryStream)_reader.BaseStream).Length - ((MemoryStream)_reader.BaseStream).Position;
+    
+        if (length > availableBytes && DebugPacket)
+        {
+            Log.Debug("Attempting to read {0} bytes, but only {1} bytes available.", length, availableBytes);
+        }
+    
         value = encoding.GetString(_reader.ReadBytes(length));
         return this;
     }
