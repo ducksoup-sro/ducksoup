@@ -1,10 +1,13 @@
-﻿namespace API.Command;
+﻿using LanguageExt.Common;
+using Void = LanguageExt.Pipes.Void;
+
+namespace API.Command;
 
 public interface ICommandManager : IDisposable
 {
     List<Command> _commands { get; }
     Command _helpCommand { get; }
 
-    void StartCommandLoop();
+    Result<Void> StartCommandLoop();
     void ExecuteCommand(string input);
 }

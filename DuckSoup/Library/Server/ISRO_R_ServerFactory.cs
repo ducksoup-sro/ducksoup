@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using API;
 using API.Database.DuckSoup;
@@ -14,7 +13,7 @@ namespace DuckSoup.Library.Server;
 
 public class ISRO_R_ServerFactory : IServerFactory
 {
-    public IFakeServer Create(Service service, ServerType serverType)
+    public IFakeServer? Create(Service service, ServerType serverType)
     {
         return serverType switch
         {
@@ -22,7 +21,7 @@ public class ISRO_R_ServerFactory : IServerFactory
             ServerType.DownloadServer => new ISRO_R_DownloadServer(service),
             ServerType.AgentServer => new ISRO_R_AgentServer(service),
             ServerType.None => null,
-            _ => throw new ArgumentOutOfRangeException()
+            _ => null
         };
     }
 
@@ -39,8 +38,8 @@ public class ISRO_R_ServerFactory : IServerFactory
             ServerType.AgentServer => defaultList.ClientGlobalWhitelist()
                 .Concat(defaultList.ClientAgentWhitelist())
                 .ToHashSet(),
-            ServerType.None => throw new ArgumentOutOfRangeException(),
-            _ => throw new ArgumentOutOfRangeException()
+            ServerType.None => new HashSet<ushort>(),
+            _ => new HashSet<ushort>()
         };
     }
 
@@ -57,8 +56,8 @@ public class ISRO_R_ServerFactory : IServerFactory
             ServerType.AgentServer => defaultList.ClientGlobalBlacklist()
                 .Concat(defaultList.ClientAgentBlacklist())
                 .ToHashSet(),
-            ServerType.None => throw new ArgumentOutOfRangeException(),
-            _ => throw new ArgumentOutOfRangeException()
+            ServerType.None => new HashSet<ushort>(),
+            _ => new HashSet<ushort>()
         };
     }
     

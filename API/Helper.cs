@@ -1,5 +1,6 @@
 ﻿using API.Session;
 using PacketLibrary.Handler;
+using Serilog;
 using SilkroadSecurityAPI.Message;
 
 namespace API;
@@ -139,7 +140,8 @@ public static class Helper
 
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(serverType), serverType, null);
+                    Log.Error("Helper - BroadcastPacket - {0}, {1}", nameof(serverType), serverType);
+                    break;
             }
         });
     }

@@ -1,4 +1,6 @@
 ﻿using API.Exceptions;
+using LanguageExt.Common;
+using Void = LanguageExt.Pipes.Void;
 
 namespace API.Command;
 
@@ -40,9 +42,9 @@ public abstract class Command : IDisposable
         return SubCommands;
     }
 
-    public bool HasSubCommands()
+    public Result<bool> HasSubCommands()
     {
-        if (SubCommands == null) throw new DisposedException(nameof(Command));
+        if (SubCommands == null) return new Result<bool>(new DisposedException(nameof(Command)));
 
         return SubCommands.Count != 0;
     }
@@ -67,11 +69,13 @@ public abstract class Command : IDisposable
         return Description;
     }
 
-    protected void ExecuteHelpCommand()
+    protected Result<Void> ExecuteHelpCommand()
     {
-        if (SubCommands == null) throw new DisposedException(nameof(Command));
+        if (SubCommands == null) return new Result<Void>(new DisposedException(nameof(Command)));
 
         foreach (var subCommand in SubCommands.Where(subCommand => subCommand.GetName()!.ToLower().Equals("help")))
             subCommand.Execute(null);
+
+        return new Result<Void>();
     }
 }

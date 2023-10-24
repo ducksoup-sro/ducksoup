@@ -4,6 +4,7 @@ using API.Database.DuckSoup;
 using DuckSoup.Library.Session;
 using NetCoreServer;
 using PacketLibrary.Handler;
+using Serilog;
 using SilkroadSecurityAPI;
 using SilkroadSecurityAPI.Message;
 
@@ -91,7 +92,8 @@ public class FakeSession : TcpSession
                     Session.SendToServer(packetResult);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    Log.Error("FakeSession - Unknown ResultType");
+                    break;
             }
         }
 

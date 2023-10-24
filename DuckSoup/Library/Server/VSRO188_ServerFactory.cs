@@ -14,7 +14,7 @@ namespace DuckSoup.Library.Server;
 
 public class VSRO188_ServerFactory : IServerFactory
 {
-    public IFakeServer Create(Service service, ServerType serverType)
+    public IFakeServer? Create(Service service, ServerType serverType)
     {
         return serverType switch
         {
@@ -22,7 +22,7 @@ public class VSRO188_ServerFactory : IServerFactory
             ServerType.DownloadServer => new VSRO188_DownloadServer(service),
             ServerType.AgentServer => new VSRO188_AgentServer(service),
             ServerType.None => null,
-            _ => throw new ArgumentOutOfRangeException()
+            _ => null
         };
     }
 
@@ -39,8 +39,8 @@ public class VSRO188_ServerFactory : IServerFactory
             ServerType.AgentServer => defaultList.ClientGlobalWhitelist()
                 .Concat(defaultList.ClientAgentWhitelist())
                 .ToHashSet(),
-            ServerType.None => throw new ArgumentOutOfRangeException(),
-            _ => throw new ArgumentOutOfRangeException()
+            ServerType.None => new HashSet<ushort>(),
+            _ => new HashSet<ushort>()
         };
     }
 
@@ -57,8 +57,8 @@ public class VSRO188_ServerFactory : IServerFactory
             ServerType.AgentServer => defaultList.ClientGlobalBlacklist()
                 .Concat(defaultList.ClientAgentBlacklist())
                 .ToHashSet(),
-            ServerType.None => throw new ArgumentOutOfRangeException(),
-            _ => throw new ArgumentOutOfRangeException()
+            ServerType.None => new HashSet<ushort>(),
+            _ => new HashSet<ushort>()
         };
     }
 

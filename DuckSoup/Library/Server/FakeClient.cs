@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using API.Database.DuckSoup;
 using PacketLibrary.Handler;
+using Serilog;
 using SilkroadSecurityAPI;
 using SilkroadSecurityAPI.Message;
 using TcpClient = NetCoreServer.TcpClient;
@@ -79,7 +80,8 @@ public class FakeClient : TcpClient
                     Session.SendToClient(packetResult);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    Log.Error("FakeClient - Unknown ResultType");
+                    break;
             }
         }
 

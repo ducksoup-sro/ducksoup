@@ -15,8 +15,18 @@ public class HelpCommand : Command
 
     public override void Execute(string[]? args)
     {
+        if (SubCommands == null)
+        {
+            Log.Information("Command: {0} has no subcommands.", this.GetName());
+            return;
+        }
+
         foreach (var subCommand in SubCommands)
-            if (subCommand.HasSubCommands() && !subCommand.GetName().Equals("help"))
+        {
+            var hasSubCommand = subCommand.HasSubCommands().Match(
+                data => data, exception => false);
+
+            if (hasSubCommand && !subCommand.GetName().Equals("help"))
             {
                 var sublist = "";
                 foreach (var command in subCommand.GetSubCommands())
@@ -34,5 +44,6 @@ public class HelpCommand : Command
                 Log.Information("Command: {0} - Syntax: {1} - Aliases: ({2}) | Description: {3}", subCommand.GetName(),
                     subCommand.GetSyntax(), string.Join(", ", subCommand.GetAliases()), subCommand.GetDescription());
             }
+        }
     }
 }

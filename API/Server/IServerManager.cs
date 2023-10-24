@@ -1,7 +1,9 @@
 ﻿using API.Database.DuckSoup;
+using LanguageExt.Common;
 using PacketLibrary.Handler;
 using SilkroadSecurityAPI;
 using SilkroadSecurityAPI.Message;
+using Void = LanguageExt.Pipes.Void;
 
 namespace API.Server;
 
@@ -17,7 +19,7 @@ public interface IServerManager : IDisposable
     void Start(Service service, bool firstStart);
     void Stop(string name);
     void Stop(Service service);
-    void AddServer(Service service);
+    Result<Void> AddServer(Service service);
 
     IServerFactory GetServiceFactory(SecurityType securityType);
 

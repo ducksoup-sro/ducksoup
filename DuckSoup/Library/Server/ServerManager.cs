@@ -8,10 +8,12 @@ using API;
 using API.Database.DuckSoup;
 using API.Server;
 using API.ServiceFactory;
+using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using PacketLibrary.Handler;
 using SilkroadSecurityAPI;
 using SilkroadSecurityAPI.Message;
+using Void = LanguageExt.Pipes.Void;
 
 #endregion
 
@@ -171,13 +173,15 @@ public class ServerManager : IServerManager
         Servers = null;
     }
 
-    public void AddServer(Service service)
+    public Result<Void> AddServer(Service service)
     {
         if (!serverFactories.TryGetValue(service.SecurityType, out var serverFactory))
-            throw new ArgumentOutOfRangeException();
+            return new Result<Void>(new ArgumentOutOfRangeException());
 
         var server = serverFactory.Create(service, service.ServerType);
 
         if (server != null) Servers.Add(server);
+
+        return new Result<Void>();
     }
 }
