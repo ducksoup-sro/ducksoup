@@ -17,6 +17,7 @@
         <LangVersion>12</LangVersion>
         <Version>2.0.0-ALPHA</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>

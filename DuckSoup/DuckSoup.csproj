@@ -7,6 +7,7 @@
         <ProductVersion>2.0.0</ProductVersion>
         <LangVersion>12</LangVersion>
         <Version>2.0.0-ALPHA</Version>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
