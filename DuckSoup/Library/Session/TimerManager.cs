@@ -87,7 +87,7 @@ public class TimerManager : ITimerManager
         foreach (var agentSession in ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).AgentSessions.Where(
                      agentSession =>
                      {
-                         agentSession.GetData<bool>(SessionConst.CHARACTER_GAME_READY, out var characterGameReady);
+                         agentSession.GetData<bool>(SessionConst.CHARACTER_GAME_READY, out var characterGameReady, false);
                          return characterGameReady;
                      }))
             agentSession.SendToClient(packet);
@@ -115,7 +115,7 @@ public class TimerManager : ITimerManager
         foreach (var agentSession in ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).AgentSessions.Where(
                      agentSession =>
                      {
-                         agentSession.GetData<bool>(SessionConst.CHARACTER_GAME_READY, out var characterGameReady);
+                         agentSession.GetData<bool>(SessionConst.CHARACTER_GAME_READY, out var characterGameReady, false);
                          return characterGameReady;
                      }))
             agentSession.SendToClient(packet);
@@ -162,7 +162,7 @@ public class TimerManager : ITimerManager
 
     private Packet CreateStartPacket()
     {
-        _session.GetData<int>(SessionConst.UNIQUE_CHAR_ID, out var uniqueCharId);
+        _session.GetData<int>(SessionConst.UNIQUE_CHAR_ID, out var uniqueCharId, -1);
         var packetTime = (int)_started.GetValueOrDefault().AddMilliseconds(_timerInterval).Subtract(DateTime.Now)
             .TotalSeconds;
         var response = new Packet(0x3041);
@@ -176,7 +176,7 @@ public class TimerManager : ITimerManager
 
     private Packet CreateStopPacket()
     {
-        _session.GetData<int>(SessionConst.UNIQUE_CHAR_ID, out var uniqueCharId);
+        _session.GetData<int>(SessionConst.UNIQUE_CHAR_ID, out var uniqueCharId, -1);
         var response = new Packet(0x3042);
         response.TryWrite((uint)uniqueCharId)
             .TryWrite(0x01);

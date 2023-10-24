@@ -84,8 +84,15 @@ public class DuckSession : ISession
         return Task.CompletedTask;
     }
 
-    public ISession GetData<T>(string key, out T value)
+    public ISession GetData<T>(string key, out T value, T defaultValue)
     {
+        if (!SessionData.ContainsKey(key))
+        {
+            value = defaultValue;
+            SetData(key, defaultValue);
+            return this;
+        }
+        
         SessionData.TryGetValue(key, out var val);
         value = (T)val;
         return this;
@@ -101,19 +108,6 @@ public class DuckSession : ISession
     public ISession HasData(string key, out bool value)
     {
         value = SessionData.ContainsKey(key);
-        return this;
-    }
-
-    public ISession Data<T>(string key, out T value, T defaultValue)
-    {
-        if (!SessionData.ContainsKey(key))
-        {
-            value = defaultValue;
-            return this;
-        }
-
-        SessionData.TryGetValue(key, out var val);
-        value = (T)val;
         return this;
     }
 }

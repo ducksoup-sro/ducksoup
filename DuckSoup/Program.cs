@@ -17,6 +17,7 @@ using DuckSoup.Library.Services;
 using DuckSoup.Library.Settings;
 using DuckSoup.Library.Webserver;
 using Serilog;
+using Serilog.Core;
 using Serilog.Events;
 
 #endregion
@@ -54,27 +55,40 @@ public static class Program
                 .ProductVersion);
         Console.Title = "Starting up...";
 
-        var settingsManager = new SettingsManager();
-        var databaseManager = new DatabaseManager();
+        try
+        {
+            var settingsManager = new SettingsManager();
+            var databaseManager = new DatabaseManager();
 
+            var sharedObjects = new SharedObjects();
+            var userService = new UserService();
+            var authService = new AuthService();
+            var partyManager = new PartyManager();
+            var serverManager = new ServerManager();
+            var webserverManager = new WebserverManager();
+            var commandManager = new CommandManager();
+            var pluginManager = new PluginManager();
+            var eventManager = new EventManager();
 
-        var sharedObjects = new SharedObjects();
-        var userService = new UserService();
-        var authService = new AuthService();
-        var partyManager = new PartyManager();
-        var serverManager = new ServerManager();
-        var webserverManager = new WebserverManager();
-        var commandManager = new CommandManager();
-        var pluginManager = new PluginManager();
-        var eventManager = new EventManager();
-
-        // Make sure we start the command loop in order to not exit the application
-        ServiceFactory.Load<ICommandManager>(typeof(ICommandManager)).StartCommandLoop();
-    }
+            // Make sure we start the command loop in order to not exit the application
+            ServiceFactory.Load<ICommandManager>(typeof(ICommandManager)).StartCommandLoop();
+        }
+        catch (Exception exception)
+        {
+            Log.Error("Program.cs Main| {0}", exception.Message);
+        }
+    } 
 
     public static void Stop()
     {
-        ServiceFactory.Load<IServerManager>(typeof(IServerManager)).Dispose();
-        ServiceFactory.Load<ICommandManager>(typeof(ICommandManager)).Dispose();
+        try
+        {
+            ServiceFactory.Load<IServerManager>(typeof(IServerManager)).Dispose();
+            ServiceFactory.Load<ICommandManager>(typeof(ICommandManager)).Dispose();
+        }
+        catch (Exception exception)
+        {
+            Log.Error("Program.cs Stop| {0}", exception.Message);
+        }
     }
 }

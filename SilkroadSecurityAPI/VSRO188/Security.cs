@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using NetCoreServer;
+using SilkroadSecurityAPI.Exceptions;
 using SilkroadSecurityAPI.Message;
 using Buffer = System.Buffer;
 
@@ -139,7 +140,7 @@ public class Security : ISecurity
     public void Send(Packet packet)
     {
         if (packet.Opcode == 0x5000 || packet.Opcode == 0x9000)
-            throw new Exception("[SecurityAPI::Send] Handshake packets cannot be sent through this function.");
+            throw new SendException("[SecurityAPI::Send] Handshake packets cannot be sent through this function.");
 
         lock (m_class_lock)
         {
@@ -292,7 +293,7 @@ public class Security : ISecurity
                         {
                             var expected_count = GenerateCountByte(true);
                             if (packet_security_count != expected_count)
-                                throw new Exception("[SecurityAPI::Recv] Count byte mismatch.");
+                                throw new RecvException("[SecurityAPI::Recv] Count byte mismatch.");
 
                             if (packet_encrypted ||
                                 (_mSecurityFlags.security_bytes == 1 && _mSecurityFlags.blowfish == 0))
@@ -307,7 +308,7 @@ public class Security : ISecurity
 
                             var expected_crc = GenerateCheckByte(buffer.Buffer);
                             if (packet_security_crc != expected_crc)
-                                throw new Exception("[SecurityAPI::Recv] CRC byte mismatch.");
+                                throw new RecvException("[SecurityAPI::Recv] CRC byte mismatch.");
 
                             buffer.Buffer[4] = 0;
 
@@ -338,7 +339,7 @@ public class Security : ISecurity
                         if (_mClientSecurity)
                             // Make sure the client accepted the security system first
                             if (!_mAcceptedHandshake)
-                                throw new Exception(
+                                throw new HandshakeException(
                                     "[SecurityAPI::Recv] The client has not accepted the handshake.");
 
                         if (packet_opcode == 0x600D) // Auto process massive messages for the user
@@ -353,7 +354,7 @@ public class Security : ISecurity
                             else
                             {
                                 if (_mMassivePacket == null)
-                                    throw new Exception(
+                                    throw new PacketFormatException(
                                         "[SecurityAPI::Recv] A malformed 0x600D packet was received.");
 
                                 foreach (var readByte in packet_data.ReadBytes(packet_size - 1))
@@ -860,7 +861,7 @@ public class Security : ISecurity
     private void Handshake(ushort packet_opcode, PacketReader packet_data, bool packet_encrypted)
     {
         if (packet_encrypted)
-            throw new Exception("[SecurityAPI::Handshake] Received an illogical (encrypted) handshake packet.");
+            throw new HandshakeException("[SecurityAPI::Handshake] Received an illogical (encrypted) handshake packet.");
 
         if (_mClientSecurity)
         {
@@ -871,7 +872,7 @@ public class Security : ISecurity
                 if (packet_opcode == 0x9000)
                 {
                     if (_mAcceptedHandshake)
-                        throw new Exception(
+                        throw new HandshakeException(
                             "[SecurityAPI::Handshake] Received an illogical handshake packet (duplicate 0x9000).");
 
                     _mAcceptedHandshake = true; // Otherwise, all good here
@@ -880,11 +881,11 @@ public class Security : ISecurity
                 // Client should not send any 0x5000s!
 
                 if (packet_opcode == 0x5000)
-                    throw new Exception(
+                    throw new HandshakeException(
                         "[SecurityAPI::Handshake] Received an illogical handshake packet (0x5000 with no handshake).");
                 // Programmer made a mistake in calling this function
 
-                throw new Exception(
+                throw new HandshakeException(
                     "[SecurityAPI::Handshake] Received an illogical handshake packet (programmer error).");
             }
 
@@ -893,11 +894,11 @@ public class Security : ISecurity
             {
                 // Can't accept it before it's started!
                 if (!_mStartedHandshake)
-                    throw new Exception(
+                    throw new HandshakeException(
                         "[SecurityAPI::Handshake] Received an illogical handshake packet (out of order 0x9000).");
 
                 if (_mAcceptedHandshake) // Client error
-                    throw new Exception(
+                    throw new HandshakeException(
                         "[SecurityAPI::Handshake] Received an illogical handshake packet (duplicate 0x9000).");
 
                 // Otherwise, all good here
@@ -909,7 +910,7 @@ public class Security : ISecurity
             if (packet_opcode == 0x5000)
             {
                 if (_mStartedHandshake) // Client error
-                    throw new Exception(
+                    throw new HandshakeException(
                         "[SecurityAPI::Handshake] Received an illogical handshake packet (duplicate 0x5000).");
 
                 _mStartedHandshake = true;
@@ -917,7 +918,7 @@ public class Security : ISecurity
             // Programmer made a mistake in calling this function
             else
             {
-                throw new Exception(
+                throw new HandshakeException(
                     "[SecurityAPI::Handshake] Received an illogical handshake packet (programmer error).");
             }
 
@@ -938,7 +939,7 @@ public class Security : ISecurity
 
             key_array = MAKELONGLONG_(_mValueB, _mValueA);
             KeyTransformValue(ref key_array, _mValueK, (byte)(LOBYTE_(LOWORD_(_mValueB)) & 0x07));
-            if (_mClientKey != key_array) throw new Exception("[SecurityAPI::Handshake] Client signature error.");
+            if (_mClientKey != key_array) throw new HandshakeException("[SecurityAPI::Handshake] Client signature error.");
 
             key_array = MAKELONGLONG_(_mValueA, _mValueB);
             KeyTransformValue(ref key_array, _mValueK, (byte)(LOBYTE_(LOWORD_(_mValueK)) & 0x03));
@@ -964,7 +965,7 @@ public class Security : ISecurity
         else
         {
             if (packet_opcode != 0x5000)
-                throw new Exception(
+                throw new HandshakeException(
                     "[SecurityAPI::Handshake] Received an illogical handshake packet (programmer error).");
 
             var flag = packet_data.ReadByte();
@@ -1022,7 +1023,7 @@ public class Security : ISecurity
                 expected_challenge_key = BitConverter.ToUInt64(tmp_bytes, 0);
 
                 if (_mChallengeKey != expected_challenge_key)
-                    throw new Exception("[SecurityAPI::Handshake] Server signature error.");
+                    throw new HandshakeException("[SecurityAPI::Handshake] Server signature error.");
 
                 KeyTransformValue(ref _mHandshakeBlowfishKey, _mValueK, 0x3);
                 _mBlowfish.Initialize(BitConverter.GetBytes(_mHandshakeBlowfishKey));
@@ -1033,7 +1034,7 @@ public class Security : ISecurity
             {
                 // Check to see if we already started a handshake
                 if (_mStartedHandshake || _mAcceptedHandshake)
-                    throw new Exception(
+                    throw new HandshakeException(
                         "[SecurityAPI::Handshake] Received an illogical handshake packet (duplicate 0x5000).");
 
                 // Handshake challenge
@@ -1049,7 +1050,7 @@ public class Security : ISecurity
             {
                 // Check to see if we already accepted a handshake
                 if (_mAcceptedHandshake)
-                    throw new Exception(
+                    throw new HandshakeException(
                         "[SecurityAPI::Handshake] Received an illogical handshake packet (duplicate 0x5000).");
 
                 // Handshake accepted
@@ -1074,7 +1075,7 @@ public class Security : ISecurity
     private byte[] FormatPacket(ushort msgId, byte[] data, bool encrypted)
     {
         // Sanity check
-        if (data.Length >= 0x8000) throw new Exception("[SecurityAPI::FormatPacket] Payload is too large!");
+        if (data.Length >= 0x8000) throw new FormatException("[SecurityAPI::FormatPacket] Payload is too large!");
 
         var data_length = (ushort)data.Length;
 
@@ -1169,7 +1170,7 @@ public class Security : ISecurity
     private KeyValuePair<TransferBuffer, Packet> GetPacketToSend()
     {
         if (_mOutgoingPackets.Count == 0)
-            throw new Exception("[SecurityAPI::GetPacketToSend] No packets are avaliable to send.");
+            throw new SendException("[SecurityAPI::GetPacketToSend] No packets are avaliable to send.");
 
         var packet = _mOutgoingPackets[0];
         _mOutgoingPackets.RemoveAt(0);
@@ -1238,7 +1239,7 @@ public class Security : ISecurity
     private TransferBuffer GetPacketToSendLite()
     {
         if (_mOutgoingPackets.Count == 0)
-            throw new Exception("[SecurityAPI::GetPacketToSend] No packets are avaliable to send.");
+            throw new SendException("[SecurityAPI::GetPacketToSend] No packets are avaliable to send.");
 
 
         var packet = _mOutgoingPackets[0];

@@ -28,7 +28,7 @@ public static class Helper
         var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
         return Task.FromResult(sharedObjects.AgentSessions.FirstOrDefault(session =>
         {
-            session.GetData(SessionConst.CHARNAME, out string? sessionCharName);
+            session.GetData(SessionConst.CHARNAME, out string? sessionCharName, null);
             return string.Equals(sessionCharName, charname, StringComparison.OrdinalIgnoreCase);
         }));
     }
@@ -38,7 +38,7 @@ public static class Helper
         var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
         return Task.FromResult(sharedObjects.AgentSessions.FirstOrDefault(session =>
         {
-            session.GetData(SessionConst.JID, out int jid);
+            session.GetData(SessionConst.JID, out int jid, 0);
             return jid == accountJID;
         }));
     }
@@ -48,7 +48,7 @@ public static class Helper
         var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
         var result = sharedObjects.AgentSessions.Where(session =>
         {
-            session.GetData(SessionConst.REGION_ID, out int sessionRegionId);
+            session.GetData(SessionConst.REGION_ID, out int sessionRegionId, 0);
             return sessionRegionId == regionId;
         }).ToList();
         return Task.FromResult(result);
@@ -59,8 +59,8 @@ public static class Helper
         var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
         var result = sharedObjects.AgentSessions.Where(session =>
         {
-            session.GetData<int>(SessionConst.SECTOR_X, out var sectorX);
-            session.GetData<int>(SessionConst.SECTOR_Y, out var sectorY);
+            session.GetData<int>(SessionConst.SECTOR_X, out var sectorX, 0);
+            session.GetData<int>(SessionConst.SECTOR_Y, out var sectorY, 0);
             return sectorX == x && sectorY == y;
         }).ToList();
         return Task.FromResult(result);
@@ -73,11 +73,11 @@ public static class Helper
             var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
             foreach (var targetSession in sharedObjects.AgentSessions)
             {
-                targetSession.GetData<bool>(SessionConst.CHARACTER_GAME_READY, out var characterGameReady);
+                targetSession.GetData<bool>(SessionConst.CHARACTER_GAME_READY, out var characterGameReady, false);
 
                 if (clientIsReady && !characterGameReady) continue;
 
-                targetSession.GetData<int>(SessionConst.REGION_ID, out var targetRegionId);
+                targetSession.GetData<int>(SessionConst.REGION_ID, out var targetRegionId, 0);
 
                 if (targetRegionId == regionId) targetSession.SendToClient(packet);
             }
@@ -92,14 +92,14 @@ public static class Helper
             var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
             foreach (var targetSession in sharedObjects.AgentSessions)
             {
-                targetSession.GetData<bool>(SessionConst.CHARACTER_GAME_READY, out var characterGameReady);
+                targetSession.GetData<bool>(SessionConst.CHARACTER_GAME_READY, out var characterGameReady, false);
 
                 if (clientIsReady && !characterGameReady) continue;
 
-                session.GetData<int>(SessionConst.SECTOR_X, out var sectorX);
-                session.GetData<int>(SessionConst.SECTOR_Y, out var sectorY);
-                targetSession.GetData<int>(SessionConst.SECTOR_X, out var targetSectorX);
-                targetSession.GetData<int>(SessionConst.SECTOR_Y, out var targetSectorY);
+                session.GetData<int>(SessionConst.SECTOR_X, out var sectorX, 0);
+                session.GetData<int>(SessionConst.SECTOR_Y, out var sectorY, 0);
+                targetSession.GetData<int>(SessionConst.SECTOR_X, out var targetSectorX, 0);
+                targetSession.GetData<int>(SessionConst.SECTOR_Y, out var targetSectorY, 0);
 
                 if ((targetSectorX + 1 == sectorX ||
                      targetSectorX - 1 == sectorX ||
@@ -132,7 +132,7 @@ public static class Helper
                 case ServerType.AgentServer:
                     foreach (var session in sharedObjects.AgentSessions)
                     {
-                        session.GetData<bool>(SessionConst.CHARACTER_GAME_READY, out var characterGameReady);
+                        session.GetData<bool>(SessionConst.CHARACTER_GAME_READY, out var characterGameReady, false);
 
                         if (!characterGameReady) return;
                         session.SendToClient(packet);

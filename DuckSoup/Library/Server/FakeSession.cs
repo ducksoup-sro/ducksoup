@@ -6,6 +6,7 @@ using NetCoreServer;
 using PacketLibrary.Handler;
 using Serilog;
 using SilkroadSecurityAPI;
+using SilkroadSecurityAPI.Exceptions;
 using SilkroadSecurityAPI.Message;
 
 namespace DuckSoup.Library.Server;
@@ -58,46 +59,65 @@ public class FakeSession : TcpSession
     // C -> P -> S
     protected override void OnReceived(byte[] buffer, long offset, long size)
     {
-        ClientSecurity.Recv(buffer, (int)offset, (int)size);
-
-        var receivedPackets = ClientSecurity.TransferIncoming();
-
-        if (receivedPackets == null || receivedPackets.Count == 0) return;
-
-        foreach (var packet in receivedPackets)
+        Session.GetData(DataConstants.CrcFailure, out var crc, 0);
+        if (crc > 5)
         {
-            Console.Write("[C -> P]");
-            if (packet.Encrypted)
-                Console.Write("[E]");
-            if (packet.Massive)
-                Console.Write("[M]");
-            Console.WriteLine($" Packet: 0x{packet.MsgId:X} - {Id}");
-
-            if (packet.MsgId == 0x5000 || packet.MsgId == 0x9000 || packet.MsgId == 0x2001) continue;
-
-            var packetResult = FakeServer.PacketHandler.HandleClient(packet, Session).Result;
-
-            switch (packetResult.ResultType)
-            {
-                case PacketResultType.Block:
-                    // TODO :: Temporary for testing purp.
-                    // Session.SendToServer(packetResult);
-                    Console.WriteLine($"Client Packet: 0x{packet.MsgId:X} is perhaps not on whitelist!");
-                    break;
-                case PacketResultType.Disconnect:
-                    // Console.WriteLine($"Packet: 0x{packet.MsgId:X} is on blacklist!");
-                    Session.Disconnect();
-                    return;
-                case PacketResultType.Nothing:
-                    Session.SendToServer(packetResult);
-                    break;
-                default:
-                    Log.Error("FakeSession - Unknown ResultType");
-                    break;
-            }
+            Session.Disconnect();
+            return;
         }
+        
+        try
+        {
+            ClientSecurity.Recv(buffer, (int)offset, (int)size);
 
-        Session.TransferToServer();
+            var receivedPackets = ClientSecurity.TransferIncoming();
+
+            if (receivedPackets == null || receivedPackets.Count == 0) return;
+
+            foreach (var packet in receivedPackets)
+            {
+                Console.Write("[C -> P]");
+                if (packet.Encrypted)
+                    Console.Write("[E]");
+                if (packet.Massive)
+                    Console.Write("[M]");
+                Console.WriteLine($" Packet: 0x{packet.MsgId:X} - {Id}");
+
+                if (packet.MsgId == 0x5000 || packet.MsgId == 0x9000 || packet.MsgId == 0x2001) continue;
+
+                var packetResult = FakeServer.PacketHandler.HandleClient(packet, Session).Result;
+
+                switch (packetResult.ResultType)
+                {
+                    case PacketResultType.Block:
+                        // TODO :: Temporary for testing purp.
+                        // Session.SendToServer(packetResult);
+                        Console.WriteLine($"Client Packet: 0x{packet.MsgId:X} is perhaps not on whitelist!");
+                        break;
+                    case PacketResultType.Disconnect:
+                        // Console.WriteLine($"Packet: 0x{packet.MsgId:X} is on blacklist!");
+                        Session.Disconnect();
+                        return;
+                    case PacketResultType.Nothing:
+                        Session.SendToServer(packetResult);
+                        break;
+                    default:
+                        Log.Error("FakeSession - Unknown ResultType");
+                        break;
+                }
+            }
+            Session.SetData(DataConstants.CrcFailure, 0);
+            Session.TransferToServer();
+        }
+        catch (RecvException recvException)
+        {
+            Session.SetData(DataConstants.CrcFailure, crc + 1);
+        }
+        catch (Exception exception)
+        {
+            Log.Error("FakeSession Recv | {0}", exception.Message);
+            Session.Disconnect();
+        }
     }
 
     public void Send(Packet packet, bool transfer = false)

@@ -34,7 +34,7 @@ public class PartyManager : IPartyManager
     {
         return _parties.Values.FirstOrDefault(party => party.Members.Any(partyMember =>
         {
-            partyMember.GetData<string>(SessionConst.CHARNAME, out var partyCharname);
+            partyMember.GetData<string>(SessionConst.CHARNAME, out var partyCharname, null);
             return string.Equals(partyCharname, charname, StringComparison.CurrentCultureIgnoreCase);
         }));
     }
@@ -75,7 +75,7 @@ public class PartyManager : IPartyManager
     {
         return _parties.Values.Any(party => party.Members.Any(partyMember =>
         {
-            partyMember.GetData<string>(SessionConst.CHARNAME, out var partyCharname);
+            partyMember.GetData<string>(SessionConst.CHARNAME, out var partyCharname, null);
             return string.Equals(partyCharname, charname, StringComparison.CurrentCultureIgnoreCase);
         }));
     }
@@ -89,7 +89,7 @@ public class PartyManager : IPartyManager
     {
         return _partyMatchEntries.Values.Any(entry => entry.Party.Members.Any(partyMember =>
         {
-            partyMember.GetData<string>(SessionConst.CHARNAME, out var partyCharname);
+            partyMember.GetData<string>(SessionConst.CHARNAME, out var partyCharname, null);
             return string.Equals(partyCharname, charname, StringComparison.CurrentCultureIgnoreCase);
         }));
     }

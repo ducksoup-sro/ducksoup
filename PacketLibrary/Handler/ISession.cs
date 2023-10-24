@@ -71,7 +71,7 @@ public interface ISession
     /// <param name="value"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    ISession GetData<T>(string key, out T? value);
+    ISession GetData<T>(string key, out T value, T defaultValue);
 
     /// <summary>
     ///     Sets data for the session which can be retrieved by <see cref="GetData{T}" />
@@ -89,15 +89,4 @@ public interface ISession
     /// <param name="value"></param>
     /// <returns></returns>
     ISession HasData(string key, out bool value);
-
-    /// <summary>
-    ///     I'm fucking lazy, you can use <see cref="GetData{T}" /> <see cref="SetData{T}" /> and <see cref="HasData" /> but
-    ///     this one will do it all in one.
-    /// </summary>
-    /// <param name="key"></param>
-    /// <param name="value"></param>
-    /// <param name="defaultValue"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    ISession Data<T>(string key, out T? value, T defaultValue);
 }

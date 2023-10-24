@@ -46,46 +46,54 @@ public class FakeClient : TcpClient
     // S -> P -> C
     protected override void OnReceived(byte[] buffer, long offset, long size)
     {
-        ServerSecurity.Recv(buffer, (int)offset, (int)size);
-
-        var receivedPackets = ServerSecurity.TransferIncoming();
-
-        if (receivedPackets == null || receivedPackets.Count == 0) return;
-
-        foreach (var packet in receivedPackets)
+        try
         {
-            Console.Write("[S -> P]");
-            if (packet.Encrypted)
-                Console.Write("[E]");
-            if (packet.Massive)
-                Console.Write("[M]");
-            Console.WriteLine($" Packet: 0x{packet.MsgId:X} - {Id}");
+            ServerSecurity.Recv(buffer, (int)offset, (int)size);
 
-            if (packet.MsgId == 0x5000 || packet.MsgId == 0x9000) continue;
+            var receivedPackets = ServerSecurity.TransferIncoming();
 
-            var packetResult = FakeServer.PacketHandler.HandleServer(packet, Session).Result;
+            if (receivedPackets == null || receivedPackets.Count == 0) return;
 
-            switch (packetResult.ResultType)
+            foreach (var packet in receivedPackets)
             {
-                case PacketResultType.Block:
-                    // TODO :: Temporary for testing purp.
-                    // Session.SendToClient(packetResult);
-                    Console.WriteLine($"Server Packet: 0x{packet.MsgId:X} is perhaps not on whitelist!");
-                    break;
-                case PacketResultType.Disconnect:
-                    // Console.WriteLine($"Packet: 0x{packet.MsgId:X} is on blacklist!");
-                    Session.Disconnect();
-                    return;
-                case PacketResultType.Nothing:
-                    Session.SendToClient(packetResult);
-                    break;
-                default:
-                    Log.Error("FakeClient - Unknown ResultType");
-                    break;
-            }
-        }
+                Console.Write("[S -> P]");
+                if (packet.Encrypted)
+                    Console.Write("[E]");
+                if (packet.Massive)
+                    Console.Write("[M]");
+                Console.WriteLine($" Packet: 0x{packet.MsgId:X} - {Id}");
 
-        Session.TransferToClient();
+                if (packet.MsgId == 0x5000 || packet.MsgId == 0x9000) continue;
+
+                var packetResult = FakeServer.PacketHandler.HandleServer(packet, Session).Result;
+
+                switch (packetResult.ResultType)
+                {
+                    case PacketResultType.Block:
+                        // TODO :: Temporary for testing purp.
+                        // Session.SendToClient(packetResult);
+                        Console.WriteLine($"Server Packet: 0x{packet.MsgId:X} is perhaps not on whitelist!");
+                        break;
+                    case PacketResultType.Disconnect:
+                        // Console.WriteLine($"Packet: 0x{packet.MsgId:X} is on blacklist!");
+                        Session.Disconnect();
+                        return;
+                    case PacketResultType.Nothing:
+                        Session.SendToClient(packetResult);
+                        break;
+                    default:
+                        Log.Error("FakeClient - Unknown ResultType");
+                        break;
+                }
+            }
+
+            Session.TransferToClient();
+        }
+        catch (Exception exception)
+        {
+            Log.Error("FakeClient Recv | {0}", exception.Message);
+            Session.Disconnect();
+        }
     }
 
     public void Send(Packet packet, bool transfer = false)
