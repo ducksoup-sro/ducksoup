@@ -7,11 +7,11 @@ public interface IPluginManager : IDisposable
     Dictionary<PluginLoader, IPlugin> Loaders { get; }
 
     bool IsLoaded(string name);
-    PluginLoader LoadPlugin(string file);
+    PluginLoader? LoadPlugin(string folder);
     IPlugin StartPlugin(PluginLoader pluginLoader);
     bool UnloadPlugin(string name);
     bool UnloadPlugin(IPlugin plugin);
     bool UnloadPlugin(PluginLoader pluginLoader);
     List<string> GetFilesInDirectory(string directory);
-    string? SearchPlugin(string directory, string pluginName);
+    string? SearchPluginDirectory(string directory, string pluginName);
 }

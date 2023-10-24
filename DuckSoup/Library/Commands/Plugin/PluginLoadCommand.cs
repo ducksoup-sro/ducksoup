@@ -19,14 +19,22 @@ public class PluginLoadCommand : Command
 
         if (args.Length == 0 || args[0].Replace(" ", "") == "" || _pluginManager.IsLoaded(args[0])) return;
 
-        var pluginList = _pluginManager.SearchPlugin("plugins", args[0]);
+        var pluginList = _pluginManager.SearchPluginDirectory("plugins", args[0]);
         if (pluginList == null)
         {
             Log.Information("No plugin found named {0}", args[0]);
             return;
         }
 
-        var plugin = _pluginManager.StartPlugin(_pluginManager.LoadPlugin(pluginList));
+        var pluginLoader = _pluginManager.LoadPlugin(pluginList);
+
+        if (pluginLoader == null)
+        {
+            Log.Information("Couldn't load plugin {0}", args[0]);
+            return;
+        }
+        
+        var plugin = _pluginManager.StartPlugin(pluginLoader);
 
         Log.Information(
             plugin != null ? "Plugin: {0} ({1}) by [{2}] started." : "Error while loading plugin {0}.", plugin.Name,

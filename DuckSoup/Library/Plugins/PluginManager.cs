@@ -7,7 +7,9 @@ using API.Plugin;
 using API.ServiceFactory;
 using DuckSoup.Library.Commands;
 using McMaster.NETCore.Plugins;
+using Newtonsoft.Json;
 using Serilog;
+using PluginConfig = API.Plugin.PluginConfig;
 
 namespace DuckSoup.Library.Plugins;
 
@@ -32,14 +34,42 @@ public class PluginManager : IPluginManager
         return false;
     }
 
-    public PluginLoader LoadPlugin(string file)
+    public PluginLoader? LoadPlugin(string folder)
     {
-        return PluginLoader.CreateFromAssemblyFile(Directory.GetCurrentDirectory() + "\\" + file,
-            config =>
+        return LoadPlugin(folder, false);
+    }
+    
+    public PluginLoader? LoadPlugin(string folder, bool setup)
+    {
+        var configFile = Path.Combine(folder, "plugin.json");
+        if (!File.Exists(configFile))
+        {
+            Log.Warning("No plugin.json found in: {0}", folder);
+            return null;
+        }
+        
+        var configJson = File.ReadAllText(configFile);
+        var config = JsonConvert.DeserializeObject<PluginConfig>(configJson);
+
+        if (setup && !config.AutoStart)
+        {
+            Log.Warning("Plugin: {0} should not be autostarted.", folder);
+            return null;
+        }
+        
+        if (config == null)
+        {
+            Log.Warning("plugin.json was faulty in: {0}", folder);
+            return null;
+        }
+        
+        var absoluteMainLibraryPath = Path.Combine(Directory.GetCurrentDirectory(), folder, config.MainLibrary);
+        return PluginLoader.CreateFromAssemblyFile(absoluteMainLibraryPath,
+            loaderConfig =>
             {
-                config.IsUnloadable = true;
-                config.LoadInMemory = true;
-                config.PreferSharedTypes = true;
+                loaderConfig.PreferSharedTypes = true;
+                loaderConfig.IsUnloadable = true;
+                loaderConfig.LoadInMemory = true;
             });
     }
 
@@ -115,19 +145,14 @@ public class PluginManager : IPluginManager
             : Directory.GetFiles(directory).Where(file => file.EndsWith(".dll")).ToList();
     }
 
-    public string SearchPlugin(string directory, string pluginName)
+    public string SearchPluginDirectory(string directory, string pluginName)
     {
         if (!Directory.Exists(directory)) return null;
 
-        foreach (var file in Directory.GetFiles(directory))
+        foreach (var folder in Directory.GetDirectories(directory))
         {
-            if (!file.EndsWith(".dll")) continue;
-
-            var replace = file.ToLower().Replace("plugin.", "").Replace(".dll", "").Replace(directory, "")
-                .Replace("\\", "");
-            var searchName = pluginName.Replace("plugin.", "").Replace(".dll", "");
-
-            if (replace.ToLower().Equals(searchName.ToLower())) return file;
+            var pluginFolder = $"{directory}\\{pluginName}";
+            if (folder.ToLower().Equals(pluginFolder.ToLower())) return folder;
         }
 
         return null;
@@ -143,8 +168,8 @@ public class PluginManager : IPluginManager
     private void Setup()
     {
         Log.Information("Loading plugins..");
-        var pluginFiles = GetFilesInDirectory("plugins");
-        if (pluginFiles == null)
+        var pluginFolders = Directory.GetDirectories("plugins");
+        if (pluginFolders.Length == 0)
         {
             Log.Information("No pluginfolder found. Creating one..");
             Directory.CreateDirectory("plugins");
@@ -152,10 +177,15 @@ public class PluginManager : IPluginManager
         }
 
         var temp = new List<PluginLoader>();
-        foreach (var file in pluginFiles)
+        foreach (var folder in pluginFolders)
         {
-            temp.Add(LoadPlugin(file));
-            Log.Information("Plugin: {0} loaded.", file.Replace("\\plugins", ""));
+            var tempPlugin = LoadPlugin(folder, true);
+            if (tempPlugin == null)
+            {
+                continue;
+            }
+            temp.Add(tempPlugin);
+            Log.Information("Plugin from folder: {0} loaded.", folder.Replace("\\plugins", ""));
         }
 
         Log.Information("Starting plugins..");
