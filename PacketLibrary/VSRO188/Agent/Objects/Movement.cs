@@ -29,14 +29,14 @@ public class Movement
         }
         else
         {
-            packet.TryRead<byte>(out var unk1); //0 = Spinning, 1 = Sky-/Key-walking
-            packet.TryRead<ushort>(out var angle);
+            packet.TryRead(out byte unk1); //0 = Spinning, 1 = Sky-/Key-walking
+            packet.TryRead(out short angle);
 
             result.HasAngle = true;
             result.Angle = angle;
         }
 
-        packet.TryRead(out result.HasSource);
+        packet.TryRead<bool>(out result.HasSource);
         if (result.HasSource)
         {
             packet.TryRead<ushort>(out var regionId);
@@ -68,6 +68,40 @@ public class Movement
         }
 
         return result;
+    }
+
+    public Movement MotionToPacket(Packet packet)
+    {
+        packet.TryWrite(HasDestination);
+        if (HasDestination)
+        {
+            Destination.ToPacketConditional(packet, false);
+        }
+        else
+        {
+            packet.TryWrite(HasAngle);
+            packet.TryWrite(Angle);
+        }
+
+        packet.TryWrite(HasSource);
+        if (HasSource)
+        {
+            packet.TryWrite(Source.Region.Id);
+            if (Source.Region.IsDungeon)
+            {
+                packet.TryWrite<int>((int)(Source.XOffset * 10f)); 
+                packet.TryWrite<float>(Source.ZOffset);
+                packet.TryWrite<int>((int)(Source.YOffset * 10f));
+            }
+            else
+            {
+                packet.TryWrite<short>((short)(Source.XOffset * 10f)); 
+                packet.TryWrite<float>(Source.ZOffset);
+                packet.TryWrite<short>((short)(Source.YOffset * 10f));
+            }
+        }
+
+        return this;
     }
 
     public static Movement FromPacket(Packet packet)

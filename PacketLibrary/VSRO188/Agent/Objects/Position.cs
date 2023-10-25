@@ -7,7 +7,7 @@ public struct Position
 {
     private float _xOffset;
     private float _yOffset;
-    public Region Region { get; set; }
+    public Region Region;
 
     public float XOffset
     {
@@ -19,16 +19,16 @@ public struct Position
             if (Region.IsDungeon)
                 return;
 
-            while (_xOffset < 0)
+            while (XOffset < 0)
             {
-                _xOffset += 1920;
-                Region.SetX((byte)(Region.GetX() - 1));
+                XOffset += 1920;
+                Region.X -= 1;
             }
 
-            while (_xOffset > 1920)
+            while (XOffset > 1920)
             {
-                _xOffset -= 1920;
-                Region.SetX((byte)(Region.GetX() + 1));
+                XOffset -= 1920;
+                Region.X += 1;
             }
         }
     }
@@ -43,16 +43,16 @@ public struct Position
             if (Region.IsDungeon)
                 return;
 
-            while (_yOffset < 0)
+            while (YOffset < 0)
             {
-                _yOffset += 1920;
-                Region.SetY((byte)(Region.GetY() - 1));
+                YOffset += 1920;
+                Region.Y -= 1;
             }
 
-            while (_yOffset > 1920)
+            while (YOffset > 1920)
             {
-                _yOffset -= 1920;
-                Region.SetY((byte)(Region.GetY() + 1));
+                YOffset -= 1920;
+                Region.Y += 1;
             }
         }
     }
@@ -62,9 +62,12 @@ public struct Position
     public short WorldId;
     public short LayerId;
 
-    public float X => Region.IsDungeon ? _xOffset / 10 : (Region.GetX() - 135) * 192 + _xOffset / 10;
+    // public float X => Region.IsDungeon ? _xOffset / 10 : (Region.GetX() - 135) * 192 + _xOffset / 10;
+    public float X => XOffset == 0 ? 0 : Region.IsDungeon ? XOffset / 10 : (Region.X - 135) * 192 + XOffset / 10;
 
-    public float Y => Region.IsDungeon ? _yOffset / 10 : (Region.GetY() - 92) * 192 + _yOffset / 10;
+
+    // public float Y => Region.IsDungeon ? _yOffset / 10 : (Region.GetY() - 92) * 192 + _yOffset / 10;
+    public float Y => YOffset == 0 ? 0 : Region.IsDungeon ? YOffset / 10 : (Region.Y - 92) * 192 + YOffset / 10;
 
     public float XSectorOffset => Region.IsDungeon ? (127 * 192 + _xOffset / 10) * 10 % 1920 : _xOffset;
 
@@ -83,9 +86,9 @@ public struct Position
             var yOffset = (int)(Math.Abs(y) % 192 * 10);
             if (y < 0) yOffset = 1920 - yOffset;
 
-            Region.SetX((byte)Math.Round((x - xOffset / 10f) / 192f + 135));
-            Region.SetY((byte)Math.Round((y - yOffset / 10f) / 192f + 92));
-
+            Region.X = (byte)MathF.Round((x - xOffset / 10.0f) / 192.0f + 135.0f);
+            Region.Y = (byte)MathF.Round((y - yOffset / 10.0f) / 192.0f + 92.0f);
+            
             XOffset = xOffset;
             YOffset = yOffset;
             return;
@@ -96,26 +99,28 @@ public struct Position
         XOffset = x * 10;
         YOffset = y * 10;
     }
-
-
-    public Position(short xOffset, short yOffset, short zOffset, ushort regionId) : this()
+    
+    public Position(Region region, float xOffset, float yOffset, float zOffset)
+        : this()
     {
-        Region = new Region(regionId);
+        Region = region;
 
         XOffset = xOffset;
         YOffset = yOffset;
         ZOffset = zOffset;
     }
-
-    public Position(float xOffset, float yOffset, float zOffset, byte xSector, byte ySector) : this()
+    
+    public Position(byte xSector, byte ySector, float xOffset, float yOffset, float zOffset)
+        : this()
     {
-        Region.SetX(xSector);
-        Region.SetY(ySector);
-
         XOffset = xOffset;
         YOffset = yOffset;
         ZOffset = zOffset;
+
+        Region.X = xSector;
+        Region.Y = ySector;
     }
+
 
     public double DistanceTo(Position position)
     {
@@ -162,14 +167,14 @@ public struct Position
 
         var position = new Position
         {
-            Region = new Region(region)
+            Region = region
         };
 
         if (!position.Region.IsDungeon)
         {
             packet.TryRead<short>(out var xOffset)
-                .TryRead<short>(out var yOffset)
-                .TryRead<short>(out var zOffset);
+                .TryRead<short>(out var zOffset)
+                .TryRead<short>(out var yOffset);
             position.XOffset = xOffset;
             position.YOffset = yOffset;
             position.ZOffset = zOffset;
@@ -177,18 +182,45 @@ public struct Position
         else
         {
             packet.TryRead<int>(out var xOffset)
-                .TryRead<int>(out var yOffset)
-                .TryRead<int>(out var zOffset);
+                .TryRead<int>(out var zOffset)
+                .TryRead<int>(out var yOffset);
             position.XOffset = xOffset;
             position.YOffset = yOffset;
             position.ZOffset = zOffset;
         }
 
-        if (parseLayerWorldId)
+        if (parseLayerWorldId) {
             packet.TryRead(out position.WorldId)
                 .TryRead(out position.LayerId);
+        }
 
         return position;
+    }
+
+    public Position ToPacketConditional(Packet packet, bool parseLayerWorldId = true)
+    {
+        packet.TryWrite(Region);
+
+        if (!Region.IsDungeon)
+        {
+            packet.TryWrite<short>((short) XOffset);
+            packet.TryWrite<short>((short) ZOffset);
+            packet.TryWrite<short>((short) YOffset);
+        }
+        else
+        {
+            packet.TryWrite<int>((int) XOffset);
+            packet.TryWrite<int>((int) ZOffset);
+            packet.TryWrite<int>((int) YOffset);
+        }
+
+        if (parseLayerWorldId)
+        {
+            packet.TryWrite<short>(WorldId);
+            packet.TryWrite<short>(LayerId);
+        }
+
+        return this;
     }
 
     public byte GetSectorFromOffset(float offset)

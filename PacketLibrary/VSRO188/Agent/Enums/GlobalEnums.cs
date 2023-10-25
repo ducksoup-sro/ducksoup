@@ -226,7 +226,7 @@ public enum ScrollState
     ThiefScroll = 2 //able to move
 }
 
-public enum BattleState
+public enum BattleState : byte
 {
     InPeace = 0,
     InBattle = 1

@@ -7,43 +7,13 @@ namespace PacketLibrary.VSRO188.Agent.Objects;
 [StructLayout(LayoutKind.Explicit)]
 public struct Region
 {
-    [FieldOffset(0)] private ushort Id;
+    [FieldOffset(0)] public ushort Id;
 
-    [FieldOffset(0)] private byte X;
+    [FieldOffset(0)] public byte X;
 
-    [FieldOffset(sizeof(byte))] private byte Y;
+    [FieldOffset(sizeof(byte))] public byte Y;
 
     public bool IsDungeon => Y == 0x80;
-
-    public ushort GetId()
-    {
-        return Id;
-    }
-
-    public byte GetX()
-    {
-        return X;
-    }
-
-    public byte GetY()
-    {
-        return Y;
-    }
-
-    public void SetId(ushort id)
-    {
-        Id = id;
-    }
-
-    public void SetX(byte x)
-    {
-        X = x;
-    }
-
-    public void SetY(byte y)
-    {
-        Y = y;
-    }
 
     public Region(ushort id)
     {
