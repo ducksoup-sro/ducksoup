@@ -2,9 +2,9 @@ using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Server;
 
-public class SERVER_On3013 : Packet
+public class SERVER_CHARACTER_DATA_BEGIN : Packet
 {
-    public SERVER_On3013() : base(0x3013)
+    public SERVER_CHARACTER_DATA_BEGIN() : base(0x34A5)
     {
     }
 
@@ -15,20 +15,17 @@ public class SERVER_On3013 : Packet
 
     public override async Task Read()
     {
-        //throw new NotImplementedException();
+        //empty
     }
 
     public override async Task<Packet> Build()
     {
-        //throw new NotImplementedException();
-
-        Reset();
-
+        //empty
         return this;
     }
 
     public static Packet of()
     {
-        return new SERVER_On3013();
+        return new SERVER_CHARACTER_DATA_BEGIN();
     }
 }

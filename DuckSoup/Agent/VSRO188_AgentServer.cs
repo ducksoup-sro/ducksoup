@@ -13,7 +13,13 @@ public class VSRO188_AgentServer : FakeServer
     public VSRO188_AgentServer(Service service) : base(service)
     {
         _sharedObjects = ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
+        PacketHandler.RegisterModuleHandler<SERVER_CHARACTER_DATA_BEGIN>(CHARACTER_DATA_BEGIN);
+        PacketHandler.RegisterModuleHandler<SERVER_CHARACTER_DATA>(CHARACTER_DATA);
+        PacketHandler.RegisterModuleHandler<SERVER_CHARACTER_DATA_END>(CHARACTER_DATA_END);
         PacketHandler.RegisterModuleHandler<SERVER_MOVEMENT>(SERVER_MOVEMENT);
+
+    }
+
     private async Task<Packet> SERVER_MOVEMENT(SERVER_MOVEMENT data, ISession session)
     {
         Log.Debug("---------------------");
@@ -31,6 +37,38 @@ public class VSRO188_AgentServer : FakeServer
         Log.Debug("---------------------");
         return data;
     }
+
+    private async Task<Packet> CHARACTER_DATA_BEGIN(SERVER_CHARACTER_DATA_BEGIN data, ISession session)
+    {
+        session.GetData("CharInfo", out var charInfo, new CharInfo());
+        charInfo.Initialize();
+        
+        return data;
+    }
+    
+    private async Task<Packet> CHARACTER_DATA(SERVER_CHARACTER_DATA data, ISession session)
+    {
+        session.GetData("CharInfo", out var charInfo, new CharInfo());
+        charInfo.Append(data);
+        data.ResultType = PacketResultType.Block;
+        
+        return data;
+    }
+    
+    private async Task<Packet> CHARACTER_DATA_END(SERVER_CHARACTER_DATA_END data, ISession session)
+    {
+        session.GetData("CharInfo", out var charInfo, new CharInfo());
+        var charPacket = charInfo.GetPacket();
+        if (charPacket == null)
+        {
+            return data;
+        }
+        
+        await charInfo.Read();
+        await session.SendToClient(charPacket);
+        charInfo.Clear();
+
+        return data;
     }
 
     public override void AddSession(ISession session)
