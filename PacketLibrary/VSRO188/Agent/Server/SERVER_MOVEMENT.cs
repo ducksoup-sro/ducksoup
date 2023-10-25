@@ -1,10 +1,14 @@
+using PacketLibrary.VSRO188.Agent.Objects;
 using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Server;
 
-public class SERVER_OnB021 : Packet
+public class SERVER_MOVEMENT : Packet
 {
-    public SERVER_OnB021() : base(0xB021)
+    public uint TargetId;
+    public Movement Movement;
+    
+    public SERVER_MOVEMENT() : base(0xB021)
     {
     }
 
@@ -15,20 +19,20 @@ public class SERVER_OnB021 : Packet
 
     public override async Task Read()
     {
-        //throw new NotImplementedException();
+        TryRead(out TargetId);
+        Movement = Movement.MotionFromPacket(this);
     }
 
     public override async Task<Packet> Build()
     {
-        //throw new NotImplementedException();
-
         Reset();
-
+        TryWrite(TargetId);
+        Movement.MotionToPacket(this);
         return this;
     }
 
     public static Packet of()
     {
-        return new SERVER_OnB021();
+        return new SERVER_MOVEMENT();
     }
 }
