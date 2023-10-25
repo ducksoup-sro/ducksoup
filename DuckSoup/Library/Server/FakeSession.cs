@@ -76,12 +76,12 @@ public class FakeSession : TcpSession
 
             foreach (var packet in receivedPackets)
             {
-                Console.Write("[C -> P]");
-                if (packet.Encrypted)
-                    Console.Write("[E]");
-                if (packet.Massive)
-                    Console.Write("[M]");
-                Console.WriteLine($" Packet: 0x{packet.MsgId:X} - {Id}");
+                // Console.Write("[C -> P]");
+                // if (packet.Encrypted)
+                //     Console.Write("[E]");
+                // if (packet.Massive)
+                //     Console.Write("[M]");
+                // Console.WriteLine($" Packet: 0x{packet.MsgId:X} - {Id}");
 
                 if (packet.MsgId == 0x5000 || packet.MsgId == 0x9000 || packet.MsgId == 0x2001) continue;
 
