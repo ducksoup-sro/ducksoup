@@ -1,4 +1,5 @@
-﻿using PacketLibrary.VSRO188.Agent.Enums;
+﻿using LanguageExt;
+using PacketLibrary.VSRO188.Agent.Enums;
 using PacketLibrary.VSRO188.Agent.Objects.Skill;
 using SilkroadSecurityAPI.Message;
 
@@ -20,6 +21,13 @@ public class State
     public ScrollState ScrollState = ScrollState.Cancel;
     public float WalkSpeed;
 
+    public static State FromPacket(Packet packet)
+    {
+        var state = new State();
+        state.Deserialize(packet);
+        return state;
+    }
+    
     public void Deserialize(Packet packet)
     {
         packet.TryRead(out LifeState)
