@@ -92,6 +92,7 @@ public class FakeClient : TcpClient
         catch (Exception exception)
         {
             Log.Error("FakeClient Recv | {0}", exception.Message);
+            Log.Error("FakeClient Recv | {0}", exception.StackTrace);
             Session.Disconnect();
         }
     }

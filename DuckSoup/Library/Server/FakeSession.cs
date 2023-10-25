@@ -116,6 +116,7 @@ public class FakeSession : TcpSession
         catch (Exception exception)
         {
             Log.Error("FakeSession Recv | {0}", exception.Message);
+            Log.Error("FakeSession Recv | {0}", exception.StackTrace);
             Session.Disconnect();
         }
     }

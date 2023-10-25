@@ -76,6 +76,7 @@ public static class Program
         catch (Exception exception)
         {
             Log.Error("Program.cs Main| {0}", exception.Message);
+            Log.Error("Program.cs Main| {0}", exception.StackTrace);
         }
     } 
 
