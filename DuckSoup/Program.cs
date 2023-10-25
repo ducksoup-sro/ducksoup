@@ -32,7 +32,7 @@ public static class Program
             .MinimumLevel.Debug()
             .MinimumLevel.Override("Quartz", LogEventLevel.Warning)
             .WriteTo.Console(
-                outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {Message}{NewLine}{Exception}"
+                outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {Message:l}{NewLine}{Exception}"
             )
             .CreateLogger();
 
