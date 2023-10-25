@@ -4,52 +4,58 @@ using SilkroadSecurityAPI.VSRO188;
 
 namespace SilkroadSecurityAPI;
 
-public class Utility
+public static class Utility
 {
-    public static string HexDump(byte[] buffer)
+    public static string HexDump(this byte[] buffer)
     {
-        return HexDump(buffer, 0, buffer.Length);
+        return buffer.HexDump(0, buffer.Length);
     }
 
-    public static string HexDump(byte[] buffer, int offset, int count)
+    public static string HexDump(this byte[] buffer, int offset, int count)
     {
         const int bytesPerLine = 16;
-        var output = new StringBuilder();
-        var asciiOutput = new StringBuilder();
-        var length = count;
-        if (length % bytesPerLine != 0) length += bytesPerLine - length % bytesPerLine;
-        for (var x = 0; x <= length; ++x)
+        StringBuilder output = new StringBuilder();
+        StringBuilder ascii_output = new StringBuilder();
+        int length = count;
+        if (length % bytesPerLine != 0)
+        {
+            length += bytesPerLine - length % bytesPerLine;
+        }
+        for (int x = 0; x <= length; ++x)
         {
             if (x % bytesPerLine == 0)
             {
                 if (x > 0)
                 {
-                    output.AppendFormat("  {0}{1}", asciiOutput, Environment.NewLine);
-                    asciiOutput.Clear();
+                    output.Append($"  {ascii_output.ToString()}{Environment.NewLine}");
+                    ascii_output.Clear();
                 }
-
-                if (x != length) output.AppendFormat("{0:d10}   ", x);
+                if (x != length)
+                {
+                    output.Append($"{x:d10}   ");
+                }
             }
-
             if (x < count)
             {
-                output.AppendFormat("{0:X2} ", buffer[offset + x]);
-                var ch = (char)buffer[offset + x];
+                output.Append($"{buffer[offset + x]:X2} ");
+                char ch = (char)buffer[offset + x];
                 if (!char.IsControl(ch))
-                    asciiOutput.AppendFormat("{0}", ch);
+                {
+                    ascii_output.Append($"{ch}");
+                }
                 else
-                    asciiOutput.Append('.');
+                {
+                    ascii_output.Append(".");
+                }
             }
             else
             {
                 output.Append("   ");
-                asciiOutput.Append('.');
+                ascii_output.Append(".");
             }
         }
-
         return output.ToString();
     }
-
 
     public static ISecurity GetSecurity(SecurityType securityType)
     {
