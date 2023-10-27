@@ -96,12 +96,12 @@ public class SERVER_CHAT_UPDATE : Packet
         };
     }
 
-    public static Packet of(ChatType chatType, string message)
+    public static async Task<Packet> of(ChatType chatType, string message)
     {
-        return new SERVER_CHAT_UPDATE
+        return await new SERVER_CHAT_UPDATE
         {
             ChatType = chatType,
             Message = message
-        };
+        }.Build();
     }
 }
