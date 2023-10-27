@@ -1,10 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using API;
 using API.Database.DuckSoup;
 using API.ServiceFactory;
 using DuckSoup.Library.Server;
 using DuckSoup.Library.Session;
 using PacketLibrary.Handler;
+using PacketLibrary.VSRO188.Agent.Enums.Chat;
 using PacketLibrary.VSRO188.Agent.Server;
 using Serilog;
 using SilkroadSecurityAPI.Message;
@@ -37,9 +39,36 @@ public class VSRO188_AgentServer : FakeServer
         // Log.Debug("RegionId: " + data.Movement.Destination.Region.Id);     
         // Log.Debug("RegionX: " + data.Movement.Destination.Region.X);
         // Log.Debug("RegionY: " + data.Movement.Destination.Region.Y);
+        var distance = data.Movement.Source.DistanceTo(data.Movement.Destination);
         Log.Debug("Source: " + data.Movement.Source.ToString());
         Log.Debug("Destination: " + data.Movement.Destination.ToString());
+        Log.Debug("Distance: " + distance);
         Log.Debug("---------------------");
+        
+        session.GetData("CharInfo", out var charInfo, new CharInfo());
+        Log.Debug("walkSpeed: {0} - ETA: {1}" ,  charInfo.walkSpeed / 10f, distance / (charInfo.walkSpeed / 10f));
+        Log.Debug("runSpeed: {0} - ETA: {1}" , charInfo.runSpeed / 10f, distance / (charInfo.runSpeed / 10f));
+        Log.Debug("hwanSpeed: {0} - ETA: {1}" ,  charInfo.hwanSpeed / 10f, distance / (charInfo.hwanSpeed / 10f));
+        Log.Debug("motionState: " + charInfo.motionState);
+
+        Task.Run(async () =>
+        {
+            Thread.Sleep((int)(distance / (charInfo.walkSpeed / 10f) * 1000));
+            session.SendToClient(await SERVER_CHAT_UPDATE.of(ChatType.Notice, "walk"));
+        });
+        
+        Task.Run(async () =>
+        {
+            Thread.Sleep((int)(distance / (charInfo.runSpeed / 10f) * 1000));
+            session.SendToClient(await SERVER_CHAT_UPDATE.of(ChatType.Notice, "run"));
+        });
+        
+        Task.Run(async () =>
+        {
+            Thread.Sleep((int)(distance / (charInfo.hwanSpeed / 10f) * 1000));
+            session.SendToClient(await SERVER_CHAT_UPDATE.of(ChatType.Notice, "hwan"));
+        });
+        
         return data;
     }
 
