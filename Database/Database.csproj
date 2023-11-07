@@ -6,6 +6,7 @@
         <Nullable>enable</Nullable>
         <Version>2.0.0-ALPHA</Version>
         <LangVersion>12</LangVersion>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <ItemGroup>
