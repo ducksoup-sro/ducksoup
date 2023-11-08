@@ -6,10 +6,10 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_MATCHING_DELETE
 public class SERVER_PARTY_MATCHING_DELETE_RESPONSE : Packet
 {
-    public byte Result;
-    public uint MatchingId;
     public PartyErrorCode ErrorCode;
-    
+    public uint MatchingId;
+    public byte Result;
+
     public SERVER_PARTY_MATCHING_DELETE_RESPONSE() : base(0xB06B)
     {
     }
@@ -46,6 +46,7 @@ public class SERVER_PARTY_MATCHING_DELETE_RESPONSE : Packet
                 TryWrite(ErrorCode);
                 break;
         }
+
         return this;
     }
 

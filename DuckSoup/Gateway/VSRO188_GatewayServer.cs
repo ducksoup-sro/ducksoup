@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using API;
 using API.Database.DuckSoup;
@@ -60,7 +59,7 @@ public class VSRO188_GatewayServer : FakeServer
                 agentServer.Service.SpoofMachine_Machine.Address != "")
                 data.AgentServer.Host = agentServer.Service.SpoofMachine_Machine.Address;
         }
-        
+
         return data;
     }
 

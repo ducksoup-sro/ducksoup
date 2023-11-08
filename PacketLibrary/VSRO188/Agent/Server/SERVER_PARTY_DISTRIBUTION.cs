@@ -6,11 +6,11 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_DISTRIBUTION
 public class SERVER_PARTY_DISTRIBUTION : Packet
 {
-    public uint UserJID;
-    public uint RefItemID;
     public byte OptLevel;
     public ushort Quantity;
-    
+    public uint RefItemID;
+    public uint UserJID;
+
     public SERVER_PARTY_DISTRIBUTION() : base(0x3068)
     {
     }
@@ -24,11 +24,8 @@ public class SERVER_PARTY_DISTRIBUTION : Packet
     {
         TryRead(out UserJID);
         TryRead(out RefItemID);
-        var item = await Cache.GetRefObjCommonAsync((int) RefItemID);
-        if (item == null || item.TypeID1 != 3)
-        {
-            return;
-        }
+        var item = await Cache.GetRefObjCommonAsync((int)RefItemID);
+        if (item == null || item.TypeID1 != 3) return;
         switch (item.TypeID2)
         {
             case 1:
@@ -48,11 +45,8 @@ public class SERVER_PARTY_DISTRIBUTION : Packet
         Reset();
         TryWrite(UserJID);
         TryWrite(RefItemID);
-        var item = await Cache.GetRefObjCommonAsync((int) RefItemID);
-        if (item == null || item.TypeID1 != 3)
-        {
-            return this;
-        }
+        var item = await Cache.GetRefObjCommonAsync((int)RefItemID);
+        if (item == null || item.TypeID1 != 3) return this;
         switch (item.TypeID2)
         {
             case 1:
@@ -65,6 +59,7 @@ public class SERVER_PARTY_DISTRIBUTION : Packet
                 TryWrite(Quantity);
                 break;
         }
+
         return this;
     }
 

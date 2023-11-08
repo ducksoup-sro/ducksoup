@@ -21,11 +21,11 @@ public class DuckSession : ISession
         Server = fakeClient;
         Guid = Guid.NewGuid();
         SessionData = new ConcurrentDictionary<string, object>();
-        
+
         SetData<ITimerManager>(Data.TimerManager, new TimerManager(this));
         SetData<ICountdownManager>(Data.CountDownManager, new CountdownManager(this));
     }
-    
+
     private ConcurrentDictionary<string, object> SessionData { get; }
 
     [JsonIgnore] private FakeSession Client { get; }
@@ -123,7 +123,7 @@ public class DuckSession : ISession
         return this;
     }
 
-    
+
     [Obsolete("Debug only. Don't use")]
     public ConcurrentDictionary<string, object> GetRawSessionData()
     {

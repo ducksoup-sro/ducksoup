@@ -27,9 +27,6 @@ public class CLIENT_PARTY_LEAVE : Packet
 
     public static Task<Packet> of()
     {
-        return new CLIENT_PARTY_LEAVE
-        {
-            
-        }.Build();
+        return new CLIENT_PARTY_LEAVE().Build();
     }
 }

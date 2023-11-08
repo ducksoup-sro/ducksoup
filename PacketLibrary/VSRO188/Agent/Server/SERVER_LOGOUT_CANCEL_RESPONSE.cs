@@ -6,9 +6,9 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_LOGOUT_CANCEL
 public class SERVER_LOGOUT_CANCEL_RESPONSE : Packet
 {
-    public byte Result;
     public LogoutErrorCode ErrorCode;
-    
+    public byte Result;
+
     public SERVER_LOGOUT_CANCEL_RESPONSE() : base(0xb006)
     {
     }
@@ -21,20 +21,14 @@ public class SERVER_LOGOUT_CANCEL_RESPONSE : Packet
     public override async Task Read()
     {
         TryRead(out Result);
-        if (Result == 0x02)
-        {
-            TryRead(out ErrorCode);
-        }
+        if (Result == 0x02) TryRead(out ErrorCode);
     }
 
     public override async Task<Packet> Build()
     {
         Reset();
         TryWrite(Result);
-        if (Result == 0x02)
-        {
-            TryWrite(ErrorCode);
-        }
+        if (Result == 0x02) TryWrite(ErrorCode);
         return this;
     }
 

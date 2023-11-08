@@ -5,10 +5,10 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 public class SERVER_ENVIRONMENT_CELESTIAL_POSITION : Packet
 {
     public uint CharacterUniqueId;
-    public ushort Moonphase; // 0-30
     public byte Hour; // 0-23
     public byte Minute; //0-59
-    
+    public ushort Moonphase; // 0-30
+
     public SERVER_ENVIRONMENT_CELESTIAL_POSITION() : base(0x3020)
     {
     }

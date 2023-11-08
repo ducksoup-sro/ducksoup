@@ -6,12 +6,12 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_MATCHING_CHANGE
 public class CLIENT_PARTY_MATCHING_CHANGE_REQUEST : Packet
 {
-    public uint MatchingId;
     public uint Id;
-    public PartySettingsFlag SettingsFlag;
-    public PartyPurposeType Purpose;
-    public byte LevelRangeMin;
     public byte LevelRangeMax;
+    public byte LevelRangeMin;
+    public uint MatchingId;
+    public PartyPurposeType Purpose;
+    public PartySettingsFlag SettingsFlag;
     public string Title;
 
     public CLIENT_PARTY_MATCHING_CHANGE_REQUEST() : base(0x706A)

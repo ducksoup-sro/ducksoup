@@ -7,7 +7,7 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 public class CLIENT_LOGOUT_REQUEST : Packet
 {
     public LogoutMode LogoutMode;
-    
+
     public CLIENT_LOGOUT_REQUEST() : base(0x7005)
     {
     }

@@ -6,7 +6,7 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 public class CLIENT_PARTY_KICK_REQUEST : Packet
 {
     public uint MemberJid;
-    
+
     public CLIENT_PARTY_KICK_REQUEST() : base(0x7063)
     {
     }

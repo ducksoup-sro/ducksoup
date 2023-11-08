@@ -5,9 +5,9 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 
 public class SERVER_ENTITY_POSITION_UPDATE : Packet
 {
-    public Position Position;
     public uint EntityId;
-    
+    public Position Position;
+
     public SERVER_ENTITY_POSITION_UPDATE() : base(0x3028)
     {
     }
@@ -31,8 +31,6 @@ public class SERVER_ENTITY_POSITION_UPDATE : Packet
 
     public static Task<Packet> of()
     {
-        return new SERVER_ENTITY_POSITION_UPDATE
-                { }
-            .Build();
+        return new SERVER_ENTITY_POSITION_UPDATE().Build();
     }
 }

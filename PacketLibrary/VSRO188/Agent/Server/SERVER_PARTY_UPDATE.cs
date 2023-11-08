@@ -7,12 +7,12 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_UPDATE
 public class SERVER_PARTY_UPDATE : Packet
 {
-    public PartyUpdateType PartyUpdateType;
     public PartyErrorCode ErrorCode;
+    public PartyLeaveType LeaveType;
     public PartyMemberInfo MemberInfo;
+    public PartyUpdateType PartyUpdateType;
     public uint UserJID;
-    public PartyLeaveType LeaveType;    
-    
+
     public SERVER_PARTY_UPDATE() : base(0x3864)
     {
     }
@@ -31,7 +31,7 @@ public class SERVER_PARTY_UPDATE : Packet
                 TryRead(out ErrorCode);
                 break;
             case PartyUpdateType.Joined:
-                MemberInfo = new PartyMemberInfo(this); 
+                MemberInfo = new PartyMemberInfo(this);
                 break;
             case PartyUpdateType.Leave:
                 TryRead(out UserJID);
@@ -39,14 +39,14 @@ public class SERVER_PARTY_UPDATE : Packet
                 break;
             case PartyUpdateType.Member:
                 TryRead(out UserJID);
-                MemberInfo = new PartyMemberInfo(this); 
+                MemberInfo = new PartyMemberInfo(this);
                 break;
             case PartyUpdateType.Leader:
                 TryRead(out UserJID);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
-        }   
+        }
     }
 
     public override async Task<Packet> Build()
@@ -73,7 +73,8 @@ public class SERVER_PARTY_UPDATE : Packet
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
-        }   
+        }
+
         return this;
     }
 

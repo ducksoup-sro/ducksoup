@@ -88,7 +88,7 @@ public struct Position
 
             Region.X = (byte)MathF.Round((x - xOffset / 10.0f) / 192.0f + 135.0f);
             Region.Y = (byte)MathF.Round((y - yOffset / 10.0f) / 192.0f + 92.0f);
-            
+
             XOffset = xOffset;
             YOffset = yOffset;
             return;
@@ -99,7 +99,7 @@ public struct Position
         XOffset = x * 10;
         YOffset = y * 10;
     }
-    
+
     public Position(Region region, float xOffset, float yOffset, float zOffset)
         : this()
     {
@@ -109,7 +109,7 @@ public struct Position
         YOffset = yOffset;
         ZOffset = zOffset;
     }
-    
+
     public Position(byte xSector, byte ySector, float xOffset, float yOffset, float zOffset)
         : this()
     {
@@ -144,14 +144,14 @@ public struct Position
             Angle = angle
         };
     }
-    
+
     public Packet ToPacket(Packet packet)
     {
         packet.TryWrite<ushort>(Region)
-            .TryWrite<float>(XOffset)
-            .TryWrite<float>(ZOffset)
-            .TryWrite<float>(YOffset)
-            .TryWrite<short>(Angle);
+            .TryWrite(XOffset)
+            .TryWrite(ZOffset)
+            .TryWrite(YOffset)
+            .TryWrite(Angle);
         return packet;
     }
 
@@ -199,10 +199,9 @@ public struct Position
             position.ZOffset = zOffset;
         }
 
-        if (parseLayerWorldId) {
+        if (parseLayerWorldId)
             packet.TryRead(out position.WorldId)
                 .TryRead(out position.LayerId);
-        }
 
         return position;
     }
@@ -213,21 +212,21 @@ public struct Position
 
         if (!Region.IsDungeon)
         {
-            packet.TryWrite<short>((short) XOffset);
-            packet.TryWrite<short>((short) ZOffset);
-            packet.TryWrite<short>((short) YOffset);
+            packet.TryWrite((short)XOffset);
+            packet.TryWrite((short)ZOffset);
+            packet.TryWrite((short)YOffset);
         }
         else
         {
-            packet.TryWrite<int>((int) XOffset);
-            packet.TryWrite<int>((int) ZOffset);
-            packet.TryWrite<int>((int) YOffset);
+            packet.TryWrite((int)XOffset);
+            packet.TryWrite((int)ZOffset);
+            packet.TryWrite((int)YOffset);
         }
 
         if (parseLayerWorldId)
         {
-            packet.TryWrite<short>(WorldId);
-            packet.TryWrite<short>(LayerId);
+            packet.TryWrite(WorldId);
+            packet.TryWrite(LayerId);
         }
 
         return this;

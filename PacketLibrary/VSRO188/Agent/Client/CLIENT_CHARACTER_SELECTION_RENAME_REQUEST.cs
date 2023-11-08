@@ -6,11 +6,11 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_CHARACTER_SELECTION_RENAME
 public class CLIENT_CHARACTER_SELECTION_RENAME_REQUEST : Packet
 {
-    public CharacterSelectionRenameAction RenameAction;
     public string CurName;
-    public string NewName;
     public string GuildName;
-    
+    public string NewName;
+    public CharacterSelectionRenameAction RenameAction;
+
     public CLIENT_CHARACTER_SELECTION_RENAME_REQUEST() : base(0x7450)
     {
     }
@@ -51,6 +51,7 @@ public class CLIENT_CHARACTER_SELECTION_RENAME_REQUEST : Packet
                 TryWrite(GuildName);
                 break;
         }
+
         return this;
     }
 

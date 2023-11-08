@@ -6,7 +6,7 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 public class CLIENT_CHARACTER_SELECTION_JOIN_REQUEST : Packet
 {
     public string Name;
-    
+
     public CLIENT_CHARACTER_SELECTION_JOIN_REQUEST() : base(0x7001)
     {
     }

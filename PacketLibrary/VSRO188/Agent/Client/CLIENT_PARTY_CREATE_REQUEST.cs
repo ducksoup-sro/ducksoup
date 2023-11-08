@@ -8,7 +8,7 @@ public class CLIENT_PARTY_CREATE_REQUEST : Packet
 {
     public uint GID;
     public PartySettingsFlag PartySettings;
-    
+
     public CLIENT_PARTY_CREATE_REQUEST() : base(0x7060)
     {
     }

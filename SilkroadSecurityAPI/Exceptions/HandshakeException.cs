@@ -4,7 +4,6 @@ namespace SilkroadSecurityAPI.Exceptions;
 
 public class HandshakeException : Exception
 {
-    
     public HandshakeException(string message) : base(string.Format(message))
     {
     }

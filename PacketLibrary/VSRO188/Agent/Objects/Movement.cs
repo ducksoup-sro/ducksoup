@@ -6,12 +6,12 @@ namespace PacketLibrary.VSRO188.Agent.Objects;
 // https://github.com/SDClowen/RSBot/
 public class Movement
 {
-    public byte KeyMovement;
     public float Angle;
     public Position Destination;
     public bool HasAngle;
     public bool HasDestination;
     public bool HasSource;
+    public byte KeyMovement;
     public bool Moving;
     public Position Source;
     public MovementType Type;
@@ -30,14 +30,14 @@ public class Movement
         }
         else
         {
-            packet.TryRead<byte>(out result.KeyMovement); //0 = Spinning, 1 = Sky-/Key-walking
+            packet.TryRead(out result.KeyMovement); //0 = Spinning, 1 = Sky-/Key-walking
             packet.TryRead<short>(out var angle);
 
             result.HasAngle = true;
             result.Angle = angle;
         }
 
-        packet.TryRead<bool>(out result.HasSource);
+        packet.TryRead(out result.HasSource);
         if (result.HasSource)
         {
             packet.TryRead<ushort>(out var regionId);
@@ -73,32 +73,32 @@ public class Movement
 
     public Movement MotionToPacket(Packet packet)
     {
-        packet.TryWrite<bool>(HasDestination);
+        packet.TryWrite(HasDestination);
         if (HasDestination)
         {
             Destination.ToPacketConditional(packet, false);
         }
         else
         {
-            packet.TryWrite<byte>(KeyMovement);
-            packet.TryWrite<short>((short) Angle);
+            packet.TryWrite(KeyMovement);
+            packet.TryWrite((short)Angle);
         }
 
-        packet.TryWrite<bool>(HasSource);
+        packet.TryWrite(HasSource);
         if (HasSource)
         {
-            packet.TryWrite<ushort>(Source.Region.Id);
+            packet.TryWrite(Source.Region.Id);
             if (Source.Region.IsDungeon)
             {
-                packet.TryWrite<int>((int)(Source.XOffset * 10f)); 
-                packet.TryWrite<float>(Source.ZOffset);
-                packet.TryWrite<int>((int)(Source.YOffset * 10f));
+                packet.TryWrite((int)(Source.XOffset * 10f));
+                packet.TryWrite(Source.ZOffset);
+                packet.TryWrite((int)(Source.YOffset * 10f));
             }
             else
             {
-                packet.TryWrite<short>((short)(Source.XOffset * 10f)); 
-                packet.TryWrite<float>(Source.ZOffset);
-                packet.TryWrite<short>((short)(Source.YOffset * 10f));
+                packet.TryWrite((short)(Source.XOffset * 10f));
+                packet.TryWrite(Source.ZOffset);
+                packet.TryWrite((short)(Source.YOffset * 10f));
             }
         }
 

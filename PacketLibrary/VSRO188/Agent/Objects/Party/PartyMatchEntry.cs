@@ -6,15 +6,15 @@ namespace PacketLibrary.VSRO188.Agent.Objects.Party;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/PartyMemberInfo
 public class PartyMatchEntry
 {
-    public uint Number;
+    public byte CountryType;
+    public byte LevelMax;
+    public byte LevelMin;
     public uint MasterJID;
     public string MasterName;
-    public byte CountryType;
     public byte MemberCount;
+    public uint Number;
     public PartySettingsFlag PartySettingsFlag;
     public PartyPurposeType PurposeType;
-    public byte LevelMin;
-    public byte LevelMax;
     public string Title;
 
     public PartyMatchEntry()

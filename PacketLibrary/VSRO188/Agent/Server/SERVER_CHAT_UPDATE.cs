@@ -40,6 +40,7 @@ public class SERVER_CHAT_UPDATE : Packet
                 TryRead(out SenderName);
                 break;
         }
+
         TryRead(out Message);
     }
 
@@ -66,6 +67,7 @@ public class SERVER_CHAT_UPDATE : Packet
                 TryWrite(SenderName);
                 break;
         }
+
         TryWrite(Message);
         return this;
     }

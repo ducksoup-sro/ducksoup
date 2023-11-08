@@ -1,5 +1,4 @@
-﻿using LanguageExt;
-using PacketLibrary.VSRO188.Agent.Enums;
+﻿using PacketLibrary.VSRO188.Agent.Enums;
 using PacketLibrary.VSRO188.Agent.Objects.Skill;
 using SilkroadSecurityAPI.Message;
 
@@ -27,7 +26,7 @@ public class State
         state.Deserialize(packet);
         return state;
     }
-    
+
     public void Deserialize(Packet packet)
     {
         packet.TryRead(out LifeState)

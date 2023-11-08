@@ -5,8 +5,11 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_SKILL_MASTERY_LEARN
 public class CLIENT_SKILL_MASTERY_LEARN_REQUEST : Packet
 {
+    public byte
+        Amount; // // 1 = Normal behavior since client/server is designed to level up one by one (0 = will not use SP)
+
     public uint MasteryId;
-    public byte Amount; // // 1 = Normal behavior since client/server is designed to level up one by one (0 = will not use SP)
+
     public CLIENT_SKILL_MASTERY_LEARN_REQUEST() : base(0x70A2)
     {
     }

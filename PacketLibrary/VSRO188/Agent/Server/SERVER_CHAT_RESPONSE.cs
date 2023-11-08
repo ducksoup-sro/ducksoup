@@ -23,10 +23,7 @@ public class SERVER_CHAT_RESPONSE : Packet
     public override async Task Read()
     {
         TryRead(out Result);
-        if (Result == 0x2)
-        {
-            TryRead(out ErrorCode);
-        }
+        if (Result == 0x2) TryRead(out ErrorCode);
         TryRead(out ChatType);
         TryRead(out ChatIndex);
     }
@@ -36,10 +33,7 @@ public class SERVER_CHAT_RESPONSE : Packet
         Reset();
 
         TryWrite(Result);
-        if (Result == 0x02)
-        {
-            TryWrite(ErrorCode);
-        }
+        if (Result == 0x02) TryWrite(ErrorCode);
 
         TryWrite(ChatType);
         TryWrite(ChatIndex);

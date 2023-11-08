@@ -11,14 +11,14 @@ namespace DuckSoup.Library.Session;
 // ReSharper disable UnusedVariable
 public class CharInfo : ICharInfo
 {
-    private Packet _packet = new Packet(0x3013, false, false);
-    
+    private Packet _packet = new(0x3013);
+
     public void Initialize()
     {
-        _packet = new Packet(0x3013, false, false);
+        _packet = new Packet(0x3013);
         TargetPosition = new Position(0, 0);
     }
-    
+
     public void Append(Packet packet)
     {
         var watch = Stopwatch.StartNew();
@@ -27,11 +27,12 @@ public class CharInfo : ICharInfo
             packet.TryRead(out byte b);
             _packet.TryWrite(b);
         }
+
         watch.Stop();
         double ticks = watch.ElapsedTicks;
-        double seconds = ticks / Stopwatch.Frequency;
-        double milliseconds = (ticks / Stopwatch.Frequency) * 1000;
-        double nanoseconds = (ticks / Stopwatch.Frequency) * 1000000000;
+        var seconds = ticks / Stopwatch.Frequency;
+        var milliseconds = ticks / Stopwatch.Frequency * 1000;
+        var nanoseconds = ticks / Stopwatch.Frequency * 1000000000;
         Log.Information("Append: {0}ns", nanoseconds);
     }
 
@@ -39,8 +40,9 @@ public class CharInfo : ICharInfo
     {
         var watch = Stopwatch.StartNew();
         _packet.ToReadOnly();
-        
+
         # region general
+
         _packet.TryRead(out ServerTime); // * 4   uint    ServerTime               //SROTimeStamp
         _packet.TryRead(out RefObjId); // 4   uint    RefObjID
         _packet.TryRead(out Scale); // 1   byte    Scale
@@ -60,10 +62,13 @@ public class CharInfo : ICharInfo
         _packet.TryRead(out TotalPk); // 2   ushort  TotalPK
         _packet.TryRead(out PkPenaltyPoint); // 4   uint    PKPenaltyPoint
         _packet.TryRead(out HwanLevel); // 1   byte    HwanLevel
-        _packet.TryRead(out PvpCape); // 1   byte    FreePVP           //0 = None, 1 = Red, 2 = Gray, 3 = Blue, 4 = White, 5 = Gold
+        _packet.TryRead(
+            out PvpCape); // 1   byte    FreePVP           //0 = None, 1 = Red, 2 = Gray, 3 = Blue, 4 = White, 5 = Gold
+
         #endregion
-        
+
         #region Inventory
+
         _packet.TryRead(out byte inventorySize); // 1   byte    Inventory.Size
         _packet.TryRead(out byte inventoryItemCount); // 1   byte    Inventory.ItemCount
         for (var i = 0; i < inventoryItemCount; i++) // for (int i = 0; i < Inventory.ItemCount; i++)
@@ -73,31 +78,34 @@ public class CharInfo : ICharInfo
             if (itemRentType == 1)
             {
                 _packet.TryRead(out ushort itemRentInfoCanDelete); //         2   ushort  item.RentInfo.CanDelete
-                _packet.TryRead(out uint itemRentInfoPeriodBeginTime); //         4   uint    item.RentInfo.PeriodBeginTime
-                _packet.TryRead(out uint itemRentInfoPeriodEndTime); //         4   uint    item.RentInfo.PeriodEndTime        
+                _packet.TryRead(
+                    out uint itemRentInfoPeriodBeginTime); //         4   uint    item.RentInfo.PeriodBeginTime
+                _packet.TryRead(
+                    out uint itemRentInfoPeriodEndTime); //         4   uint    item.RentInfo.PeriodEndTime        
             }
             else if (itemRentType == 2)
             {
                 _packet.TryRead(out ushort itemRentInfoCanDelete); //         2   ushort  item.RentInfo.CanDelete
                 _packet.TryRead(out ushort itemRentInfoCanRecharge); //         2   ushort  item.RentInfo.CanRecharge
-                _packet.TryRead(out uint itemRentInfoMeterRateTime); //         4   uint    item.RentInfo.MeterRateTime        
+                _packet.TryRead(
+                    out uint itemRentInfoMeterRateTime); //         4   uint    item.RentInfo.MeterRateTime        
             }
             else if (itemRentType == 3)
             {
                 _packet.TryRead(out ushort itemRentInfoCanDelete); //         2   ushort  item.RentInfo.CanDelete
                 _packet.TryRead(out ushort itemRentInfoCanRecharge); //         2   ushort  item.RentInfo.CanRecharge
-                _packet.TryRead(out uint itemRentInfoPeriodBeginTime); //         4   uint    item.RentInfo.PeriodBeginTime
-                _packet.TryRead(out uint itemRentInfoPeriodEndTime); //         4   uint    item.RentInfo.PeriodEndTime   
-                _packet.TryRead(out uint itemRentInfoPackingTime); //         4   uint    item.RentInfo.PackingTime        
+                _packet.TryRead(
+                    out uint itemRentInfoPeriodBeginTime); //         4   uint    item.RentInfo.PeriodBeginTime
+                _packet.TryRead(
+                    out uint itemRentInfoPeriodEndTime); //         4   uint    item.RentInfo.PeriodEndTime   
+                _packet.TryRead(
+                    out uint itemRentInfoPackingTime); //         4   uint    item.RentInfo.PackingTime        
             }
 
             _packet.TryRead(out uint itemRefItemId); //     4   uint    item.RefItemID
             var item = await Cache.GetRefObjCommonAsync((int)itemRefItemId);
-            if (item == null)
-            {
-                continue;
-            }
-            
+            if (item == null) continue;
+
             if (item.TypeID1 == 3)
             {
                 //ITEM_        
@@ -125,7 +133,8 @@ public class CharInfo : ICharInfo
                         _packet.TryRead(out uint bindingOptionParam1); // 4   uint bindingOption.nParam1
                     }
 
-                    _packet.TryRead(out byte bindingOptionType2); // 1   byte    bindingOptionType   //2 = Advanced elixir
+                    _packet.TryRead(
+                        out byte bindingOptionType2); // 1   byte    bindingOptionType   //2 = Advanced elixir
                     _packet.TryRead(out byte bindingOptionCount2); // 1   byte    bindingOptionCount2
                     for (var bindingOptionIndex = 0; bindingOptionIndex < bindingOptionCount2; bindingOptionIndex++)
                     {
@@ -143,12 +152,10 @@ public class CharInfo : ICharInfo
                         if (cosState == 2 || cosState == 3 || cosState == 4)
                         {
                             _packet.TryRead(out uint cosRefObjId); // 4 uint RefObjID
-                            _packet.TryRead(out string cosName); // 2 ushort Name.Length //     * string Name
+                            _packet.TryRead(out var cosName); // 2 ushort Name.Length //     * string Name
                             if (item.TypeID4 == 2)
-                            {
                                 //ITEM_COS_P (Ability)
                                 _packet.TryRead(out uint cosSecondsToRentEndTime); // 4 uint SecondsToRentEndTime
-                            }
 
                             // Maybe?!
                             // might be service thing
@@ -160,7 +167,8 @@ public class CharInfo : ICharInfo
                                 _packet.TryRead(out byte unk1222); // NANI
                                 _packet.TryRead(out uint unk1223); // THE
                                 _packet.TryRead(out uint unk1224); // FUCK
-                                if(unk1224 == 5) {
+                                if (unk1224 == 5)
+                                {
                                     // Special Thanks to BimBum1337
                                     // https://i.rapture.pw/BAKE5/ZEqISAFo33.png/raw
                                     _packet.TryRead(out uint unk1225); // ?!
@@ -177,7 +185,8 @@ public class CharInfo : ICharInfo
                     else if (item.TypeID3 == 3)
                     {
                         //MAGIC_CUBE
-                        _packet.TryRead(out uint quantity); // 4   uint    Quantity        //Do not confuse with StackCount, this indicates the amount of elixirs in the cube
+                        _packet.TryRead(
+                            out uint quantity); // 4   uint    Quantity        //Do not confuse with StackCount, this indicates the amount of elixirs in the cube
                     }
                 }
                 else if (item.TypeID2 == 3)
@@ -188,10 +197,9 @@ public class CharInfo : ICharInfo
                     if (item.TypeID3 == 11)
                     {
                         if (item.TypeID4 == 1 || item.TypeID4 == 2)
-                        {
                             //MAGICSTONE, ATTRSTONE
-                            _packet.TryRead(out byte attributeAssimilationProbability); // 1   byte    AttributeAssimilationProbability
-                        }
+                            _packet.TryRead(
+                                out byte attributeAssimilationProbability); // 1   byte    AttributeAssimilationProbability
                     }
                     else if (item.TypeID3 == 14 && item.TypeID4 == 2)
                     {
@@ -207,9 +215,11 @@ public class CharInfo : ICharInfo
                 }
             }
         }
+
         #endregion
 
         #region AvatarInventory
+
         _packet.TryRead(out byte avatarInventorySize); // 1 byte AvatarInventory.Size
         _packet.TryRead(out byte avatarInventoryItemCount); // 1 byte AvatarInventory.ItemCount
         for (var i = 0; i < avatarInventoryItemCount; i++)
@@ -239,11 +249,8 @@ public class CharInfo : ICharInfo
 
             _packet.TryRead(out uint itemRefItemId); // 4 uint item.RefItemID
             var item = await Cache.GetRefObjCommonAsync((int)itemRefItemId);
-            if (item == null)
-            {
-                continue;
-            }
-            
+            if (item == null) continue;
+
             if (item.TypeID1 == 3)
                 //ITEM_        
                 if (item.TypeID2 == 1)
@@ -284,10 +291,13 @@ public class CharInfo : ICharInfo
                     }
                 }
         }
+
         #endregion
+
         _packet.TryRead(out byte unkByte1); //1 byte unkByte1 //not a counter
 
         #region Masteries
+
         _packet.TryRead(out byte nextMastery); // 1   byte    nextMastery
         while (nextMastery == 1)
         {
@@ -295,11 +305,13 @@ public class CharInfo : ICharInfo
             _packet.TryRead(out byte masteryLevel); // 1   byte    mastery.Level   
             _packet.TryRead(out nextMastery); // 1   byte    nextMastery
         }
+
         #endregion
 
         _packet.TryRead(out byte unkByte2); // 1   byte    unkByte2    //not a counter
 
         #region Skills
+
         _packet.TryRead(out byte nextSkill); // 1   byte    nextSkill
         while (nextSkill == 1)
         {
@@ -308,17 +320,19 @@ public class CharInfo : ICharInfo
 
             _packet.TryRead(out nextSkill); // 1   byte    nextSkill
         }
+
         #endregion
 
         #region Quests
+
         _packet.TryRead(out ushort completedQuestCount); // 2   ushort  CompletedQuestCount
-        uint[] completedQuests = new uint[completedQuestCount];
+        var completedQuests = new uint[completedQuestCount];
         for (ushort i = 0; i < completedQuestCount; i++) // *   uint[]  CompletedQuests
         {
             _packet.TryRead(out uint quest);
             completedQuests[i] = quest;
         }
-        
+
         _packet.TryRead(out byte activeQuestCount); // 1   byte    ActiveQuestCount
         for (var activeQuestIndex = 0; activeQuestIndex < activeQuestCount; activeQuestIndex++)
         {
@@ -326,10 +340,7 @@ public class CharInfo : ICharInfo
             _packet.TryRead(out byte questAchievementCount); // 1   byte    quest.AchievementCount
             _packet.TryRead(out byte questRequiresAutoShareParty); // 1   byte    quest.RequiresAutoShareParty
             _packet.TryRead(out byte questType); // 1   byte    quest.Type
-            if (questType == 28)
-            {
-                _packet.TryRead(out uint questRemainingTime); // 4   uint    remainingTime
-            }
+            if (questType == 28) _packet.TryRead(out uint questRemainingTime); // 4   uint    remainingTime
 
             _packet.TryRead(out byte questStatus); // 1   byte    quest.Status
 
@@ -339,29 +350,30 @@ public class CharInfo : ICharInfo
                 for (var objectiveIndex = 0; objectiveIndex < questObjectiveCount; objectiveIndex++)
                 {
                     _packet.TryRead(out byte questObjectiveId); // 1   byte    objective.ID
-                    _packet.TryRead(out byte questObjectiveStatus); // 1   byte    objective.Status        //0 = Done, 1  = On
-                    _packet.TryRead(out string questObjectiveName); // 2   ushort  objective.Name.Length // *   string  objective.Name
+                    _packet.TryRead(
+                        out byte questObjectiveStatus); // 1   byte    objective.Status        //0 = Done, 1  = On
+                    _packet.TryRead(
+                        out var questObjectiveName); // 2   ushort  objective.Name.Length // *   string  objective.Name
                     _packet.TryRead(out byte objectiveTaskCount); // 1   byte    objective.TaskCount
                     for (var taskIndex = 0; taskIndex < objectiveTaskCount; taskIndex++)
-                    {
                         _packet.TryRead(out uint questTaskValue); // 4   uint    task.Value
-                    }
                 }
             }
 
             if (questType == 88)
             {
                 _packet.TryRead(out byte refObjCount); // 1   byte    RefObjCount
-                for (var refObjIndex = 0; refObjIndex < refObjCount; refObjIndex++) {
+                for (var refObjIndex = 0; refObjIndex < refObjCount; refObjIndex++)
                     _packet.TryRead(out uint questRefObjId); // 4   uint    RefObjID    //NPCs
-                }
             }
         }
+
         #endregion
-        
+
         _packet.TryRead(out byte unkByte3); // 1   byte    unkByte3        //Structure changes!!!
 
         #region CollectionBook
+
         _packet.TryRead(out uint startedCollectionCount); // 4   uint    CollectionBookStartedThemeCount
         for (var i = 0; i < startedCollectionCount; i++)
         {
@@ -369,12 +381,14 @@ public class CharInfo : ICharInfo
             _packet.TryRead(out uint themeStartedDateTime); // 4   uint    theme.StartedDateTime   //SROTimeStamp
             _packet.TryRead(out uint themePages); // 4   uint    theme.Pages
         }
+
         #endregion
-        
+
         #region EntityData
+
         _packet.TryRead(out UniqueCharId); // 4   uint    UniqueID
 
-        
+
         //Position
         // _packet.TryRead(out ushort latestRegionId); // 2   ushort  Position.RegionID
         // _packet.TryRead(out float positionX); // 4   float   Position.X
@@ -382,7 +396,7 @@ public class CharInfo : ICharInfo
         // _packet.TryRead(out float positionZ); // 4   float   Position.Z
         // _packet.TryRead(out ushort positionAngle); // 2   ushort  Position.Angle
         CurPosition = Position.FromPacket(_packet);
-        
+
         //Movement
         _packet.TryRead(out byte movementHasDestination); // 1   byte    Movement.HasDestination
         _packet.TryRead(out byte movementType); // 1   byte    Movement.Type
@@ -406,37 +420,36 @@ public class CharInfo : ICharInfo
         }
         else
         {
-            _packet.TryRead(out byte movementSource); // 1   byte    Movement.Source     //0 = Spinning, 1 = Sky-/Key-walking
-            _packet.TryRead(out ushort movementAngle); // 2   ushort  Movement.Angle      //Represents the new angle, character is looking at
+            _packet.TryRead(
+                out byte movementSource); // 1   byte    Movement.Source     //0 = Spinning, 1 = Sky-/Key-walking
+            _packet.TryRead(
+                out ushort movementAngle); // 2   ushort  Movement.Angle      //Represents the new angle, character is looking at
         }
         // Movement movement = Movement.MotionFromPacket(_packet);
-        
+
         //State
         _packet.TryRead(out LifeState); // 1   byte    State.LifeState         //1 = Alive, 2 = Dead
         _packet.TryRead(out Unkbyte0); // 1   byte    State.unkByte0
-        _packet.TryRead(out MotionState); // 1   byte    State.MotionState       //0 = None, 2 = Walking, 3 = Running, 4 = Sitting
-        _packet.TryRead(out BodyState); // 1   byte    State.Status            //0 = None, 1 = Hwan, 2 = Untouchable, 3 = GameMasterInvincible, 5 = GameMasterInvisible, 5 = ?, 6 = Stealth, 7 = Invisible
+        _packet.TryRead(
+            out MotionState); // 1   byte    State.MotionState       //0 = None, 2 = Walking, 3 = Running, 4 = Sitting
+        _packet.TryRead(
+            out BodyState); // 1   byte    State.Status            //0 = None, 1 = Hwan, 2 = Untouchable, 3 = GameMasterInvincible, 5 = GameMasterInvisible, 5 = ?, 6 = Stealth, 7 = Invisible
         _packet.TryRead(out WalkSpeed); // 4   float   State.WalkSpeed
         _packet.TryRead(out RunSpeed); // 4   float   State.RunSpeed
         _packet.TryRead(out HwanSpeed); // 4   float   State.HwanSpeed
-        
+
         _packet.TryRead(out byte stateBuffCount); // 1   byte    State.BuffCount
         for (var i = 0; i < stateBuffCount; i++)
         {
             _packet.TryRead(out uint buffRefSkillId); // 4   uint    Buff.RefSkillID
             _packet.TryRead(out uint buffDuration); // 4   uint    Buff.Duration
-        
-            var skill = await Cache.GetRefSkillAsync((int) buffRefSkillId);
-            if (skill == null)
-            {
-                continue;
-            }
-            
+
+            var skill = await Cache.GetRefSkillAsync((int)buffRefSkillId);
+            if (skill == null) continue;
+
             if (skill.ParamsContains(1701213281))
-            {
                 //1701213281 -> atfe -> "auto transfer effect" like Recovery Division
                 _packet.TryRead(out bool isCreator); // 1   bool    IsCreator
-            }
         }
         // State state = State.FromPacket(_packet);
 
@@ -450,19 +463,19 @@ public class CharInfo : ICharInfo
         _packet.TryRead(out PvpState); // 1   byte    PVPState                //0 = White, 1 = Purple, 2 = Red
         _packet.TryRead(out TransportFlag); // 1   byte    TransportFlag
         _packet.TryRead(out InCombat); // 1   byte    InCombat
-        if (TransportFlag)
-        {
-            _packet.TryRead(out TransportUniqueId); // 4   uint    Transport.UniqueID
-        }
-        
+        if (TransportFlag) _packet.TryRead(out TransportUniqueId); // 4   uint    Transport.UniqueID
+
         _packet.TryRead(out PvpFlag); // 1   byte    PVPFlag                 //0 = Red Side, 1 = Blue Side, 0xFF = None
         _packet.TryRead(out GuideFlag); // 8   ulong   GuideFlag
         _packet.TryRead(out Jid); // 4   uint    JID
         _packet.TryRead(out GmFlag); // 1   byte    GMFlag
+
         #endregion
-        
+
         #region Hotkey
-        _packet.TryRead(out byte activationFlag); // 1   byte    ActivationFlag          //ConfigType:0 --> (0 = Not activated, 7 = activated)
+
+        _packet.TryRead(
+            out byte activationFlag); // 1   byte    ActivationFlag          //ConfigType:0 --> (0 = Not activated, 7 = activated)
         _packet.TryRead(out byte hotkeyCount); // 1   byte    Hotkeys.Count           //ConfigType:1
         for (var i = 0; i < hotkeyCount; i++)
         {
@@ -470,30 +483,33 @@ public class CharInfo : ICharInfo
             _packet.TryRead(out byte hotkeySlotContentType); // 1   byte    hotkey.SlotContentType
             _packet.TryRead(out uint hotkeySlotData); // 4   uint    hotkey.SlotData
         }
+
         #endregion
 
         #region Autopot
+
         _packet.TryRead(out ushort autoHpConfig); // 2   ushort  AutoHPConfig            //ConfigType:11
         _packet.TryRead(out ushort autoMpConfig); // 2   ushort  AutoMPConfig            //ConfigType:12
         _packet.TryRead(out ushort autoUniversalConfig); // 2   ushort  AutoUniversalConfig     //ConfigType:13
         _packet.TryRead(out byte autoPotionDelay); // 1   byte    AutoPotionDelay         //ConfigType:14
+
         #endregion
 
         #region Whisper
+
         _packet.TryRead(out byte blockedWhisperCount); // 1   byte    blockedWhisperCount
         for (var i = 0; i < blockedWhisperCount; i++)
-        {
-            _packet.TryRead(out string target); // 2   ushort  Target.Length // *   string  Target
-        }
+            _packet.TryRead(out var target); // 2   ushort  Target.Length // *   string  Target
+
         #endregion
-        
+
         _packet.TryRead(out uint unkUshort0); // 4   uint    unkUShort0      //Structure changes!!!
         _packet.TryRead(out byte unkByte4); // 1   byte    unkByte4        //Structure changes!!!
         watch.Stop();
         double ticks = watch.ElapsedTicks;
-        double seconds = ticks / Stopwatch.Frequency;
-        double milliseconds = (ticks / Stopwatch.Frequency) * 1000;
-        double nanoseconds = (ticks / Stopwatch.Frequency) * 1000000000;
+        var seconds = ticks / Stopwatch.Frequency;
+        var milliseconds = ticks / Stopwatch.Frequency * 1000;
+        var nanoseconds = ticks / Stopwatch.Frequency * 1000000000;
         Log.Information("Read: {0}ns", nanoseconds);
     }
 

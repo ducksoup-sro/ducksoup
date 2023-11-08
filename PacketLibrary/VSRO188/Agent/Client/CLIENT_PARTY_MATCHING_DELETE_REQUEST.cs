@@ -6,7 +6,7 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 public class CLIENT_PARTY_MATCHING_DELETE_REQUEST : Packet
 {
     public uint MatchingId;
-    
+
     public CLIENT_PARTY_MATCHING_DELETE_REQUEST() : base(0x706B)
     {
     }

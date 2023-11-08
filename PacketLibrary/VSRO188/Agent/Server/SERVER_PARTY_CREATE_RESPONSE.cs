@@ -6,9 +6,9 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_CREATE
 public class SERVER_PARTY_CREATE_RESPONSE : Packet
 {
-    public byte Result;
-    public uint JID;
     public PartyErrorCode ErrorCode;
+    public uint JID;
+    public byte Result;
 
     public SERVER_PARTY_CREATE_RESPONSE() : base(0xB060)
     {

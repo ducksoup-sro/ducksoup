@@ -5,13 +5,13 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_AUTH
 public class CLIENT_AUTH_REQUEST : Packet
 {
-    public uint Token;
-    public string Username;
-    public string Password;
     public byte ContentId;
     public byte[] MacAddress;
-    
-    public CLIENT_AUTH_REQUEST() : base(0x6103, true, false)
+    public string Password;
+    public uint Token;
+    public string Username;
+
+    public CLIENT_AUTH_REQUEST() : base(0x6103, true)
     {
     }
 
@@ -26,7 +26,7 @@ public class CLIENT_AUTH_REQUEST : Packet
         TryRead(out Username);
         TryRead(out Password);
         TryRead(out ContentId);
-        for (int i = 0; i < 6; i++)
+        for (var i = 0; i < 6; i++)
         {
             TryRead<byte>(out var macAddressByte);
             MacAddress[i] = macAddressByte;
@@ -40,10 +40,7 @@ public class CLIENT_AUTH_REQUEST : Packet
         TryWrite(Username);
         TryWrite(Password);
         TryWrite(ContentId);
-        foreach (var b in MacAddress)
-        {
-            TryWrite(b);
-        }
+        foreach (var b in MacAddress) TryWrite(b);
         return this;
     }
 

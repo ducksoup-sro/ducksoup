@@ -6,10 +6,10 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_CHARACTER_SELECTION_RENAME
 public class SERVER_CHARACTER_SELECTION_RENAME_RESPONSE : Packet
 {
+    public CharacterSelectionRenameErrorCode ErrorCode;
     public CharacterSelectionRenameAction RenameAction;
     public byte Result;
-    public CharacterSelectionRenameErrorCode ErrorCode;
-    
+
     public SERVER_CHARACTER_SELECTION_RENAME_RESPONSE() : base(0xB450)
     {
     }
@@ -21,10 +21,7 @@ public class SERVER_CHARACTER_SELECTION_RENAME_RESPONSE : Packet
     {
         TryRead(out RenameAction);
         TryRead(out Result);
-        if (Result == 0x02)
-        {
-            TryRead(out ErrorCode);
-        }
+        if (Result == 0x02) TryRead(out ErrorCode);
     }
 
     public override async Task<Packet> Build()
@@ -32,17 +29,12 @@ public class SERVER_CHARACTER_SELECTION_RENAME_RESPONSE : Packet
         Reset();
         TryWrite(RenameAction);
         TryWrite(Result);
-        if (Result == 0x02)
-        {
-            TryWrite(ErrorCode);
-        }
+        if (Result == 0x02) TryWrite(ErrorCode);
         return this;
     }
 
     public static Task<Packet> of()
     {
-        return new SERVER_CHARACTER_SELECTION_RENAME_RESPONSE
-                { }
-            .Build();
+        return new SERVER_CHARACTER_SELECTION_RENAME_RESPONSE().Build();
     }
 }

@@ -75,21 +75,15 @@ public class TimerManager : ITimerManager
         _started = DateTime.Now;
 
         var packet = CreateStartPacket();
-        if (packet == null)
-        {
-            return;
-        }
-        
+        if (packet == null) return;
+
         if (!broadcast)
         {
             _session.SendToClient(packet);
             return;
         }
-        
-        Task.Run(async () =>
-        {
-            await Helper.BroadcastPacket(packet);
-        });
+
+        Task.Run(async () => { await Helper.BroadcastPacket(packet); });
     }
 
     public void Stop()
@@ -104,30 +98,21 @@ public class TimerManager : ITimerManager
         _stopOnVehicleMoveMove = true;
 
         var packet = CreateStopPacket();
-        if (packet == null)
-        {
-            return;
-        }
-        
+        if (packet == null) return;
+
         if (!_broadcast)
         {
             _session.SendToClient(packet);
             return;
         }
 
-        Task.Run(async () =>
-        {
-            await Helper.BroadcastPacket(packet);
-        });
+        Task.Run(async () => { await Helper.BroadcastPacket(packet); });
     }
 
     public void Send(ISession session)
     {
         var packet = CreateStartPacket();
-        if (packet == null)
-        {
-            return;
-        }
+        if (packet == null) return;
 
         session.SendToClient(packet);
     }
@@ -169,11 +154,8 @@ public class TimerManager : ITimerManager
     private Packet? CreateStartPacket()
     {
         _session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
-        if (charInfo == null)
-        {
-            return null;
-        }
-        
+        if (charInfo == null) return null;
+
         var packetTime = (int)_started.GetValueOrDefault().AddMilliseconds(_timerInterval).Subtract(DateTime.Now)
             .TotalSeconds;
         var response = new Packet(0x3041);
@@ -188,13 +170,10 @@ public class TimerManager : ITimerManager
     private Packet? CreateStopPacket()
     {
         _session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
-        if (charInfo == null)
-        {
-            return null;
-        }
-        
+        if (charInfo == null) return null;
+
         var response = new Packet(0x3042);
-        response.TryWrite<uint>(charInfo.UniqueCharId)
+        response.TryWrite(charInfo.UniqueCharId)
             .TryWrite<byte>(0x01);
         return response;
     }

@@ -17,7 +17,7 @@ public class HelpCommand : Command
     {
         if (SubCommands == null)
         {
-            Log.Information("Command: {0} has no subcommands.", this.GetName());
+            Log.Information("Command: {0} has no subcommands.", GetName());
             return;
         }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Net.Sockets;
 using API.Database.DuckSoup;
 using API.Session;
@@ -67,7 +66,7 @@ public class FakeSession : TcpSession
             Session.Disconnect();
             return;
         }
-        
+
         try
         {
             ClientSecurity.Recv(buffer, (int)offset, (int)size);
@@ -108,6 +107,7 @@ public class FakeSession : TcpSession
                         break;
                 }
             }
+
             Session.SetData(Data.CrcFailure, 0);
             Session.TransferToServer();
         }
@@ -122,7 +122,7 @@ public class FakeSession : TcpSession
             Session.Disconnect();
         }
     }
-    
+
     public void Send(Packet packet, bool transfer = false)
     {
         ClientSecurity.Send(packet);

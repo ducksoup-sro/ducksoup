@@ -1,6 +1,5 @@
 ﻿namespace PacketLibrary.VSRO188.Agent.Objects.newObj;
 
-public class CObjChild : CObj 
+public class CObjChild : CObj
 {
-    
 }

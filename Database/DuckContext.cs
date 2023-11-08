@@ -4,7 +4,7 @@ namespace Database;
 
 public class DuckContext : DbContext
 {
-    public static Dictionary<Type, string> ConnectionStrings = new Dictionary<Type, string>();
+    public static Dictionary<Type, string> ConnectionStrings = new();
 
     protected DuckContext()
     {
@@ -12,10 +12,7 @@ public class DuckContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (ConnectionStrings.ContainsKey(this.GetType()))
-        {
-            optionsBuilder.UseSqlServer(ConnectionStrings[this.GetType()]);
-        }
+        if (ConnectionStrings.ContainsKey(GetType())) optionsBuilder.UseSqlServer(ConnectionStrings[GetType()]);
     }
 
     public bool CanConnect()

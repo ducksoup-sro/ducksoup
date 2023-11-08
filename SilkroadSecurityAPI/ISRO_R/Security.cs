@@ -872,7 +872,8 @@ public class Security : ISecurity
     private void Handshake(ushort packet_opcode, PacketReader packet_data, bool packet_encrypted)
     {
         if (packet_encrypted)
-            throw new HandshakeException("[SecurityAPI::Handshake] Received an illogical (encrypted) handshake packet.");
+            throw new HandshakeException(
+                "[SecurityAPI::Handshake] Received an illogical (encrypted) handshake packet.");
 
         if (_mClientSecurity)
         {
@@ -950,7 +951,8 @@ public class Security : ISecurity
 
             key_array = MAKELONGLONG_(_mValueB, _mValueA);
             KeyTransformValue(ref key_array, _mValueK, (byte)(LOBYTE_(LOWORD_(_mValueB)) & 0x07));
-            if (_mClientKey != key_array) throw new HandshakeException("[SecurityAPI::Handshake] Client signature error.");
+            if (_mClientKey != key_array)
+                throw new HandshakeException("[SecurityAPI::Handshake] Client signature error.");
 
             key_array = MAKELONGLONG_(_mValueA, _mValueB);
             KeyTransformValue(ref key_array, _mValueK, (byte)(LOBYTE_(LOWORD_(_mValueK)) & 0x03));

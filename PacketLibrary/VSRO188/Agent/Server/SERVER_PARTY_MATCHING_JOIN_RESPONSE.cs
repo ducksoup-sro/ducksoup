@@ -6,10 +6,10 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_MATCHING_JOIN
 public class SERVER_PARTY_MATCHING_JOIN_RESPONSE : Packet
 {
-    public byte Result;
-    public PartyMatchingJoinResult JoinResult;
     public PartyErrorCode ErrorCode;
-    
+    public PartyMatchingJoinResult JoinResult;
+    public byte Result;
+
     public SERVER_PARTY_MATCHING_JOIN_RESPONSE() : base(0xB06D)
     {
     }
@@ -46,6 +46,7 @@ public class SERVER_PARTY_MATCHING_JOIN_RESPONSE : Packet
                 TryWrite(ErrorCode);
                 break;
         }
+
         return this;
     }
 

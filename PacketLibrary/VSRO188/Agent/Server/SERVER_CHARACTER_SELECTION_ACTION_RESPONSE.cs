@@ -8,10 +8,10 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 public class SERVER_CHARACTER_SELECTION_ACTION_RESPONSE : Packet
 {
     public CharacterSelectionAction Action;
-    public byte Result;
     public List<SelectionCharacter> Characters = new();
     public CharacterSelectionErrorCode ErrorCode;
-    
+    public byte Result;
+
     public SERVER_CHARACTER_SELECTION_ACTION_RESPONSE() : base(0xB007)
     {
     }
@@ -28,10 +28,7 @@ public class SERVER_CHARACTER_SELECTION_ACTION_RESPONSE : Packet
             case 0x01 when Action == CharacterSelectionAction.List:
             {
                 TryRead(out byte characterCount);
-                for (var i = 0; i < characterCount; i++)
-                {
-                    Characters.Add(new SelectionCharacter(this));
-                }
+                for (var i = 0; i < characterCount; i++) Characters.Add(new SelectionCharacter(this));
 
                 break;
             }
@@ -51,23 +48,19 @@ public class SERVER_CHARACTER_SELECTION_ACTION_RESPONSE : Packet
             case 0x01 when Action == CharacterSelectionAction.List:
             {
                 TryWrite(Characters.Count);
-                foreach (var selectionCharacter in Characters)
-                {
-                    await selectionCharacter.Build(this);
-                }
+                foreach (var selectionCharacter in Characters) await selectionCharacter.Build(this);
                 break;
             }
             case 0x02:
                 TryWrite(ErrorCode);
                 break;
         }
+
         return this;
     }
 
     public static Task<Packet> of()
     {
-        return new SERVER_CHARACTER_SELECTION_ACTION_RESPONSE
-                { }
-            .Build();
+        return new SERVER_CHARACTER_SELECTION_ACTION_RESPONSE().Build();
     }
 }

@@ -38,40 +38,6 @@ public class PluginManager : IPluginManager
     {
         return LoadPlugin(folder, false);
     }
-    
-    public PluginLoader? LoadPlugin(string folder, bool setup)
-    {
-        var configFile = Path.Combine(folder, "plugin.json");
-        if (!File.Exists(configFile))
-        {
-            Log.Warning("No plugin.json found in: {0}", folder);
-            return null;
-        }
-        
-        var configJson = File.ReadAllText(configFile);
-        var config = JsonConvert.DeserializeObject<PluginConfig>(configJson);
-
-        if (setup && !config.AutoStart)
-        {
-            Log.Warning("Plugin: {0} should not be autostarted.", folder);
-            return null;
-        }
-        
-        if (config == null)
-        {
-            Log.Warning("plugin.json was faulty in: {0}", folder);
-            return null;
-        }
-        
-        var absoluteMainLibraryPath = Path.Combine(Directory.GetCurrentDirectory(), folder, config.MainLibrary);
-        return PluginLoader.CreateFromAssemblyFile(absoluteMainLibraryPath,
-            loaderConfig =>
-            {
-                loaderConfig.PreferSharedTypes = true;
-                loaderConfig.IsUnloadable = true;
-                loaderConfig.LoadInMemory = true;
-            });
-    }
 
     public IPlugin StartPlugin(PluginLoader pluginLoader)
     {
@@ -165,6 +131,40 @@ public class PluginManager : IPluginManager
         Loaders = null;
     }
 
+    public PluginLoader? LoadPlugin(string folder, bool setup)
+    {
+        var configFile = Path.Combine(folder, "plugin.json");
+        if (!File.Exists(configFile))
+        {
+            Log.Warning("No plugin.json found in: {0}", folder);
+            return null;
+        }
+
+        var configJson = File.ReadAllText(configFile);
+        var config = JsonConvert.DeserializeObject<PluginConfig>(configJson);
+
+        if (setup && !config.AutoStart)
+        {
+            Log.Warning("Plugin: {0} should not be autostarted.", folder);
+            return null;
+        }
+
+        if (config == null)
+        {
+            Log.Warning("plugin.json was faulty in: {0}", folder);
+            return null;
+        }
+
+        var absoluteMainLibraryPath = Path.Combine(Directory.GetCurrentDirectory(), folder, config.MainLibrary);
+        return PluginLoader.CreateFromAssemblyFile(absoluteMainLibraryPath,
+            loaderConfig =>
+            {
+                loaderConfig.PreferSharedTypes = true;
+                loaderConfig.IsUnloadable = true;
+                loaderConfig.LoadInMemory = true;
+            });
+    }
+
     private void Setup()
     {
         Log.Information("Loading plugins..");
@@ -180,10 +180,7 @@ public class PluginManager : IPluginManager
         foreach (var folder in pluginFolders)
         {
             var tempPlugin = LoadPlugin(folder, true);
-            if (tempPlugin == null)
-            {
-                continue;
-            }
+            if (tempPlugin == null) continue;
             temp.Add(tempPlugin);
             Log.Information("Plugin from folder: {0} loaded.", folder.Replace("\\plugins", ""));
         }

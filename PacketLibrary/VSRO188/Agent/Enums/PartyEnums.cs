@@ -78,5 +78,5 @@ public enum PartyErrorCode : ushort
     Denied = 11276, //The request for the party denied.
     NoResponse = 11280, //The party invite automaticly cancelled due to no response form the other player.
     OtherParty = 11288, //Player is in another party.
-    Unregistered = 11301, //The user registered a party in the party matching system.
+    Unregistered = 11301 //The user registered a party in the party matching system.
 }

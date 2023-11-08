@@ -6,13 +6,13 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_MATCHING_PLAYER_JOIN
 public class SERVER_PARTY_MATCHING_PLAYER_JOIN_REQUEST : Packet
 {
-    public uint RequestID;
-    public uint UserJID;
-    public uint MatchingID;
-    public uint PrimaryMastery;
-    public uint SecondaryMastery;
     public byte JobState;
+    public uint MatchingID;
     public PartyMemberInfo memberInfo;
+    public uint PrimaryMastery;
+    public uint RequestID;
+    public uint SecondaryMastery;
+    public uint UserJID;
 
     public SERVER_PARTY_MATCHING_PLAYER_JOIN_REQUEST() : base(0x706D)
     {
@@ -31,7 +31,7 @@ public class SERVER_PARTY_MATCHING_PLAYER_JOIN_REQUEST : Packet
         TryRead(out PrimaryMastery);
         TryRead(out SecondaryMastery);
         TryRead(out JobState);
-        PartyMemberInfo memberInfo = new PartyMemberInfo(this);
+        var memberInfo = new PartyMemberInfo(this);
     }
 
     public override async Task<Packet> Build()

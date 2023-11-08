@@ -36,10 +36,7 @@ public class PartyManager : IPartyManager
         return _parties.Values.FirstOrDefault(party => party.Members.Any(partyMember =>
         {
             partyMember.GetData(Data.CharInfo, out CharInfo? charInfo, null);
-            if (charInfo == null)
-            {
-                return false;
-            }
+            if (charInfo == null) return false;
 
             return string.Equals(charInfo.CharName, charName, StringComparison.CurrentCultureIgnoreCase);
         }));
@@ -59,10 +56,7 @@ public class PartyManager : IPartyManager
     public void RemoveParty(int id)
     {
         var party = GetParty(id);
-        if (party == null)
-        {
-            return;
-        }
+        if (party == null) return;
 
         RemovePartyMatchEntry(party);
         _parties.Remove(id, out _);
@@ -71,10 +65,7 @@ public class PartyManager : IPartyManager
     public void RemoveParty(string charName)
     {
         var party = GetParty(charName);
-        if (party == null)
-        {
-            return;
-        }
+        if (party == null) return;
 
         RemovePartyMatchEntry(party);
         _parties.Remove(party.PartyId, out _);
@@ -83,10 +74,7 @@ public class PartyManager : IPartyManager
     public void RemoveParty(ISession session)
     {
         var party = GetParty(session);
-        if (party == null)
-        {
-            return;
-        }
+        if (party == null) return;
 
         RemovePartyMatchEntry(party);
         _parties.Remove(party.PartyId, out _);
@@ -97,10 +85,7 @@ public class PartyManager : IPartyManager
         return _parties.Values.Any(party => party.Members.Any(partyMember =>
         {
             partyMember.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
-            if (charInfo == null)
-            {
-                return false;
-            }
+            if (charInfo == null) return false;
 
             return string.Equals(charInfo.CharName, charName, StringComparison.CurrentCultureIgnoreCase);
         }));
@@ -116,10 +101,7 @@ public class PartyManager : IPartyManager
         return _partyMatchEntries.Values.Any(entry => entry?.Party != null && entry.Party.Members.Any(partyMember =>
         {
             partyMember.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
-            if (charInfo == null)
-            {
-                return false;
-            }
+            if (charInfo == null) return false;
 
             return string.Equals(charInfo.CharName, charName, StringComparison.CurrentCultureIgnoreCase);
         }));

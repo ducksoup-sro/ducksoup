@@ -1,6 +1,4 @@
 using PacketLibrary.VSRO188.Agent.Objects;
-using Serilog;
-using SilkroadSecurityAPI;
 using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Server;
@@ -9,9 +7,9 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 // https://github.com/SDClowen/RSBot/blob/master/Library/RSBot.Core/Network/Handler/Agent/Entity/EntityUpdateMovementResponse.cs
 public class SERVER_MOVEMENT_RESPONSE : Packet
 {
-    public uint TargetId;
     public Movement Movement;
-    
+    public uint TargetId;
+
     public SERVER_MOVEMENT_RESPONSE() : base(0xB021)
     {
     }

@@ -7,7 +7,6 @@ using API.ServiceFactory;
 using NetCoreServer;
 using PacketLibrary.Handler;
 using Serilog;
-using SilkroadSecurityAPI.Message;
 
 namespace DuckSoup.Library.Server;
 
@@ -33,8 +32,8 @@ public class FakeServer : TcpServer, IFakeServer
             Service.SecurityType);
         Log.Information("{0} - Setting up Socket..", Service.Name);
         Log.Information("{0} - Redirecting Sessions from {1}:{2} to {3}:{4}", Service.Name,
-                Service.LocalMachine_Machine.Address, Service.BindPort,
-                Service.RemoteMachine_Machine.Address, Service.RemotePort);
+            Service.LocalMachine_Machine.Address, Service.BindPort,
+            Service.RemoteMachine_Machine.Address, Service.RemotePort);
     }
 
     public Service Service { get; }

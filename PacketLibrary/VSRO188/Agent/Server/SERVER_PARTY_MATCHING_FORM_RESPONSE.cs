@@ -6,16 +6,16 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_MATCHING_FORM
 public class SERVER_PARTY_MATCHING_FORM_RESPONSE : Packet
 {
-    public byte Result;
-    public uint MatchingId;
-    public uint Id;
-    public PartySettingsFlag partySetting;
-    public PartyPurposeType partyPurpose;
-    public byte LevelRangeMin;
-    public byte LevelRangeMax;
-    public string Title;
     public PartyErrorCode errorCode;
-    
+    public uint Id;
+    public byte LevelRangeMax;
+    public byte LevelRangeMin;
+    public uint MatchingId;
+    public PartyPurposeType partyPurpose;
+    public PartySettingsFlag partySetting;
+    public byte Result;
+    public string Title;
+
     public SERVER_PARTY_MATCHING_FORM_RESPONSE() : base(0xB069)
     {
     }
@@ -23,7 +23,7 @@ public class SERVER_PARTY_MATCHING_FORM_RESPONSE : Packet
     public override PacketDirection FromDirection => PacketDirection.Server;
 
     public override PacketDirection ToDirection => PacketDirection.Client;
-    
+
     public override async Task Read()
     {
         TryRead(out Result);
@@ -63,6 +63,7 @@ public class SERVER_PARTY_MATCHING_FORM_RESPONSE : Packet
                 TryWrite(errorCode);
                 break;
         }
+
         return this;
     }
 

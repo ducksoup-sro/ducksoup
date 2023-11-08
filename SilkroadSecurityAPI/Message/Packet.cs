@@ -107,7 +107,7 @@ public class Packet
         return (int)(_reader.BaseStream.Length - _reader.BaseStream.Position);
     }
 
-    public async virtual Task Read()
+    public virtual async Task Read()
     {
         // throw new NotImplementedException();
     }
@@ -169,14 +169,12 @@ public class Packet
         // var size = (ushort)Unsafe.SizeOf<T>();
         // MemoryMarshal.TryRead(_reader.ReadBytes(size), out value);
         // return this;
-        
+
         var size = (ushort)Unsafe.SizeOf<T>();
         var availableBytes = ((MemoryStream)_reader.BaseStream).Length - ((MemoryStream)_reader.BaseStream).Position;
 
         if (size > availableBytes && DebugPacket)
-        {
             Log.Debug("Attempting to read {0} bytes, but only {1} bytes available.", size, availableBytes);
-        }
 
         MemoryMarshal.TryRead(_reader.ReadBytes(size), out value);
         return this;
@@ -219,14 +217,12 @@ public class Packet
     {
         // value = encoding.GetString(_reader.ReadBytes(length));
         // return this;
-        
+
         var availableBytes = ((MemoryStream)_reader.BaseStream).Length - ((MemoryStream)_reader.BaseStream).Position;
-    
+
         if (length > availableBytes && DebugPacket)
-        {
             Log.Debug("Attempting to read {0} bytes, but only {1} bytes available.", length, availableBytes);
-        }
-    
+
         value = encoding.GetString(_reader.ReadBytes(length));
         return this;
     }

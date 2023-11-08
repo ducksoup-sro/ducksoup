@@ -4,7 +4,6 @@ namespace SilkroadSecurityAPI.Exceptions;
 
 public class SendException : Exception
 {
-    
     public SendException(string message) : base(string.Format(message))
     {
     }

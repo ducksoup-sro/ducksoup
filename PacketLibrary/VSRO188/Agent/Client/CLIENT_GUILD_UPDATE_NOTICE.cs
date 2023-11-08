@@ -4,8 +4,8 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 
 public class CLIENT_GUILD_UPDATE_NOTICE : Packet
 {
-    public string Title;
     public string Text;
+    public string Title;
 
     public CLIENT_GUILD_UPDATE_NOTICE() : base(0x70F9)
     {

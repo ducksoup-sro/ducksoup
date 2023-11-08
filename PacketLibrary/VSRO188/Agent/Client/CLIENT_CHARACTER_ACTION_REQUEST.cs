@@ -19,16 +19,14 @@ public class CLIENT_CHARACTER_ACTION_REQUEST : Packet
     public override async Task<Packet> Build()
     {
         // throw new NotImplementedException();
-        
+
         //Reset();
-        
+
         return this;
     }
 
     public static Task<Packet> of()
     {
-        return new CLIENT_CHARACTER_ACTION_REQUEST
-                { }
-            .Build();
+        return new CLIENT_CHARACTER_ACTION_REQUEST().Build();
     }
 }

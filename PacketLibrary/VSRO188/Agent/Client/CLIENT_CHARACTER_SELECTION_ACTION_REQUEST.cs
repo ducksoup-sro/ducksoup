@@ -7,14 +7,14 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 public class CLIENT_CHARACTER_SELECTION_ACTION_REQUEST : Packet
 {
     public CharacterSelectionAction Action;
-    public string Name;
-    public uint CharacterRefObjId;
-    public byte Scale;
-    public uint ChestRefObjId;
-    public uint PantsRefObjId;
     public uint BootsRefObjId;
+    public uint CharacterRefObjId;
+    public uint ChestRefObjId;
+    public string Name;
+    public uint PantsRefObjId;
+    public byte Scale;
     public uint WeaponRefObjId;
-    
+
     public CLIENT_CHARACTER_SELECTION_ACTION_REQUEST() : base(0x7007)
     {
     }
@@ -67,6 +67,7 @@ public class CLIENT_CHARACTER_SELECTION_ACTION_REQUEST : Packet
                 TryWrite(Name);
                 break;
         }
+
         return this;
     }
 

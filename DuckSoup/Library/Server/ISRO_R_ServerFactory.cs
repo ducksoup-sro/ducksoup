@@ -60,7 +60,7 @@ public class ISRO_R_ServerFactory : IServerFactory
             _ => new HashSet<ushort>()
         };
     }
-    
+
     public PacketResultType GetDefaultUnknownClientResult(ServerType serviceServerType)
     {
         return PacketResultType.Nothing; // TODO :: Temporary for testing purp.

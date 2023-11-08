@@ -33,7 +33,7 @@ public class PluginLoadCommand : Command
             Log.Information("Couldn't load plugin {0}", args[0]);
             return;
         }
-        
+
         var plugin = _pluginManager.StartPlugin(pluginLoader);
 
         Log.Information(

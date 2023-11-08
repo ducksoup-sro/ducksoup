@@ -6,13 +6,13 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_MATCHING_LIST
 public class SERVER_PARTY_MATCHING_LIST_RESPONSE : Packet
 {
-    public byte Result;
+    public ushort ErrorCode;
     public byte PageCount;
     public byte PageIndex;
     public byte PartyCount;
     public List<PartyMatchEntry> PartyMatch = new();
-    public ushort ErrorCode;
-    
+    public byte Result;
+
     public SERVER_PARTY_MATCHING_LIST_RESPONSE() : base(0xB06C)
     {
     }
@@ -32,10 +32,7 @@ public class SERVER_PARTY_MATCHING_LIST_RESPONSE : Packet
                 TryRead(out PageCount);
                 TryRead(out PageIndex);
                 TryRead(out PartyCount);
-                for (var i = 0; i < PartyCount; i++)
-                {
-                    PartyMatch.Add(new PartyMatchEntry(this));
-                }
+                for (var i = 0; i < PartyCount; i++) PartyMatch.Add(new PartyMatchEntry(this));
                 break;
             }
             case 2:
@@ -55,10 +52,7 @@ public class SERVER_PARTY_MATCHING_LIST_RESPONSE : Packet
                 TryWrite(PageCount);
                 TryWrite(PageIndex);
                 TryWrite(PartyCount);
-                foreach (var partyMatchEntry in PartyMatch)
-                {
-                    partyMatchEntry.Build(this);
-                }
+                foreach (var partyMatchEntry in PartyMatch) partyMatchEntry.Build(this);
                 break;
             }
             case 2:

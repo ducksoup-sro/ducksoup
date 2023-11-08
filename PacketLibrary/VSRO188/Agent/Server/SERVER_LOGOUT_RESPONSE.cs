@@ -6,11 +6,11 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_LOGOUT
 public class SERVER_LOGOUT_RESPONSE : Packet
 {
-    public byte Result;
     public byte Countdown;
-    public LogoutMode LogoutMode;
     public LogoutErrorCode ErrorCode;
-    
+    public LogoutMode LogoutMode;
+    public byte Result;
+
     public SERVER_LOGOUT_RESPONSE() : base(0xb005)
     {
     }
@@ -38,7 +38,8 @@ public class SERVER_LOGOUT_RESPONSE : Packet
     public override async Task<Packet> Build()
     {
         Reset();
-        TryWrite(Result); switch (Result)
+        TryWrite(Result);
+        switch (Result)
         {
             case 0x01:
                 TryWrite(Countdown);
@@ -48,7 +49,7 @@ public class SERVER_LOGOUT_RESPONSE : Packet
                 TryWrite(ErrorCode);
                 break;
         }
-            
+
 
         return this;
     }
@@ -62,7 +63,7 @@ public class SERVER_LOGOUT_RESPONSE : Packet
             LogoutMode = logoutMode
         }.Build();
     }
-    
+
     public static Task<Packet> of(LogoutErrorCode errorCode)
     {
         return new SERVER_LOGOUT_RESPONSE

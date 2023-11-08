@@ -15,7 +15,7 @@ public interface ISession
     ///     Unique ID of the session
     /// </summary>
     Guid Guid { get; }
-    
+
     /// <summary>
     ///     Sends the packet immediately to the client
     /// </summary>
@@ -98,7 +98,7 @@ public interface ISession
     ISession HasData(string key, out bool value);
 
     /// <summary>
-    /// Debug only. Don't use
+    ///     Debug only. Don't use
     /// </summary>
     /// <returns></returns>
     ConcurrentDictionary<string, object> GetRawSessionData();

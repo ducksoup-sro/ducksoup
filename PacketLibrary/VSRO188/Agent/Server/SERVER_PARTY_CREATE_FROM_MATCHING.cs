@@ -7,13 +7,13 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_CREATED_FROM_MATCHING
 public class SERVER_PARTY_CREATE_FROM_MATCHING : Packet
 {
-    public PartyInfoFlag PartyInfoFlag;
     public int ID;
     public int LeaderJID;
-    public PartySettingsFlag PartySettingsFlag;
     public byte MemberCount;
-    public List<PartyMemberInfo> MemberInfos = new List<PartyMemberInfo>();
-    
+    public List<PartyMemberInfo> MemberInfos = new();
+    public PartyInfoFlag PartyInfoFlag;
+    public PartySettingsFlag PartySettingsFlag;
+
     public SERVER_PARTY_CREATE_FROM_MATCHING() : base(0x3065)
     {
     }
@@ -27,19 +27,16 @@ public class SERVER_PARTY_CREATE_FROM_MATCHING : Packet
     {
         TryRead(out PartyInfoFlag);
         TryRead(out ID);
-        if(PartyInfoFlag.HasFlag(PartyInfoFlag.Options))
+        if (PartyInfoFlag.HasFlag(PartyInfoFlag.Options))
         {
             TryRead(out LeaderJID);
             TryRead(out PartySettingsFlag);
         }
-        
-        if(PartyInfoFlag.HasFlag(PartyInfoFlag.MemberList))
+
+        if (PartyInfoFlag.HasFlag(PartyInfoFlag.MemberList))
         {
             TryRead(out MemberCount);
-            for(var i = 0; i < MemberCount; i++)
-            {
-                MemberInfos.Add(new PartyMemberInfo(this));
-            }
+            for (var i = 0; i < MemberCount; i++) MemberInfos.Add(new PartyMemberInfo(this));
         }
     }
 
@@ -48,17 +45,18 @@ public class SERVER_PARTY_CREATE_FROM_MATCHING : Packet
         Reset();
         TryWrite(PartyInfoFlag);
         TryWrite(ID);
-        if(PartyInfoFlag.HasFlag(PartyInfoFlag.Options))
+        if (PartyInfoFlag.HasFlag(PartyInfoFlag.Options))
         {
             TryWrite(LeaderJID);
             TryWrite(PartySettingsFlag);
         }
-        
-        if(PartyInfoFlag.HasFlag(PartyInfoFlag.MemberList))
+
+        if (PartyInfoFlag.HasFlag(PartyInfoFlag.MemberList))
         {
             TryWrite(MemberCount);
             MemberInfos.ForEach(partyMemberInfo => partyMemberInfo.Build(this));
         }
+
         return this;
     }
 

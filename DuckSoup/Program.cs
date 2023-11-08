@@ -17,7 +17,6 @@ using DuckSoup.Library.Services;
 using DuckSoup.Library.Settings;
 using DuckSoup.Library.Webserver;
 using Serilog;
-using Serilog.Core;
 using Serilog.Events;
 
 #endregion
@@ -78,7 +77,7 @@ public static class Program
             Log.Error("Program.cs Main| {0}", exception.Message);
             Log.Error("Program.cs Main| {0}", exception.StackTrace);
         }
-    } 
+    }
 
     public static void Stop()
     {

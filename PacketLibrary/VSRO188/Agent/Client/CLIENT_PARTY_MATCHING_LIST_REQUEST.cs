@@ -6,7 +6,7 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 public class CLIENT_PARTY_MATCHING_LIST_REQUEST : Packet
 {
     public byte PageIndex;
-    
+
     public CLIENT_PARTY_MATCHING_LIST_REQUEST() : base(0x706C)
     {
     }

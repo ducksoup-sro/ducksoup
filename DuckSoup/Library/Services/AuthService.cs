@@ -1,8 +1,7 @@
 ﻿using System;
-using API;
 using API.Database;
 using API.Database.DuckSoup;
-using api.Extensions;
+using API.Extensions;
 using API.Services;
 using JWT.Algorithms;
 using JWT.Builder;

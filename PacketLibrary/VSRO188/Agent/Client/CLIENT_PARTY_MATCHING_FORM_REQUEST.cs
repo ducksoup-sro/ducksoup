@@ -6,14 +6,14 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_MATCHING_FORM
 public class CLIENT_PARTY_MATCHING_FORM_REQUEST : Packet
 {
-    public uint MatchingId;
     public uint Id;
-    public PartySettingsFlag partySetting;
-    public PartyPurposeType partyPurpose;
-    public byte LevelRangeMin;
     public byte LevelRangeMax;
+    public byte LevelRangeMin;
+    public uint MatchingId;
+    public PartyPurposeType partyPurpose;
+    public PartySettingsFlag partySetting;
     public string Title;
-    
+
     public CLIENT_PARTY_MATCHING_FORM_REQUEST() : base(0x7069)
     {
     }

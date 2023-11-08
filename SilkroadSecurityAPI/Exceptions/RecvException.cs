@@ -4,7 +4,6 @@ namespace SilkroadSecurityAPI.Exceptions;
 
 public class RecvException : Exception
 {
-    
     public RecvException(string message) : base(string.Format(message))
     {
     }

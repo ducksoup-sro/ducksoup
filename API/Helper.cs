@@ -19,10 +19,7 @@ public static class Helper
         return Task.FromResult(sharedObjects.AgentSessions.FirstOrDefault(session =>
         {
             session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
-            if (charInfo == null)
-            {
-                return false;
-            }
+            if (charInfo == null) return false;
             return string.Equals(charInfo.CharName, charName, StringComparison.OrdinalIgnoreCase);
         }));
     }
@@ -33,24 +30,18 @@ public static class Helper
         return Task.FromResult(sharedObjects.AgentSessions.FirstOrDefault(session =>
         {
             session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
-            if (charInfo == null)
-            {
-                return false;
-            }
+            if (charInfo == null) return false;
             return charInfo.Jid == accountJid;
         }));
     }
-    
+
     public static Task<List<ISession>> GetSessionsInRegion(int regionId)
     {
         var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
         var result = sharedObjects.AgentSessions.Where(session =>
         {
             session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
-            if (charInfo == null)
-            {
-                return false;
-            }
+            if (charInfo == null) return false;
             return charInfo.GetCalcPosition.Region.Id == regionId;
         }).ToList();
         return Task.FromResult(result);
@@ -62,10 +53,7 @@ public static class Helper
         var result = sharedObjects.AgentSessions.Where(session =>
         {
             session.GetData(Data.CharInfo, out ICharInfo? targetCharInfo, null);
-            if (targetCharInfo == null)
-            {
-                return false;
-            }
+            if (targetCharInfo == null) return false;
             var targetSectorX = targetCharInfo.GetCalcPosition.Region.X;
             var targetSectorY = targetCharInfo.GetCalcPosition.Region.Y;
             return targetSectorX == sectorX && targetSectorY == sectorY;
@@ -82,16 +70,10 @@ public static class Helper
             {
                 targetSession.GetData(Data.CharacterGameReady, out var characterGameReady, false);
 
-                if (characterGameReady != clientIsReady)
-                {
-                    continue;
-                }
+                if (characterGameReady != clientIsReady) continue;
 
                 targetSession.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
-                if (charInfo == null)
-                {
-                    return;
-                }
+                if (charInfo == null) return;
                 if (charInfo.GetCalcPosition.Region.Id == regionId) targetSession.SendToClient(packet);
             }
         });
@@ -102,10 +84,7 @@ public static class Helper
     {
         var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
         session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
-        if (charInfo == null)
-        {
-            return;
-        }
+        if (charInfo == null) return;
 
         var sectorX = charInfo.GetCalcPosition.Region.X;
         var sectorY = charInfo.GetCalcPosition.Region.Y;
@@ -114,17 +93,11 @@ public static class Helper
             foreach (var targetSession in sharedObjects.AgentSessions)
             {
                 targetSession.GetData(Data.CharacterGameReady, out var characterGameReady, false);
-                if (characterGameReady != clientIsReady)
-                {
-                    continue;
-                }
-                
+                if (characterGameReady != clientIsReady) continue;
+
                 targetSession.GetData(Data.CharInfo, out ICharInfo? targetCharInfo, null);
-                if (targetCharInfo == null)
-                {
-                    continue;
-                }
-                
+                if (targetCharInfo == null) continue;
+
                 var targetSectorX = targetCharInfo.GetCalcPosition.Region.X;
                 var targetSectorY = targetCharInfo.GetCalcPosition.Region.Y;
                 if ((targetSectorX + 1 == sectorX ||
@@ -134,9 +107,7 @@ public static class Helper
                      targetSectorY - 1 == sectorY ||
                      targetSectorY == sectorY)
                    )
-                {
                     targetSession.SendToClient(packet);
-                }
             }
         });
     }
@@ -161,10 +132,7 @@ public static class Helper
                     foreach (var session in sharedObjects.AgentSessions)
                     {
                         session.GetData(Data.CharacterGameReady, out var characterGameReady, false);
-                        if (characterGameReady != clientIsReady)
-                        {
-                            continue;
-                        }
+                        if (characterGameReady != clientIsReady) continue;
                         session.SendToClient(packet);
                     }
 
