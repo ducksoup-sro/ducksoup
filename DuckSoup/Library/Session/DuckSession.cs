@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using DuckSoup.Library.Server;
+using Newtonsoft.Json;
 using PacketLibrary.Handler;
 using PacketLibrary.VSRO188.Agent.Enums.Chat;
 using PacketLibrary.VSRO188.Agent.Server;
@@ -19,9 +21,15 @@ public class DuckSession : ISession
         SessionData = new Dictionary<string, object>();
     }
 
+
     private Dictionary<string, object> SessionData { get; }
-    private FakeSession Client { get; }
-    private FakeClient Server { get; }
+
+    [JsonIgnore] private FakeSession Client { get; }
+
+    [JsonIgnore] private FakeClient Server { get; }
+
+    [JsonIgnore] public IPEndPoint RemoteEndPoint => (IPEndPoint)Client.Socket.RemoteEndPoint;
+
     public Guid Guid { get; }
 
     public Task SendToClient(Packet packet)
@@ -92,7 +100,7 @@ public class DuckSession : ISession
             SetData(key, defaultValue);
             return this;
         }
-        
+
         SessionData.TryGetValue(key, out var val);
         value = (T)val;
         return this;
@@ -109,5 +117,12 @@ public class DuckSession : ISession
     {
         value = SessionData.ContainsKey(key);
         return this;
+    }
+
+    
+    [Obsolete("Debug only. Don't use")]
+    public Dictionary<string, object> GetRawSessionData()
+    {
+        return SessionData;
     }
 }

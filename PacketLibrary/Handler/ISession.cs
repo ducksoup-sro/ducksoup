@@ -1,9 +1,15 @@
-﻿using SilkroadSecurityAPI.Message;
+﻿using System.Net;
+using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.Handler;
 
 public interface ISession
 {
+    /// <summary>
+    ///     Endpoint of the client / user
+    /// </summary>
+    IPEndPoint RemoteEndPoint { get; }
+
     /// <summary>
     ///     Unique ID of the session
     /// </summary>
@@ -89,4 +95,10 @@ public interface ISession
     /// <param name="value"></param>
     /// <returns></returns>
     ISession HasData(string key, out bool value);
+
+    /// <summary>
+    /// Debug only. Don't use
+    /// </summary>
+    /// <returns></returns>
+    Dictionary<string, object> GetRawSessionData();
 }

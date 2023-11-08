@@ -40,26 +40,26 @@ public class CharInfo : ICharInfo
         _packet.ToReadOnly();
         
         # region general
-        _packet.TryRead(out serverTime); // * 4   uint    ServerTime               //SROTimeStamp
-        _packet.TryRead(out refObjId); // 4   uint    RefObjID
-        _packet.TryRead(out scale); // 1   byte    Scale
-        _packet.TryRead(out curLevel); // 1   byte    CurLevel
-        _packet.TryRead(out maxLevel); // 1   byte    MaxLevel
-        _packet.TryRead(out expOffset); // 8   ulong   ExpOffset
-        _packet.TryRead(out sExpOffset); // 4   uint    SExpOffset
-        _packet.TryRead(out remainGold); // 8   ulong   RemainGold
-        _packet.TryRead(out remainSkillPoint); // 4   uint    RemainSkillPoint
-        _packet.TryRead(out remainStatPoint); // 2   ushort  RemainStatPoint
-        _packet.TryRead(out remainHwanCount); // 1   byte    RemainHwanCount
-        _packet.TryRead(out gatheredExpPoint); // 4   uint    GatheredExpPoint
-        _packet.TryRead(out hp); // 4   uint    HP
-        _packet.TryRead(out mp); // 4   uint    MP
-        _packet.TryRead(out autoInverstExp); // 1   byte    AutoInverstExp
-        _packet.TryRead(out dailyPk); // 1   byte    DailyPK
-        _packet.TryRead(out totalPk); // 2   ushort  TotalPK
-        _packet.TryRead(out pkPenaltyPoint); // 4   uint    PKPenaltyPoint
-        _packet.TryRead(out hwanLevel); // 1   byte    HwanLevel
-        _packet.TryRead(out pvpCape); // 1   byte    FreePVP           //0 = None, 1 = Red, 2 = Gray, 3 = Blue, 4 = White, 5 = Gold
+        _packet.TryRead(out ServerTime); // * 4   uint    ServerTime               //SROTimeStamp
+        _packet.TryRead(out RefObjId); // 4   uint    RefObjID
+        _packet.TryRead(out Scale); // 1   byte    Scale
+        _packet.TryRead(out CurLevel); // 1   byte    CurLevel
+        _packet.TryRead(out MaxLevel); // 1   byte    MaxLevel
+        _packet.TryRead(out ExpOffset); // 8   ulong   ExpOffset
+        _packet.TryRead(out SExpOffset); // 4   uint    SExpOffset
+        _packet.TryRead(out RemainGold); // 8   ulong   RemainGold
+        _packet.TryRead(out RemainSkillPoint); // 4   uint    RemainSkillPoint
+        _packet.TryRead(out RemainStatPoint); // 2   ushort  RemainStatPoint
+        _packet.TryRead(out RemainHwanCount); // 1   byte    RemainHwanCount
+        _packet.TryRead(out GatheredExpPoint); // 4   uint    GatheredExpPoint
+        _packet.TryRead(out Hp); // 4   uint    HP
+        _packet.TryRead(out Mp); // 4   uint    MP
+        _packet.TryRead(out AutoInverstExp); // 1   byte    AutoInverstExp
+        _packet.TryRead(out DailyPk); // 1   byte    DailyPK
+        _packet.TryRead(out TotalPk); // 2   ushort  TotalPK
+        _packet.TryRead(out PkPenaltyPoint); // 4   uint    PKPenaltyPoint
+        _packet.TryRead(out HwanLevel); // 1   byte    HwanLevel
+        _packet.TryRead(out PvpCape); // 1   byte    FreePVP           //0 = None, 1 = Red, 2 = Gray, 3 = Blue, 4 = White, 5 = Gold
         #endregion
         
         #region Inventory
@@ -371,7 +371,7 @@ public class CharInfo : ICharInfo
         #endregion
         
         #region EntityData
-        _packet.TryRead(out uniqueCharId); // 4   uint    UniqueID
+        _packet.TryRead(out UniqueCharId); // 4   uint    UniqueID
 
         
         //Position
@@ -411,13 +411,13 @@ public class CharInfo : ICharInfo
         // Movement movement = Movement.MotionFromPacket(_packet);
         
         //State
-        _packet.TryRead(out lifeState); // 1   byte    State.LifeState         //1 = Alive, 2 = Dead
-        _packet.TryRead(out unkbyte0); // 1   byte    State.unkByte0
-        _packet.TryRead(out motionState); // 1   byte    State.MotionState       //0 = None, 2 = Walking, 3 = Running, 4 = Sitting
-        _packet.TryRead(out bodyState); // 1   byte    State.Status            //0 = None, 1 = Hwan, 2 = Untouchable, 3 = GameMasterInvincible, 5 = GameMasterInvisible, 5 = ?, 6 = Stealth, 7 = Invisible
-        _packet.TryRead(out walkSpeed); // 4   float   State.WalkSpeed
-        _packet.TryRead(out runSpeed); // 4   float   State.RunSpeed
-        _packet.TryRead(out hwanSpeed); // 4   float   State.HwanSpeed
+        _packet.TryRead(out LifeState); // 1   byte    State.LifeState         //1 = Alive, 2 = Dead
+        _packet.TryRead(out Unkbyte0); // 1   byte    State.unkByte0
+        _packet.TryRead(out MotionState); // 1   byte    State.MotionState       //0 = None, 2 = Walking, 3 = Running, 4 = Sitting
+        _packet.TryRead(out BodyState); // 1   byte    State.Status            //0 = None, 1 = Hwan, 2 = Untouchable, 3 = GameMasterInvincible, 5 = GameMasterInvisible, 5 = ?, 6 = Stealth, 7 = Invisible
+        _packet.TryRead(out WalkSpeed); // 4   float   State.WalkSpeed
+        _packet.TryRead(out RunSpeed); // 4   float   State.RunSpeed
+        _packet.TryRead(out HwanSpeed); // 4   float   State.HwanSpeed
         
         _packet.TryRead(out byte stateBuffCount); // 1   byte    State.BuffCount
         for (var i = 0; i < stateBuffCount; i++)
@@ -439,25 +439,25 @@ public class CharInfo : ICharInfo
         }
         // State state = State.FromPacket(_packet);
 
-        _packet.TryRead(out name); // 2   ushort  Name.Length // *   string  Name
-        _packet.TryRead(out jobName); // 2   ushort  JobName.Length // *   string  JobName
-        _packet.TryRead(out jobType); // 1   byte    JobType
-        _packet.TryRead(out jobLevel); // 1   byte    JobLevel
-        _packet.TryRead(out jobExp); // 4   uint    JobExp
-        _packet.TryRead(out jobContribution); // 4   uint    JobContribution
-        _packet.TryRead(out jobReward); // 4   uint    JobReward
-        _packet.TryRead(out pvpState); // 1   byte    PVPState                //0 = White, 1 = Purple, 2 = Red
-        _packet.TryRead(out transportFlag); // 1   byte    TransportFlag
-        _packet.TryRead(out inCombat); // 1   byte    InCombat
-        if (transportFlag)
+        _packet.TryRead(out CharName); // 2   ushort  Name.Length // *   string  Name
+        _packet.TryRead(out JobName); // 2   ushort  JobName.Length // *   string  JobName
+        _packet.TryRead(out JobType); // 1   byte    JobType
+        _packet.TryRead(out JobLevel); // 1   byte    JobLevel
+        _packet.TryRead(out JobExp); // 4   uint    JobExp
+        _packet.TryRead(out JobContribution); // 4   uint    JobContribution
+        _packet.TryRead(out JobReward); // 4   uint    JobReward
+        _packet.TryRead(out PvpState); // 1   byte    PVPState                //0 = White, 1 = Purple, 2 = Red
+        _packet.TryRead(out TransportFlag); // 1   byte    TransportFlag
+        _packet.TryRead(out InCombat); // 1   byte    InCombat
+        if (TransportFlag)
         {
-            _packet.TryRead(out transportUniqueId); // 4   uint    Transport.UniqueID
+            _packet.TryRead(out TransportUniqueId); // 4   uint    Transport.UniqueID
         }
         
-        _packet.TryRead(out pvpFlag); // 1   byte    PVPFlag                 //0 = Red Side, 1 = Blue Side, 0xFF = None
-        _packet.TryRead(out guideFlag); // 8   ulong   GuideFlag
-        _packet.TryRead(out jid); // 4   uint    JID
-        _packet.TryRead(out gmFlag); // 1   byte    GMFlag
+        _packet.TryRead(out PvpFlag); // 1   byte    PVPFlag                 //0 = Red Side, 1 = Blue Side, 0xFF = None
+        _packet.TryRead(out GuideFlag); // 8   ulong   GuideFlag
+        _packet.TryRead(out Jid); // 4   uint    JID
+        _packet.TryRead(out GmFlag); // 1   byte    GMFlag
         #endregion
         
         #region Hotkey

@@ -4,7 +4,10 @@ namespace SilkroadSecurityAPI.VSRO188;
 
 public class DefaultList : IDefaultList
 {
-    private readonly HashSet<ushort> _clientAgentBlacklist = new();
+    private readonly HashSet<ushort> _clientAgentBlacklist = new()
+    {
+        0x3510 // GS Crash Exploit - 0x3510 - https://www.elitepvpers.com/forum/sro-pserver-guides-releases/4383384-release-fix-gameserver-crash-runtime-error-exploit.html
+    };
 
     private readonly HashSet<ushort> _clientAgentWhitelist = new();
 

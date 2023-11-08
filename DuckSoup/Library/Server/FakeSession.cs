@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using API.Database.DuckSoup;
+using API.Session;
 using DuckSoup.Library.Session;
 using NetCoreServer;
 using PacketLibrary.Handler;
@@ -59,7 +61,7 @@ public class FakeSession : TcpSession
     // C -> P -> S
     protected override void OnReceived(byte[] buffer, long offset, long size)
     {
-        Session.GetData(DataConstants.CrcFailure, out var crc, 0);
+        Session.GetData(Data.CrcFailure, out var crc, 0);
         if (crc > 5)
         {
             Session.Disconnect();
@@ -76,12 +78,12 @@ public class FakeSession : TcpSession
 
             foreach (var packet in receivedPackets)
             {
-                // Console.Write("[C -> P]");
-                // if (packet.Encrypted)
-                //     Console.Write("[E]");
-                // if (packet.Massive)
-                //     Console.Write("[M]");
-                // Console.WriteLine($" Packet: 0x{packet.MsgId:X} - {Id}");
+                Console.Write("[C -> P]");
+                if (packet.Encrypted)
+                    Console.Write("[E]");
+                if (packet.Massive)
+                    Console.Write("[M]");
+                Console.WriteLine($" Packet: 0x{packet.MsgId:X} - {Id}");
 
                 if (packet.MsgId == 0x5000 || packet.MsgId == 0x9000 || packet.MsgId == 0x2001) continue;
 
@@ -106,12 +108,12 @@ public class FakeSession : TcpSession
                         break;
                 }
             }
-            Session.SetData(DataConstants.CrcFailure, 0);
+            Session.SetData(Data.CrcFailure, 0);
             Session.TransferToServer();
         }
         catch (RecvException recvException)
         {
-            Session.SetData(DataConstants.CrcFailure, crc + 1);
+            Session.SetData(Data.CrcFailure, crc + 1);
         }
         catch (Exception exception)
         {
@@ -120,7 +122,7 @@ public class FakeSession : TcpSession
             Session.Disconnect();
         }
     }
-
+    
     public void Send(Packet packet, bool transfer = false)
     {
         ClientSecurity.Send(packet);

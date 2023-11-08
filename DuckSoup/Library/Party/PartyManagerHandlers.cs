@@ -6,6 +6,8 @@ using API;
 using API.Enums;
 using API.Party;
 using API.ServiceFactory;
+using API.Session;
+using DuckSoup.Library.Session;
 using PacketLibrary.Handler;
 using PacketLibrary.VSRO188.Agent.Enums;
 using PacketLibrary.VSRO188.Agent.Objects.Party;
@@ -190,9 +192,9 @@ public class PartyManagerHandlers
         var partyMatchEntry = _partyManager.GetPartyMatchEntries()
             .FirstOrDefault(entry =>
             {
-                entry.Party.Leader.GetData("jid", out uint? leaderJid, null);
-                leaderSession.GetData("jid", out uint? leaderSessionJid, null);
-                return leaderJid == leaderSessionJid;
+                entry.Party.Leader.GetData(Data.CharInfo, out CharInfo? entryInfo, null);
+                leaderSession.GetData(Data.CharInfo, out CharInfo? leaderInfo, null);
+                return leaderInfo.Jid == entryInfo.Jid;
             });
         if (partyMatchEntry != null)
         {

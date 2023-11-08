@@ -4,6 +4,9 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 
 public class CLIENT_GUILD_UPDATE_NOTICE : Packet
 {
+    public string Title;
+    public string Text;
+
     public CLIENT_GUILD_UPDATE_NOTICE() : base(0x70F9)
     {
     }
@@ -15,20 +18,24 @@ public class CLIENT_GUILD_UPDATE_NOTICE : Packet
 
     public override async Task Read()
     {
-        //throw new NotImplementedException();
+        TryRead(out Title);
+        TryRead(out Text);
     }
 
     public override async Task<Packet> Build()
     {
-        //throw new NotImplementedException();
-
-        //Reset();
-
+        Reset();
+        TryWrite(Title);
+        TryWrite(Text);
         return this;
     }
 
-    public static Packet of()
+    public static Task<Packet> of(string title, string text)
     {
-        return new CLIENT_GUILD_UPDATE_NOTICE();
+        return new CLIENT_GUILD_UPDATE_NOTICE
+        {
+            Title = title,
+            Text = text
+        }.Build();
     }
 }
