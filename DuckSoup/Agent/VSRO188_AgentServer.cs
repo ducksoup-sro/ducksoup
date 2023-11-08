@@ -6,6 +6,7 @@ using API.Database.DuckSoup;
 using API.EventFactory;
 using API.ServiceFactory;
 using API.Session;
+using Database.VSRO188;
 using Database.VSRO188.Context;
 using DuckSoup.Library.Party;
 using DuckSoup.Library.Server;
@@ -13,6 +14,7 @@ using DuckSoup.Library.Session;
 using Microsoft.EntityFrameworkCore;
 using PacketLibrary.Handler;
 using PacketLibrary.VSRO188.Agent.Client;
+using PacketLibrary.VSRO188.Agent.Enums;
 using PacketLibrary.VSRO188.Agent.Enums.Logout;
 using PacketLibrary.VSRO188.Agent.Server;
 using Serilog;
@@ -64,7 +66,7 @@ public class VSRO188_AgentServer : FakeServer
 
         #region fixes
 
-        // PacketHandler.RegisterClientHandler<CLIENT_MAINACTION>(1); // Snow Shield fix
+        PacketHandler.RegisterClientHandler<CLIENT_CHARACTER_ACTION_REQUEST>(1, ClientCharacterActionRequest); // Snow Shield fix
 
         #endregion
 
@@ -77,6 +79,48 @@ public class VSRO188_AgentServer : FakeServer
         #endregion
 
         // PacketHandler.RegisterModuleHandler<SERVER_MOVEMENT>(SERVER_MOVEMENT);
+    }
+
+    private async Task<Packet> ClientCharacterActionRequest(CLIENT_CHARACTER_ACTION_REQUEST data, ISession session)
+    {
+        data.TryRead(out byte result);
+        if (result != 0x01)
+        {
+            return data;
+        }
+
+        data.TryRead(out CharacterAction action);
+        if (action != CharacterAction.SkillCast)
+        {
+            return data;
+        }
+
+        data.TryRead(out uint skillId);
+        var skill = await Cache.GetRefSkillAsync((int)skillId);
+        if (skill == null)
+        {
+            return data;
+        }
+
+        if (!skill.Basic_Code.Contains("COLD_SHIELD"))
+        {
+            return data;
+        }
+
+        session.GetData(Data.LastSnowShieldUsage, out long lastUsage, 0);
+        if (lastUsage + skill.Action_ReuseDelay >
+            DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+        {
+            await session.SendNotice("You cannot use Snow Shield again. Please wait another " +
+                               (int)((DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - lastUsage - skill.Action_ReuseDelay) / 1000 * -1) +
+                               " seconds!");
+            data.Status = 0x02;
+            data.ResultType = PacketResultType.Block;
+            return data;
+        }
+
+        session.SetData(Data.LastSnowShieldUsage, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        return data;
     }
 
     /*
@@ -726,7 +770,6 @@ public class VSRO188_AgentServer : FakeServer
     }
      */
 
-    // TODO :: EXPLOITS
     private async Task<Packet> ServerAuth(SERVER_AUTH_RESPONSE data, ISession session)
     {
         session.SetData(Data.CharInfo, new CharInfo());

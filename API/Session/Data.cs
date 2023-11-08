@@ -8,4 +8,5 @@ public static class Data
     public static string CharId = "CharId";
     public static string CharNameSent = "CharNameSent";
     public static string CrcFailure = "CRC_FAILURE";
+    public static string LastSnowShieldUsage = "LastSnowShieldUsage";
 }
