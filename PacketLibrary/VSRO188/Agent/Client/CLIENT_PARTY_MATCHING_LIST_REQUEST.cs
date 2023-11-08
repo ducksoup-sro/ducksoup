@@ -2,8 +2,11 @@ using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Client;
 
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_MATCHING_LIST
 public class CLIENT_PARTY_MATCHING_LIST_REQUEST : Packet
 {
+    public byte PageIndex;
+    
     public CLIENT_PARTY_MATCHING_LIST_REQUEST() : base(0x706C)
     {
     }
@@ -15,20 +18,21 @@ public class CLIENT_PARTY_MATCHING_LIST_REQUEST : Packet
 
     public override async Task Read()
     {
-        //throw new NotImplementedException();
+        TryRead(out PageIndex);
     }
 
     public override async Task<Packet> Build()
     {
-        //throw new NotImplementedException();
-
         Reset();
-
+        TryWrite(PageIndex);
         return this;
     }
 
-    public static Packet of()
+    public static Task<Packet> of(byte pageIndex)
     {
-        return new CLIENT_PARTY_MATCHING_LIST_REQUEST();
+        return new CLIENT_PARTY_MATCHING_LIST_REQUEST
+        {
+            PageIndex = pageIndex
+        }.Build();
     }
 }

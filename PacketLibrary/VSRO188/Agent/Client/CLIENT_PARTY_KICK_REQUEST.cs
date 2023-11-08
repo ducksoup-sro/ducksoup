@@ -2,8 +2,11 @@ using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Client;
 
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_KICK
 public class CLIENT_PARTY_KICK_REQUEST : Packet
 {
+    public uint MemberJid;
+    
     public CLIENT_PARTY_KICK_REQUEST() : base(0x7063)
     {
     }
@@ -15,20 +18,21 @@ public class CLIENT_PARTY_KICK_REQUEST : Packet
 
     public override async Task Read()
     {
-        //throw new NotImplementedException();
+        TryRead(out MemberJid);
     }
 
     public override async Task<Packet> Build()
     {
-        //throw new NotImplementedException();
-
         Reset();
-
+        TryWrite(MemberJid);
         return this;
     }
 
-    public static Packet of()
+    public static Task<Packet> of(uint memberJid)
     {
-        return new CLIENT_PARTY_KICK_REQUEST();
+        return new CLIENT_PARTY_KICK_REQUEST
+        {
+            MemberJid = memberJid
+        }.Build();
     }
 }

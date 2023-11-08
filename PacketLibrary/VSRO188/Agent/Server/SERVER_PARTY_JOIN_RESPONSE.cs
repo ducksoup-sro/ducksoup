@@ -2,6 +2,9 @@ using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Server;
 
+// TODO :: Where the fuck is this being used?
+// None	0xB067	sro_client.OnJoinPartyAck
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/Agent-packets
 public class SERVER_PARTY_JOIN_RESPONSE : Packet
 {
     public SERVER_PARTY_JOIN_RESPONSE() : base(0xB067)
@@ -22,7 +25,7 @@ public class SERVER_PARTY_JOIN_RESPONSE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

@@ -2,8 +2,11 @@ using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Client;
 
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_INVITE
 public class CLIENT_PARTY_INVITE_REQUEST : Packet
 {
+    public uint GID;
+
     public CLIENT_PARTY_INVITE_REQUEST() : base(0x7062)
     {
     }
@@ -15,20 +18,21 @@ public class CLIENT_PARTY_INVITE_REQUEST : Packet
 
     public override async Task Read()
     {
-        //throw new NotImplementedException();
+        TryRead(out GID);
     }
 
     public override async Task<Packet> Build()
     {
-        //throw new NotImplementedException();
-
         Reset();
-
+        TryWrite(GID);
         return this;
     }
 
-    public static Packet of()
+    public static Task<Packet> of(uint gid)
     {
-        return new CLIENT_PARTY_INVITE_REQUEST();
+        return new CLIENT_PARTY_INVITE_REQUEST
+        {
+            GID = gid
+        }.Build();
     }
 }

@@ -1,9 +1,18 @@
+using PacketLibrary.VSRO188.Agent.Objects.Party;
 using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Server;
 
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_MATCHING_LIST
 public class SERVER_PARTY_MATCHING_LIST_RESPONSE : Packet
 {
+    public byte Result;
+    public byte PageCount;
+    public byte PageIndex;
+    public byte PartyCount;
+    public List<PartyMatchEntry> PartyMatch = new();
+    public ushort ErrorCode;
+    
     public SERVER_PARTY_MATCHING_LIST_RESPONSE() : base(0xB06C)
     {
     }
@@ -15,14 +24,47 @@ public class SERVER_PARTY_MATCHING_LIST_RESPONSE : Packet
 
     public override async Task Read()
     {
-        //throw new NotImplementedException();
+        TryRead(out Result);
+        switch (Result)
+        {
+            case 1:
+            {
+                TryRead(out PageCount);
+                TryRead(out PageIndex);
+                TryRead(out PartyCount);
+                for (var i = 0; i < PartyCount; i++)
+                {
+                    PartyMatch.Add(new PartyMatchEntry(this));
+                }
+                break;
+            }
+            case 2:
+                TryRead(out ErrorCode);
+                break;
+        }
     }
 
     public override async Task<Packet> Build()
     {
-        //throw new NotImplementedException();
-
         Reset();
+        TryWrite(Result);
+        switch (Result)
+        {
+            case 1:
+            {
+                TryWrite(PageCount);
+                TryWrite(PageIndex);
+                TryWrite(PartyCount);
+                foreach (var partyMatchEntry in PartyMatch)
+                {
+                    partyMatchEntry.Build(this);
+                }
+                break;
+            }
+            case 2:
+                TryWrite(ErrorCode);
+                break;
+        }
 
         return this;
     }

@@ -1,9 +1,19 @@
+using PacketLibrary.VSRO188.Agent.Enums;
 using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Client;
 
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_MATCHING_CHANGE
 public class CLIENT_PARTY_MATCHING_CHANGE_REQUEST : Packet
 {
+    public uint MatchingId;
+    public uint Id;
+    public PartySettingsFlag SettingsFlag;
+    public PartyPurposeType Purpose;
+    public byte LevelRangeMin;
+    public byte LevelRangeMax;
+    public string Title;
+
     public CLIENT_PARTY_MATCHING_CHANGE_REQUEST() : base(0x706A)
     {
     }
@@ -15,15 +25,25 @@ public class CLIENT_PARTY_MATCHING_CHANGE_REQUEST : Packet
 
     public override async Task Read()
     {
-        //throw new NotImplementedException();
+        TryRead(out MatchingId);
+        TryRead(out Id);
+        TryRead(out SettingsFlag);
+        TryRead(out Purpose);
+        TryRead(out LevelRangeMin);
+        TryRead(out LevelRangeMax);
+        TryRead(out Title);
     }
 
     public override async Task<Packet> Build()
     {
-        //throw new NotImplementedException();
-
         Reset();
-
+        TryWrite(MatchingId);
+        TryWrite(Id);
+        TryWrite(SettingsFlag);
+        TryWrite(Purpose);
+        TryWrite(LevelRangeMin);
+        TryWrite(LevelRangeMax);
+        TryWrite(Title);
         return this;
     }
 

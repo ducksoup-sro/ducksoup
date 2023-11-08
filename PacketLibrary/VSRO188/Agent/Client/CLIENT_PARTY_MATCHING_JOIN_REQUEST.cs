@@ -2,8 +2,11 @@ using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Client;
 
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_MATCHING_PLAYER_JOIN
 public class CLIENT_PARTY_MATCHING_JOIN_REQUEST : Packet
 {
+    public uint MatchingId;
+
     public CLIENT_PARTY_MATCHING_JOIN_REQUEST() : base(0x706D)
     {
     }
@@ -15,20 +18,21 @@ public class CLIENT_PARTY_MATCHING_JOIN_REQUEST : Packet
 
     public override async Task Read()
     {
-        //throw new NotImplementedException();
+        TryRead(out MatchingId);
     }
 
     public override async Task<Packet> Build()
     {
-        //throw new NotImplementedException();
-
         Reset();
-
+        TryWrite(MatchingId);
         return this;
     }
 
-    public static Packet of()
+    public static Task<Packet> of(uint matchingId)
     {
-        return new CLIENT_PARTY_MATCHING_JOIN_REQUEST();
+        return new CLIENT_PARTY_MATCHING_JOIN_REQUEST
+        {
+            MatchingId = matchingId
+        }.Build();
     }
 }

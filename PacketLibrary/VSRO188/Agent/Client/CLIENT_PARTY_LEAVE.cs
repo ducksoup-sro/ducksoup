@@ -2,6 +2,7 @@ using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Client;
 
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_PARTY_LEAVE
 public class CLIENT_PARTY_LEAVE : Packet
 {
     public CLIENT_PARTY_LEAVE() : base(0x7061)
@@ -15,20 +16,20 @@ public class CLIENT_PARTY_LEAVE : Packet
 
     public override async Task Read()
     {
-        //throw new NotImplementedException();
+        // Empty
     }
 
     public override async Task<Packet> Build()
     {
-        //throw new NotImplementedException();
-
         Reset();
-
         return this;
     }
 
-    public static Packet of()
+    public static Task<Packet> of()
     {
-        return new CLIENT_PARTY_LEAVE();
+        return new CLIENT_PARTY_LEAVE
+        {
+            
+        }.Build();
     }
 }
