@@ -3,6 +3,8 @@ using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Server;
 
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_ENTITY_MOVEMENT
+// https://github.com/SDClowen/RSBot/blob/master/Library/RSBot.Core/Network/Handler/Agent/Entity/EntityUpdateMovementResponse.cs
 public class SERVER_MOVEMENT : Packet
 {
     public uint TargetId;

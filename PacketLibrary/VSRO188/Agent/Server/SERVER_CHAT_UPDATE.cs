@@ -21,7 +21,6 @@ public class SERVER_CHAT_UPDATE : Packet
     public override async Task Read()
     {
         TryRead(out ChatType);
-
         switch (ChatType)
         {
             case ChatType.Notice:
@@ -41,16 +40,13 @@ public class SERVER_CHAT_UPDATE : Packet
                 TryRead(out SenderName);
                 break;
         }
-
         TryRead(out Message);
     }
 
     public override async Task<Packet> Build()
     {
         Reset();
-
         TryWrite(ChatType);
-
         switch (ChatType)
         {
             case ChatType.Notice:
@@ -70,30 +66,28 @@ public class SERVER_CHAT_UPDATE : Packet
                 TryWrite(SenderName);
                 break;
         }
-
         TryWrite(Message);
-
         return this;
     }
 
-    public static Packet of(ChatType chatType, uint senderUniqueId, string message)
+    public static Task<Packet> of(ChatType chatType, uint senderUniqueId, string message)
     {
         return new SERVER_CHAT_UPDATE
         {
             ChatType = chatType,
             SenderUniqueId = senderUniqueId,
             Message = message
-        };
+        }.Build();
     }
 
-    public static Packet of(ChatType chatType, string senderName, string message)
+    public static Task<Packet> of(ChatType chatType, string senderName, string message)
     {
         return new SERVER_CHAT_UPDATE
         {
             ChatType = chatType,
             SenderName = senderName,
             Message = message
-        };
+        }.Build();
     }
 
     public static async Task<Packet> of(ChatType chatType, string message)

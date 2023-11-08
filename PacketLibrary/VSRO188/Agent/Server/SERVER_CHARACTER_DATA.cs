@@ -2,6 +2,7 @@ using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Server;
 
+// https://www.elitepvpers.com/forum/sro-coding-corner/3970615-release-characterdata-entityspawn.html
 public class SERVER_CHARACTER_DATA : Packet
 {
     public SERVER_CHARACTER_DATA() : base(0x3013, false, true)

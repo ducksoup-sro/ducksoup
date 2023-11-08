@@ -22,11 +22,13 @@ public class SERVER_CHAT_RESPONSE : Packet
 
     public override async Task Read()
     {
-        TryRead(out Result); // 1 byte result
-        if (Result == 0x2) TryRead(out ErrorCode); // 2 ushort errorCode
-
-        TryRead(out ChatType); // 1 byte chatType
-        TryRead(out ChatIndex); // 1 byte chatIndex
+        TryRead(out Result);
+        if (Result == 0x2)
+        {
+            TryRead(out ErrorCode);
+        }
+        TryRead(out ChatType);
+        TryRead(out ChatIndex);
     }
 
     public override async Task<Packet> Build()
@@ -34,7 +36,10 @@ public class SERVER_CHAT_RESPONSE : Packet
         Reset();
 
         TryWrite(Result);
-        if (Result == 0x02) TryWrite(ErrorCode);
+        if (Result == 0x02)
+        {
+            TryWrite(ErrorCode);
+        }
 
         TryWrite(ChatType);
         TryWrite(ChatIndex);
@@ -42,7 +47,7 @@ public class SERVER_CHAT_RESPONSE : Packet
         return this;
     }
 
-    public static Packet of(byte result, ChatErrorCode errorCode, ChatType chatType, byte chatIndex)
+    public static Task<Packet> of(byte result, ChatErrorCode errorCode, ChatType chatType, byte chatIndex)
     {
         return new SERVER_CHAT_RESPONSE
         {
@@ -50,16 +55,16 @@ public class SERVER_CHAT_RESPONSE : Packet
             ErrorCode = errorCode,
             ChatType = chatType,
             ChatIndex = chatIndex
-        };
+        }.Build();
     }
 
-    public static Packet of(byte result, ChatType chatType, byte chatIndex)
+    public static Task<Packet> of(byte result, ChatType chatType, byte chatIndex)
     {
         return new SERVER_CHAT_RESPONSE
         {
             Result = result,
             ChatType = chatType,
             ChatIndex = chatIndex
-        };
+        }.Build();
     }
 }
