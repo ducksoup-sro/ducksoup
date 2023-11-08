@@ -1,12 +1,12 @@
-﻿using API.Enums;
-using PacketLibrary.Handler;
+﻿using PacketLibrary.Handler;
+using PacketLibrary.VSRO188.Agent.Enums;
 
 namespace API.Party;
 
 public interface IParty
 {
-    int PartyId { get; init; }
-    ISession Leader { get; set; }
-    PartyEnums.PartySettingsFlag PartySettingsFlag { get; init; }
-    List<ISession> Members { get; init; }
+    public int PartyId { get; init; }
+    public ISession Leader { get; set; }
+    public PartySettingsFlag PartySettingsFlag { get; init; }
+    public List<ISession> Members { get; init; }
 }

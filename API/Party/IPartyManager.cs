@@ -1,4 +1,5 @@
 ﻿using PacketLibrary.Handler;
+using PacketLibrary.VSRO188.Agent.Objects.Party;
 
 namespace API.Party;
 
