@@ -23,7 +23,7 @@ public class VSRO188_AgentServer : FakeServer
         PacketHandler.RegisterModuleHandler<SERVER_CHARACTER_DATA_BEGIN>(CHARACTER_DATA_BEGIN);
         PacketHandler.RegisterModuleHandler<SERVER_CHARACTER_DATA>(CHARACTER_DATA);
         PacketHandler.RegisterModuleHandler<SERVER_CHARACTER_DATA_END>(CHARACTER_DATA_END);
-        PacketHandler.RegisterModuleHandler<SERVER_MOVEMENT>(SERVER_MOVEMENT);
+        // PacketHandler.RegisterModuleHandler<SERVER_MOVEMENT>(SERVER_MOVEMENT);
 
     }
 
@@ -51,23 +51,23 @@ public class VSRO188_AgentServer : FakeServer
         Log.Debug("hwanSpeed: {0} - ETA: {1}" ,  charInfo.hwanSpeed / 10f, distance / (charInfo.hwanSpeed / 10f));
         Log.Debug("motionState: " + charInfo.motionState);
 
-        Task.Run(async () =>
-        {
-            Thread.Sleep((int)(distance / (charInfo.walkSpeed / 10f) * 1000));
-            session.SendToClient(await SERVER_CHAT_UPDATE.of(ChatType.Notice, "walk"));
-        });
-        
-        Task.Run(async () =>
-        {
-            Thread.Sleep((int)(distance / (charInfo.runSpeed / 10f) * 1000));
-            session.SendToClient(await SERVER_CHAT_UPDATE.of(ChatType.Notice, "run"));
-        });
-        
-        Task.Run(async () =>
-        {
-            Thread.Sleep((int)(distance / (charInfo.hwanSpeed / 10f) * 1000));
-            session.SendToClient(await SERVER_CHAT_UPDATE.of(ChatType.Notice, "hwan"));
-        });
+        // Task.Run(async () =>
+        // {
+        //     Thread.Sleep((int)(distance / (charInfo.walkSpeed / 10f) * 1000));
+        //     session.SendToClient(await SERVER_CHAT_UPDATE.of(ChatType.Notice, "walk"));
+        // });
+        //
+        // Task.Run(async () =>
+        // {
+        //     Thread.Sleep((int)(distance / (charInfo.runSpeed / 10f) * 1000));
+        //     session.SendToClient(await SERVER_CHAT_UPDATE.of(ChatType.Notice, "run"));
+        // });
+        //
+        // Task.Run(async () =>
+        // {
+        //     Thread.Sleep((int)(distance / (charInfo.hwanSpeed / 10f) * 1000));
+        //     session.SendToClient(await SERVER_CHAT_UPDATE.of(ChatType.Notice, "hwan"));
+        // });
         
         return data;
     }
