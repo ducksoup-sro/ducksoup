@@ -16,11 +16,12 @@ public class CharInfo : ICharInfo
     public void Initialize()
     {
         _packet = new Packet(0x3013, false, false);
+        TargetPosition = new Position(0, 0);
     }
     
     public void Append(Packet packet)
     {
-        var watch = System.Diagnostics.Stopwatch.StartNew();
+        var watch = Stopwatch.StartNew();
         for (var i = 0; i < packet.GetBytes().Length; i++)
         {
             packet.TryRead(out byte b);
@@ -36,7 +37,7 @@ public class CharInfo : ICharInfo
 
     public async Task Read()
     {
-        var watch = System.Diagnostics.Stopwatch.StartNew();
+        var watch = Stopwatch.StartNew();
         _packet.ToReadOnly();
         
         # region general
@@ -380,7 +381,7 @@ public class CharInfo : ICharInfo
         // _packet.TryRead(out float positionY); // 4   float   Position.Y
         // _packet.TryRead(out float positionZ); // 4   float   Position.Z
         // _packet.TryRead(out ushort positionAngle); // 2   ushort  Position.Angle
-        Position position = Position.FromPacket(_packet);
+        CurPosition = Position.FromPacket(_packet);
         
         //Movement
         _packet.TryRead(out byte movementHasDestination); // 1   byte    Movement.HasDestination

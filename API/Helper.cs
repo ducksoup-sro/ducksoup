@@ -7,61 +7,68 @@ namespace API;
 
 public static class Helper
 {
-    public static long GetCurrentTimeMillis()
-    {
-        return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-    }
-
-    public static long GetCurrentTimeSeconds()
-    {
-        return DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-    }
-
     public static Task<ISession?> GetSessionByGuid(Guid guid)
     {
         var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
         return Task.FromResult(sharedObjects.AgentSessions.FirstOrDefault(session => session.Guid.Equals(guid)));
     }
 
-    public static Task<ISession?> GetSessionByCharname(string charname)
+    public static Task<ISession?> GetSessionByCharName(string charName)
     {
         var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
         return Task.FromResult(sharedObjects.AgentSessions.FirstOrDefault(session =>
         {
-            session.GetData(SessionConst.CHARNAME, out string? sessionCharName, null);
-            return string.Equals(sessionCharName, charname, StringComparison.OrdinalIgnoreCase);
+            session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
+            if (charInfo == null)
+            {
+                return false;
+            }
+            return string.Equals(charInfo.CharName, charName, StringComparison.OrdinalIgnoreCase);
         }));
     }
 
-    public static Task<ISession?> GetSessionByAccountJID(int accountJID)
+    public static Task<ISession?> GetSessionByAccountJid(int accountJid)
     {
         var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
         return Task.FromResult(sharedObjects.AgentSessions.FirstOrDefault(session =>
         {
-            session.GetData(SessionConst.JID, out int jid, 0);
-            return jid == accountJID;
+            session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
+            if (charInfo == null)
+            {
+                return false;
+            }
+            return charInfo.Jid == accountJid;
         }));
     }
-
+    
     public static Task<List<ISession>> GetSessionsInRegion(int regionId)
     {
         var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
         var result = sharedObjects.AgentSessions.Where(session =>
         {
-            session.GetData(SessionConst.REGION_ID, out int sessionRegionId, 0);
-            return sessionRegionId == regionId;
+            session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
+            if (charInfo == null)
+            {
+                return false;
+            }
+            return charInfo.GetCalcPosition.Region.Id == regionId;
         }).ToList();
         return Task.FromResult(result);
     }
 
-    public static Task<List<ISession>> GetSessionsInSectorXY(int x, int y)
+    public static Task<List<ISession>> GetSessionsInSector(int sectorX, int sectorY)
     {
         var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
         var result = sharedObjects.AgentSessions.Where(session =>
         {
-            session.GetData<int>(SessionConst.SECTOR_X, out var sectorX, 0);
-            session.GetData<int>(SessionConst.SECTOR_Y, out var sectorY, 0);
-            return sectorX == x && sectorY == y;
+            session.GetData(Data.CharInfo, out ICharInfo? targetCharInfo, null);
+            if (targetCharInfo == null)
+            {
+                return false;
+            }
+            var targetSectorX = targetCharInfo.GetCalcPosition.Region.X;
+            var targetSectorY = targetCharInfo.GetCalcPosition.Region.Y;
+            return targetSectorX == sectorX && targetSectorY == sectorY;
         }).ToList();
         return Task.FromResult(result);
     }
@@ -73,13 +80,19 @@ public static class Helper
             var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
             foreach (var targetSession in sharedObjects.AgentSessions)
             {
-                targetSession.GetData<bool>(SessionConst.CHARACTER_GAME_READY, out var characterGameReady, false);
+                targetSession.GetData(Data.CharacterGameReady, out var characterGameReady, false);
 
-                if (clientIsReady && !characterGameReady) continue;
+                if (characterGameReady != clientIsReady)
+                {
+                    continue;
+                }
 
-                targetSession.GetData<int>(SessionConst.REGION_ID, out var targetRegionId, 0);
-
-                if (targetRegionId == regionId) targetSession.SendToClient(packet);
+                targetSession.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
+                if (charInfo == null)
+                {
+                    return;
+                }
+                if (charInfo.GetCalcPosition.Region.Id == regionId) targetSession.SendToClient(packet);
             }
         });
     }
@@ -87,20 +100,33 @@ public static class Helper
     public static async Task BroadcastPacketNearSession(ISession session, Packet packet, int distanceX = 1,
         int distanceY = 1, bool clientIsReady = true)
     {
+        var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
+        session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
+        if (charInfo == null)
+        {
+            return;
+        }
+
+        var sectorX = charInfo.GetCalcPosition.Region.X;
+        var sectorY = charInfo.GetCalcPosition.Region.Y;
         await Task.Run(() =>
         {
-            var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
             foreach (var targetSession in sharedObjects.AgentSessions)
             {
-                targetSession.GetData<bool>(SessionConst.CHARACTER_GAME_READY, out var characterGameReady, false);
-
-                if (clientIsReady && !characterGameReady) continue;
-
-                session.GetData<int>(SessionConst.SECTOR_X, out var sectorX, 0);
-                session.GetData<int>(SessionConst.SECTOR_Y, out var sectorY, 0);
-                targetSession.GetData<int>(SessionConst.SECTOR_X, out var targetSectorX, 0);
-                targetSession.GetData<int>(SessionConst.SECTOR_Y, out var targetSectorY, 0);
-
+                targetSession.GetData(Data.CharacterGameReady, out var characterGameReady, false);
+                if (characterGameReady != clientIsReady)
+                {
+                    continue;
+                }
+                
+                targetSession.GetData(Data.CharInfo, out ICharInfo? targetCharInfo, null);
+                if (targetCharInfo == null)
+                {
+                    continue;
+                }
+                
+                var targetSectorX = targetCharInfo.GetCalcPosition.Region.X;
+                var targetSectorY = targetCharInfo.GetCalcPosition.Region.Y;
                 if ((targetSectorX + 1 == sectorX ||
                      targetSectorX - 1 == sectorX ||
                      targetSectorX == sectorX) &&
@@ -108,7 +134,9 @@ public static class Helper
                      targetSectorY - 1 == sectorY ||
                      targetSectorY == sectorY)
                    )
+                {
                     targetSession.SendToClient(packet);
+                }
             }
         });
     }
@@ -132,9 +160,11 @@ public static class Helper
                 case ServerType.AgentServer:
                     foreach (var session in sharedObjects.AgentSessions)
                     {
-                        session.GetData<bool>(SessionConst.CHARACTER_GAME_READY, out var characterGameReady, false);
-
-                        if (!characterGameReady) return;
+                        session.GetData(Data.CharacterGameReady, out var characterGameReady, false);
+                        if (characterGameReady != clientIsReady)
+                        {
+                            continue;
+                        }
                         session.SendToClient(packet);
                     }
 

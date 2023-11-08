@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using API.Session;
 using DuckSoup.Library.Server;
 using Newtonsoft.Json;
 using PacketLibrary.Handler;
@@ -18,11 +20,13 @@ public class DuckSession : ISession
         Client = fakeSession;
         Server = fakeClient;
         Guid = Guid.NewGuid();
-        SessionData = new Dictionary<string, object>();
+        SessionData = new ConcurrentDictionary<string, object>();
+        
+        SetData<ITimerManager>(Data.TimerManager, new TimerManager(this));
+        SetData<ICountdownManager>(Data.CountDownManager, new CountdownManager(this));
     }
-
-
-    private Dictionary<string, object> SessionData { get; }
+    
+    private ConcurrentDictionary<string, object> SessionData { get; }
 
     [JsonIgnore] private FakeSession Client { get; }
 
@@ -108,8 +112,8 @@ public class DuckSession : ISession
 
     public ISession SetData<T>(string key, T value)
     {
-        SessionData.Remove(key);
-        SessionData.Add(key, value);
+        SessionData.Remove(key, out var _);
+        SessionData.TryAdd(key, value);
         return this;
     }
 
@@ -121,7 +125,7 @@ public class DuckSession : ISession
 
     
     [Obsolete("Debug only. Don't use")]
-    public Dictionary<string, object> GetRawSessionData()
+    public ConcurrentDictionary<string, object> GetRawSessionData()
     {
         return SessionData;
     }

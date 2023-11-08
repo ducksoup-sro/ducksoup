@@ -69,7 +69,7 @@ public class PartyManagerHandlers
 
                 break;
             case PartyUpdateType.Joined:
-                sess = await Helper.GetSessionByCharname(data.MemberInfo.Name);
+                sess = await Helper.GetSessionByCharName(data.MemberInfo.Name);
                 if (sess == null)
                 {
                     break;
@@ -95,7 +95,7 @@ public class PartyManagerHandlers
                 break;
             case PartyUpdateType.Leave:
                 // everywhere
-                sess = await Helper.GetSessionByAccountJID((int) data.UserJID);
+                sess = await Helper.GetSessionByAccountJid((int) data.UserJID);
                 if (sess == null)
                 {
                     break;
@@ -106,7 +106,7 @@ public class PartyManagerHandlers
             case PartyUpdateType.Member:
                 break;
             case PartyUpdateType.Leader:
-                sess = await Helper.GetSessionByAccountJID((int) data.UserJID);
+                sess = await Helper.GetSessionByAccountJid((int) data.UserJID);
                 if (sess == null)
                 {
                     break;
@@ -151,7 +151,7 @@ public class PartyManagerHandlers
             party = _partyManager.GetParty((int)data.Id);
         }
 
-        IPartyMatchEntry partyMatchEntry = new PartyMatchEntry
+        IPartyMatchEntry? partyMatchEntry = new PartyMatchEntry
         {
             LevelMax = data.LevelRangeMax,
             LevelMin = data.LevelRangeMin,
@@ -174,7 +174,7 @@ public class PartyManagerHandlers
             return data;
         }
 
-        var leaderSession = await Helper.GetSessionByAccountJID(data.LeaderJID);
+        var leaderSession = await Helper.GetSessionByAccountJid(data.LeaderJID);
         party = new Party
         {
             Leader = leaderSession,
@@ -184,7 +184,7 @@ public class PartyManagerHandlers
 
         foreach (var dataMemberInfo in data.MemberInfos)
         {
-            party.Members.Add(await Helper.GetSessionByAccountJID(dataMemberInfo.JID));
+            party.Members.Add(await Helper.GetSessionByAccountJid(dataMemberInfo.JID));
         }
 
         _partyManager.AddParty(party);

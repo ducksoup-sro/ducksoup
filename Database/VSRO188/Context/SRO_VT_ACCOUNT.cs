@@ -167,7 +167,7 @@ public partial class SRO_VT_ACCOUNT : DuckContext
 
             entity.ToTable("SK_DownLevelLog");
 
-            entity.Property(e => e.charname)
+            entity.Property(e => e.charName)
                 .HasMaxLength(20)
                 .IsUnicode(false);
             entity.Property(e => e.newlevel)
@@ -261,7 +261,7 @@ public partial class SRO_VT_ACCOUNT : DuckContext
                 .HasMaxLength(20)
                 .IsUnicode(false);
             entity.Property(e => e.TimeReset).HasColumnType("datetime");
-            entity.Property(e => e.charname)
+            entity.Property(e => e.charName)
                 .HasMaxLength(20)
                 .IsUnicode(false);
             entity.Property(e => e.server)

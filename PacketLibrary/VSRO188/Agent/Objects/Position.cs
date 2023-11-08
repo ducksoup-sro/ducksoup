@@ -144,6 +144,16 @@ public struct Position
             Angle = angle
         };
     }
+    
+    public Packet ToPacket(Packet packet)
+    {
+        packet.TryWrite<ushort>(Region)
+            .TryWrite<float>(XOffset)
+            .TryWrite<float>(ZOffset)
+            .TryWrite<float>(YOffset)
+            .TryWrite<short>(Angle);
+        return packet;
+    }
 
     public static Position FromPacketInt(Packet packet)
     {
@@ -221,6 +231,11 @@ public struct Position
         }
 
         return this;
+    }
+
+    public bool IsEmpty()
+    {
+        return X == 0 && Y == 0 && ZOffset == 0;
     }
 
     public byte GetSectorFromOffset(float offset)

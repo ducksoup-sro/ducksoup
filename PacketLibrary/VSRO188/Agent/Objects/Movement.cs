@@ -6,6 +6,7 @@ namespace PacketLibrary.VSRO188.Agent.Objects;
 // https://github.com/SDClowen/RSBot/
 public class Movement
 {
+    public byte KeyMovement;
     public float Angle;
     public Position Destination;
     public bool HasAngle;
@@ -29,8 +30,8 @@ public class Movement
         }
         else
         {
-            packet.TryRead(out byte unk1); //0 = Spinning, 1 = Sky-/Key-walking
-            packet.TryRead(out short angle);
+            packet.TryRead<byte>(out result.KeyMovement); //0 = Spinning, 1 = Sky-/Key-walking
+            packet.TryRead<short>(out var angle);
 
             result.HasAngle = true;
             result.Angle = angle;
@@ -72,21 +73,21 @@ public class Movement
 
     public Movement MotionToPacket(Packet packet)
     {
-        packet.TryWrite(HasDestination);
+        packet.TryWrite<bool>(HasDestination);
         if (HasDestination)
         {
             Destination.ToPacketConditional(packet, false);
         }
         else
         {
-            packet.TryWrite(HasAngle);
-            packet.TryWrite(Angle);
+            packet.TryWrite<byte>(KeyMovement);
+            packet.TryWrite<short>((short) Angle);
         }
 
-        packet.TryWrite(HasSource);
+        packet.TryWrite<bool>(HasSource);
         if (HasSource)
         {
-            packet.TryWrite(Source.Region.Id);
+            packet.TryWrite<ushort>(Source.Region.Id);
             if (Source.Region.IsDungeon)
             {
                 packet.TryWrite<int>((int)(Source.XOffset * 10f)); 

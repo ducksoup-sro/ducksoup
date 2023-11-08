@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Concurrent;
+using System.Net;
 using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.Handler;
@@ -14,7 +15,7 @@ public interface ISession
     ///     Unique ID of the session
     /// </summary>
     Guid Guid { get; }
-
+    
     /// <summary>
     ///     Sends the packet immediately to the client
     /// </summary>
@@ -100,5 +101,5 @@ public interface ISession
     /// Debug only. Don't use
     /// </summary>
     /// <returns></returns>
-    Dictionary<string, object> GetRawSessionData();
+    ConcurrentDictionary<string, object> GetRawSessionData();
 }

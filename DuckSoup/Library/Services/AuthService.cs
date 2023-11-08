@@ -2,6 +2,7 @@
 using API;
 using API.Database;
 using API.Database.DuckSoup;
+using api.Extensions;
 using API.Services;
 using JWT.Algorithms;
 using JWT.Builder;
@@ -33,7 +34,7 @@ public class AuthService : Service<IAuthService>, IAuthService
         return JwtBuilder.Create()
             .WithSecret(RefreshSecret)
             .WithAlgorithm(new HMACSHA512Algorithm())
-            .AddClaim("iat", Helper.GetCurrentTimeSeconds())
+            .AddClaim("iat", DateTime.UtcNow.ToUnixTimeSeconds())
             .AddClaim("exp", DateTimeOffset.UtcNow.AddHours(RefreshTokenExpiry).ToUnixTimeSeconds())
             .AddClaim("iss", Issuer)
             .AddClaim("version", user.tokenVersion)
@@ -46,7 +47,7 @@ public class AuthService : Service<IAuthService>, IAuthService
         return JwtBuilder.Create()
             .WithSecret(AccessSecret)
             .WithAlgorithm(new HMACSHA512Algorithm())
-            .AddClaim("iat", Helper.GetCurrentTimeSeconds())
+            .AddClaim("iat", DateTime.UtcNow.ToUnixTimeSeconds())
             .AddClaim("exp", DateTimeOffset.UtcNow.AddMinutes(AccessTokenExpiry).ToUnixTimeSeconds())
             .AddClaim("iss", Issuer)
             .AddClaim("version", user.tokenVersion)

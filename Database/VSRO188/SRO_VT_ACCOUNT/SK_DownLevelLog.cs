@@ -8,7 +8,7 @@ public class SK_DownLevelLog
 
     public string? struserid { get; set; }
 
-    public string? charname { get; set; }
+    public string? charName { get; set; }
 
     public string? package { get; set; }
 

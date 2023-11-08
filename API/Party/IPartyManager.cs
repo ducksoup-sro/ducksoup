@@ -7,17 +7,17 @@ public interface IPartyManager
 {
     List<IParty> GetParties();
     IParty? GetParty(int id);
-    IParty? GetParty(string charname);
+    IParty? GetParty(string charName);
     IParty? GetParty(ISession session);
     void AddParty(IParty party);
     void RemoveParty(int id);
-    void RemoveParty(string charname);
+    void RemoveParty(string charName);
     void RemoveParty(ISession session);
-    bool IsInParty(string charname);
+    bool IsInParty(string charName);
     bool IsInParty(ISession session);
-    bool HasPartyMatchEntry(string charname);
+    bool HasPartyMatchEntry(string charName);
     bool HasPartyMatchEntry(ISession session);
-    List<IPartyMatchEntry> GetPartyMatchEntries();
+    List<IPartyMatchEntry?> GetPartyMatchEntries();
     IPartyMatchEntry? GetPartyMatchEntry(int id);
     IPartyMatchEntry? GetPartyMatchEntry(IParty party);
     void AddPartyMatchEntry(IPartyMatchEntry partyMatchEntry);

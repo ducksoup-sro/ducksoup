@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using API;
 using API.Database.DuckSoup;
 using API.EventFactory;
+using api.Extensions;
 using API.ServiceFactory;
 using API.Session;
 using Database.VSRO188;
 using Database.VSRO188.Context;
+using DuckSoup.Library;
 using DuckSoup.Library.Party;
 using DuckSoup.Library.Server;
 using DuckSoup.Library.Session;
@@ -16,8 +19,10 @@ using PacketLibrary.Handler;
 using PacketLibrary.VSRO188.Agent.Client;
 using PacketLibrary.VSRO188.Agent.Enums;
 using PacketLibrary.VSRO188.Agent.Enums.Logout;
+using PacketLibrary.VSRO188.Agent.Objects;
 using PacketLibrary.VSRO188.Agent.Server;
 using Serilog;
+using SilkroadSecurityAPI;
 using SilkroadSecurityAPI.Message;
 
 namespace DuckSoup.Agent;
@@ -33,7 +38,7 @@ public class VSRO188_AgentServer : FakeServer
 
         #region Exploits
 
-        // charname modify and not really logged in Exploit - 0x7001 - https://www.elitepvpers.com/forum/sro-pserver-guides-releases/4232366-release-disconnect-players-exploit-found-iwa-4.html 
+        // charName modify and not really logged in Exploit - 0x7001 - https://www.elitepvpers.com/forum/sro-pserver-guides-releases/4232366-release-disconnect-players-exploit-found-iwa-4.html 
         PacketHandler.RegisterClientHandler<CLIENT_CHARACTER_SELECTION_JOIN_REQUEST>(1, ClientCharacterSelectionJoin);
 
         // SQL Injection - 0x705E - Also contains Tax / checkout checks - https://www.elitepvpers.com/forum/sro-private-server/4141360-information-sql-injection-ingame.html
@@ -75,10 +80,86 @@ public class VSRO188_AgentServer : FakeServer
         PacketHandler.RegisterModuleHandler<SERVER_CHARACTER_DATA_BEGIN>(CHARACTER_DATA_BEGIN);
         PacketHandler.RegisterModuleHandler<SERVER_CHARACTER_DATA>(CHARACTER_DATA);
         PacketHandler.RegisterModuleHandler<SERVER_CHARACTER_DATA_END>(CHARACTER_DATA_END);
+        PacketHandler.RegisterClientHandler<CLIENT_GAME_READY>(CLIENT_GAME_READY);
 
         #endregion
 
-        // PacketHandler.RegisterModuleHandler<SERVER_MOVEMENT>(SERVER_MOVEMENT);
+        PacketHandler.RegisterClientHandler<CLIENT_CHAT_REQUEST>(async (data, session) =>
+        {
+            var split = data.Message.ToLower().Split(' ');
+            if (split.Length == 2 && split[0] == "start")
+            {
+                session.GetTimerManager().Start(int.Parse(split[1]), async () =>
+                {
+                    await session.SendNotice("Test");
+                });
+            }
+            
+            if (split.Length == 1 && split[0] == "stop")
+            {
+                session.GetTimerManager().Stop();
+            }
+            
+            if (split.Length == 2 && split[0] == "start2")
+            {
+                session.GetCountdownManager().Start(int.Parse(split[1]), async () =>
+                {
+                    await session.SendNotice("Test");
+                });
+            }
+            
+            if (split.Length == 1 && split[0] == "stop2")
+            {
+                session.GetCountdownManager().Stop();
+            }
+            return data;
+        });
+
+        PacketHandler.RegisterModuleHandler<SERVER_MOVEMENT_RESPONSE>(SERVER_MOVEMENT);
+        PacketHandler.RegisterModuleHandler<SERVER_ENTITY_POSITION_UPDATE>(SERVER_ENTITY_POSITION_UPDATE);
+    }
+
+    private async Task<Packet> CLIENT_GAME_READY(CLIENT_GAME_READY data, ISession session)
+    {
+        session.GetData(Data.CharScreen, out var charScreen, true);
+        session.SetData(Data.CharacterGameReady, true);
+        session.SetData(Data.CharacterGameReadyTimestamp, DateTime.Now.ToUnixTimeMilliseconds());
+        session.GetData(Data.FirstSpawn, out var firstSpawn, false);
+        
+        if (charScreen)
+        {
+            EventFactory.Publish(EventFactoryNames.OnUserLeaveCharScreen, session);
+            session.SetData(Data.CharScreen, false);
+        }
+        
+        if (!firstSpawn)
+        {
+            session.SetData(Data.FirstSpawn, true);
+            EventFactory.Publish(EventFactoryNames.OnCharacterFirstSpawn, session);
+        }
+
+        EventFactory.Publish(EventFactoryNames.OnCharacterGameReadyChange, session, true);
+
+        var countdownManager = session.GetCountdownManager();
+        if (countdownManager != null && countdownManager.IsStarted())
+        {
+            if (!countdownManager.IsStopOnTeleport())
+            {
+                countdownManager.Resend();
+            }
+            else
+            {
+                countdownManager.Stop();
+            }
+        }
+
+        var timerManager = session.GetTimerManager();
+        if (timerManager != null && timerManager.IsStarted())
+        {
+            timerManager.Stop();
+        }
+        
+        return data;
     }
 
     private async Task<Packet> ClientCharacterActionRequest(CLIENT_CHARACTER_ACTION_REQUEST data, ISession session)
@@ -952,10 +1033,10 @@ public class VSRO188_AgentServer : FakeServer
     private async Task<Packet> ClientCharacterSelectionJoin(CLIENT_CHARACTER_SELECTION_JOIN_REQUEST data,
         ISession session)
     {
-        session.GetData(Data.CharNameSent, out var charnameSent, false);
-        if (charnameSent)
+        session.GetData(Data.CharNameSent, out var charNameSent, false);
+        if (charNameSent)
         {
-            // this can happen twice, we block it once we've received the charname
+            // this can happen twice, we block it once we've received the charName
             data.Status = 0x01;
             data.ResultType = PacketResultType.Block;
             return data;
@@ -993,48 +1074,46 @@ public class VSRO188_AgentServer : FakeServer
         return data;
     }
 
+    private async Task<Packet> SERVER_ENTITY_POSITION_UPDATE(SERVER_ENTITY_POSITION_UPDATE data, ISession session)
+    {
+        session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
+        if (charInfo == null)
+        {
+            return data;
+        }
+
+        if (data.EntityId != charInfo.UniqueCharId)
+        {
+            return data;
+        }
+
+        charInfo.CurPosition = data.Position;
+        charInfo.TargetPosition = new Position(0, 0);
+        return data;
+    }
+
     private async Task<Packet> SERVER_MOVEMENT(SERVER_MOVEMENT_RESPONSE data, ISession session)
     {
-        Log.Debug("---------------------");
-        // Log.Debug("X: " + data.Movement.Destination.X);        
-        // Log.Debug("XOffset: " + data.Movement.Destination.XOffset);        
-        // Log.Debug("XSectorOffset: " + data.Movement.Destination.XSectorOffset);     
-        // Log.Debug("Y: " + data.Movement.Destination.Y);        
-        // Log.Debug("YOffset: " + data.Movement.Destination.YOffset);        
-        // Log.Debug("YSectorOffset: " + data.Movement.Destination.YSectorOffset);     
-        // Log.Debug("RegionId: " + data.Movement.Destination.Region.Id);     
-        // Log.Debug("RegionX: " + data.Movement.Destination.Region.X);
-        // Log.Debug("RegionY: " + data.Movement.Destination.Region.Y);
-        var distance = data.Movement.Source.DistanceTo(data.Movement.Destination);
-        Log.Debug("Source: " + data.Movement.Source.ToString());
-        Log.Debug("Destination: " + data.Movement.Destination.ToString());
-        Log.Debug("Distance: " + distance);
-        Log.Debug("---------------------");
+        session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
+        if (charInfo == null)
+        {
+            return data;
+        }
 
-        session.GetData(Data.CharInfo, out var charInfo, new CharInfo());
-        Log.Debug("walkSpeed: {0} - ETA: {1}", charInfo.WalkSpeed / 10f, distance / (charInfo.WalkSpeed / 10f));
-        Log.Debug("runSpeed: {0} - ETA: {1}", charInfo.RunSpeed / 10f, distance / (charInfo.RunSpeed / 10f));
-        Log.Debug("hwanSpeed: {0} - ETA: {1}", charInfo.HwanSpeed / 10f, distance / (charInfo.HwanSpeed / 10f));
-        Log.Debug("motionState: " + charInfo.MotionState);
+        charInfo.LastPositionUpdate = DateTime.UtcNow.ToUnixTimeMilliseconds();
+        if (data.Movement.HasSource)
+        {
+            charInfo.CurPosition = data.Movement.Source;
+        }
 
-        // Task.Run(async () =>
-        // {
-        //     Thread.Sleep((int)(distance / (charInfo.walkSpeed / 10f) * 1000));
-        //     session.SendToClient(await SERVER_CHAT_UPDATE.of(ChatType.Notice, "walk"));
-        // });
-        //
-        // Task.Run(async () =>
-        // {
-        //     Thread.Sleep((int)(distance / (charInfo.runSpeed / 10f) * 1000));
-        //     session.SendToClient(await SERVER_CHAT_UPDATE.of(ChatType.Notice, "run"));
-        // });
-        //
-        // Task.Run(async () =>
-        // {
-        //     Thread.Sleep((int)(distance / (charInfo.hwanSpeed / 10f) * 1000));
-        //     session.SendToClient(await SERVER_CHAT_UPDATE.of(ChatType.Notice, "hwan"));
-        // });
-
+        if (data.Movement.HasDestination)
+        {
+            charInfo.TargetPosition = data.Movement.Destination;
+        }
+        else
+        {
+            charInfo.TargetPosition = new Position(0, 0);
+        }
         return data;
     }
 

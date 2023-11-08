@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using API;
-using API.ServiceFactory;
 using API.Session;
 using PacketLibrary.Handler;
 using SilkroadSecurityAPI.Message;
@@ -18,7 +16,7 @@ public class TimerManager : ITimerManager
     private bool _stopOnBattle;
     private bool _stopOnMove;
     private bool _stopOnVehicleMoveMove;
-    private Timer _timer;
+    private Timer? _timer;
     private int _timerInterval;
 
     public TimerManager(ISession session)
@@ -77,20 +75,21 @@ public class TimerManager : ITimerManager
         _started = DateTime.Now;
 
         var packet = CreateStartPacket();
-
+        if (packet == null)
+        {
+            return;
+        }
+        
         if (!broadcast)
         {
             _session.SendToClient(packet);
             return;
         }
-
-        foreach (var agentSession in ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).AgentSessions.Where(
-                     agentSession =>
-                     {
-                         agentSession.GetData<bool>(SessionConst.CHARACTER_GAME_READY, out var characterGameReady, false);
-                         return characterGameReady;
-                     }))
-            agentSession.SendToClient(packet);
+        
+        Task.Run(async () =>
+        {
+            await Helper.BroadcastPacket(packet);
+        });
     }
 
     public void Stop()
@@ -105,25 +104,32 @@ public class TimerManager : ITimerManager
         _stopOnVehicleMoveMove = true;
 
         var packet = CreateStopPacket();
-
+        if (packet == null)
+        {
+            return;
+        }
+        
         if (!_broadcast)
         {
             _session.SendToClient(packet);
             return;
         }
 
-        foreach (var agentSession in ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects)).AgentSessions.Where(
-                     agentSession =>
-                     {
-                         agentSession.GetData<bool>(SessionConst.CHARACTER_GAME_READY, out var characterGameReady, false);
-                         return characterGameReady;
-                     }))
-            agentSession.SendToClient(packet);
+        Task.Run(async () =>
+        {
+            await Helper.BroadcastPacket(packet);
+        });
     }
 
     public void Send(ISession session)
     {
-        session.SendToClient(CreateStartPacket());
+        var packet = CreateStartPacket();
+        if (packet == null)
+        {
+            return;
+        }
+
+        session.SendToClient(packet);
     }
 
     public bool IsStarted()
@@ -160,13 +166,18 @@ public class TimerManager : ITimerManager
             .TotalSeconds);
     }
 
-    private Packet CreateStartPacket()
+    private Packet? CreateStartPacket()
     {
-        _session.GetData<int>(SessionConst.UNIQUE_CHAR_ID, out var uniqueCharId, -1);
+        _session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
+        if (charInfo == null)
+        {
+            return null;
+        }
+        
         var packetTime = (int)_started.GetValueOrDefault().AddMilliseconds(_timerInterval).Subtract(DateTime.Now)
             .TotalSeconds;
         var response = new Packet(0x3041);
-        response.TryWrite((uint)uniqueCharId)
+        response.TryWrite(charInfo.UniqueCharId)
             .TryWrite<byte>(0x02)
             .TryWrite<byte>(0x02)
             .TryWrite((byte)packetTime);
@@ -174,12 +185,17 @@ public class TimerManager : ITimerManager
         return response;
     }
 
-    private Packet CreateStopPacket()
+    private Packet? CreateStopPacket()
     {
-        _session.GetData<int>(SessionConst.UNIQUE_CHAR_ID, out var uniqueCharId, -1);
+        _session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
+        if (charInfo == null)
+        {
+            return null;
+        }
+        
         var response = new Packet(0x3042);
-        response.TryWrite((uint)uniqueCharId)
-            .TryWrite(0x01);
+        response.TryWrite<uint>(charInfo.UniqueCharId)
+            .TryWrite<byte>(0x01);
         return response;
     }
 
