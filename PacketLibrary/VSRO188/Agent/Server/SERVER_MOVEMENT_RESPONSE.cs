@@ -5,12 +5,12 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_ENTITY_MOVEMENT
 // https://github.com/SDClowen/RSBot/blob/master/Library/RSBot.Core/Network/Handler/Agent/Entity/EntityUpdateMovementResponse.cs
-public class SERVER_MOVEMENT : Packet
+public class SERVER_MOVEMENT_RESPONSE : Packet
 {
     public uint TargetId;
     public Movement Movement;
     
-    public SERVER_MOVEMENT() : base(0xB021)
+    public SERVER_MOVEMENT_RESPONSE() : base(0xB021)
     {
     }
 
@@ -35,6 +35,6 @@ public class SERVER_MOVEMENT : Packet
 
     public static Packet of()
     {
-        return new SERVER_MOVEMENT();
+        return new SERVER_MOVEMENT_RESPONSE();
     }
 }
