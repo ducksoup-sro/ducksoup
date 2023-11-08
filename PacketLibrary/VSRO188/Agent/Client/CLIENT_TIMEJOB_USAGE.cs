@@ -22,7 +22,7 @@ public class CLIENT_TIMEJOB_USAGE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

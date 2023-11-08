@@ -22,7 +22,7 @@ public class CLIENT_CONSIGNMENT_REGISTER : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

@@ -22,7 +22,7 @@ public class CLIENT_GUILD_WAR_END : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

@@ -22,7 +22,7 @@ public class CLIENT_ALCHEMY_ENCHANT : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

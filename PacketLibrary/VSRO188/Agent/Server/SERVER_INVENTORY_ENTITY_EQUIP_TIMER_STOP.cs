@@ -22,7 +22,7 @@ public class SERVER_INVENTORY_ENTITY_EQUIP_TIMER_STOP : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

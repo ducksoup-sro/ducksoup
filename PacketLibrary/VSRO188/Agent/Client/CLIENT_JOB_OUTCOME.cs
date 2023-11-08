@@ -22,7 +22,7 @@ public class CLIENT_JOB_OUTCOME : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

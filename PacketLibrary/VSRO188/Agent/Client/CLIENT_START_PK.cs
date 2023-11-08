@@ -22,7 +22,7 @@ public class CLIENT_START_PK : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

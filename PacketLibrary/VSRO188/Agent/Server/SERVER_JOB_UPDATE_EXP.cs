@@ -21,7 +21,7 @@ public class SERVER_JOB_UPDATE_EXP : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        // Reset();
 
         return this;
     }

@@ -22,7 +22,7 @@ public class CLIENT_COMMUNITY_FRIEND_ADD : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

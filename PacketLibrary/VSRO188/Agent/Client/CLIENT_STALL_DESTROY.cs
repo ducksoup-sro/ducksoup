@@ -22,7 +22,7 @@ public class CLIENT_STALL_DESTROY : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

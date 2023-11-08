@@ -22,7 +22,7 @@ public class CLIENT_ALCHEMY_REINFORCE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

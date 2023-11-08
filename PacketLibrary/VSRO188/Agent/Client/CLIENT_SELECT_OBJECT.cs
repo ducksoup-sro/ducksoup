@@ -22,7 +22,7 @@ public class CLIENT_SELECT_OBJECT : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

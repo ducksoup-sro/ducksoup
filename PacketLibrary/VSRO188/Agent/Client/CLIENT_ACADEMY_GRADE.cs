@@ -22,7 +22,7 @@ public class CLIENT_ACADEMY_GRADE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

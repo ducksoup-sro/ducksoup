@@ -22,7 +22,7 @@ public class CLIENT_CLOSE_NPC : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

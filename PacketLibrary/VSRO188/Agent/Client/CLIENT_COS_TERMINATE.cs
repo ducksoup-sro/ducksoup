@@ -22,7 +22,7 @@ public class CLIENT_COS_TERMINATE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

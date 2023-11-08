@@ -22,7 +22,7 @@ public class CLIENT_GAME_READY : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

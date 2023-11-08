@@ -22,7 +22,7 @@ public class CLIENT_GUIDE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

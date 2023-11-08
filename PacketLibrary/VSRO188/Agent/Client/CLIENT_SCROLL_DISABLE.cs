@@ -22,7 +22,7 @@ public class CLIENT_SCROLL_DISABLE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

@@ -22,7 +22,7 @@ public class CLIENT_SILK_HISTORY : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

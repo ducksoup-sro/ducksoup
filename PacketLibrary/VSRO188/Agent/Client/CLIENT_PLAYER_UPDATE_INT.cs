@@ -22,7 +22,7 @@ public class CLIENT_PLAYER_UPDATE_INT : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

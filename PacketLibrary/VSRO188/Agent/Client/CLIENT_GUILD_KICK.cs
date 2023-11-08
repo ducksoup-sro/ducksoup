@@ -22,7 +22,7 @@ public class CLIENT_GUILD_KICK : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

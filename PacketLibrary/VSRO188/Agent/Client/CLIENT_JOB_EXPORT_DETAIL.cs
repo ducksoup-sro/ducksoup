@@ -22,7 +22,7 @@ public class CLIENT_JOB_EXPORT_DETAIL : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

@@ -22,7 +22,7 @@ public class CLIENT_CONSIGNMENT_LIST : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

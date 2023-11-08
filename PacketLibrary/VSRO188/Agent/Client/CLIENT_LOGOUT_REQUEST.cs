@@ -1,9 +1,13 @@
+using PacketLibrary.VSRO188.Agent.Enums.Logout;
 using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Client;
 
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_LOGOUT
 public class CLIENT_LOGOUT_REQUEST : Packet
 {
+    public LogoutMode LogoutMode;
+    
     public CLIENT_LOGOUT_REQUEST() : base(0x7005)
     {
     }
@@ -15,20 +19,21 @@ public class CLIENT_LOGOUT_REQUEST : Packet
 
     public override async Task Read()
     {
-        //throw new NotImplementedException();
+        TryRead(out LogoutMode);
     }
 
     public override async Task<Packet> Build()
     {
-        //throw new NotImplementedException();
-
         Reset();
-
+        TryWrite(LogoutMode);
         return this;
     }
 
-    public static Packet of()
+    public static Task<Packet> of(LogoutMode logoutMode)
     {
-        return new CLIENT_LOGOUT_REQUEST();
+        return new CLIENT_LOGOUT_REQUEST
+        {
+            LogoutMode = logoutMode
+        }.Build();
     }
 }

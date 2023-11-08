@@ -22,7 +22,7 @@ public class CLIENT_ALCHEMY_DISMANTLE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

@@ -22,7 +22,7 @@ public class CLIENT_ACADEMY_MATCHING_RESPONSE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

@@ -22,7 +22,7 @@ public class CLIENT_TELEPORT_DESIGNATE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

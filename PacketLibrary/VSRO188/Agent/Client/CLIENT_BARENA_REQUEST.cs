@@ -22,7 +22,7 @@ public class CLIENT_BARENA_REQUEST : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

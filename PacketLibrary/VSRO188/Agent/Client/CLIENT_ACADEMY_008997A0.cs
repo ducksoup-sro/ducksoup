@@ -22,7 +22,7 @@ public class CLIENT_ACADEMY_008997A0 : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

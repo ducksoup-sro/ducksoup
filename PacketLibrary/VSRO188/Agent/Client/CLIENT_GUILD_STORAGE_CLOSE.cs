@@ -22,7 +22,7 @@ public class CLIENT_GUILD_STORAGE_CLOSE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

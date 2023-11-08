@@ -22,7 +22,7 @@ public class CLIENT_UNKNOWN2 : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

@@ -22,7 +22,7 @@ public class CLIENT_PLAYER_BERSERK : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

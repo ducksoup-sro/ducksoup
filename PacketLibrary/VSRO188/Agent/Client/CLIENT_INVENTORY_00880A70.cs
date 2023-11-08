@@ -22,7 +22,7 @@ public class CLIENT_INVENTORY_00880A70 : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

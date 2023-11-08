@@ -22,7 +22,7 @@ public class CLIENT_QUEST_REWAD_SELECT : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

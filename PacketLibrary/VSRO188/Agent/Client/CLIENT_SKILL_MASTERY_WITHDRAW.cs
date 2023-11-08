@@ -22,7 +22,7 @@ public class CLIENT_SKILL_MASTERY_WITHDRAW : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

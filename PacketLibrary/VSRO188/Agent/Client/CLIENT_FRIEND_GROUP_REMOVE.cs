@@ -22,7 +22,7 @@ public class CLIENT_FRIEND_GROUP_REMOVE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

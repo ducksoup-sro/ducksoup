@@ -22,7 +22,7 @@ public class CLIENT_CHARACTER_SELECTION_ACTION_REQUEST : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

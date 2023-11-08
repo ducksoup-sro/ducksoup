@@ -22,7 +22,7 @@ public class CLIENT_GUILD_ELECTION_VOTE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

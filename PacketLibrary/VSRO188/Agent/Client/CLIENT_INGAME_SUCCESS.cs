@@ -22,7 +22,7 @@ public class CLIENT_INGAME_SUCCESS : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

@@ -22,7 +22,7 @@ public class CLIENT_ALCHEMY_MANUFACTURE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

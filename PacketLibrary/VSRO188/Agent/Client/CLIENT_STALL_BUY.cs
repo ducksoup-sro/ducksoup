@@ -22,7 +22,7 @@ public class CLIENT_STALL_BUY : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

@@ -22,7 +22,7 @@ public class CLIENT_STALL_UPDATE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

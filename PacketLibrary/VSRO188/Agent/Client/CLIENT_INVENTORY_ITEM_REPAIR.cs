@@ -22,7 +22,7 @@ public class CLIENT_INVENTORY_ITEM_REPAIR : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

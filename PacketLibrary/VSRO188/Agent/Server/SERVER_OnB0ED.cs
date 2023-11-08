@@ -22,7 +22,7 @@ public class SERVER_OnB0ED : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

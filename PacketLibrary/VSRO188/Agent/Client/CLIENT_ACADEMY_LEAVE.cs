@@ -22,7 +22,7 @@ public class CLIENT_ACADEMY_LEAVE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

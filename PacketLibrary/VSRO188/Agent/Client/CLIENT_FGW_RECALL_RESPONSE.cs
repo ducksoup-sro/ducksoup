@@ -22,7 +22,7 @@ public class CLIENT_FGW_RECALL_RESPONSE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

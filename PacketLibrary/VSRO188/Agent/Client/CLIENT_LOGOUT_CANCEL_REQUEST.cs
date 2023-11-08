@@ -2,6 +2,7 @@ using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Client;
 
+// https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_LOGOUT_CANCEL
 public class CLIENT_LOGOUT_CANCEL_REQUEST : Packet
 {
     public CLIENT_LOGOUT_CANCEL_REQUEST() : base(0x7006)
@@ -15,20 +16,19 @@ public class CLIENT_LOGOUT_CANCEL_REQUEST : Packet
 
     public override async Task Read()
     {
-        //throw new NotImplementedException();
+        // empty
     }
 
     public override async Task<Packet> Build()
     {
-        //throw new NotImplementedException();
-
         Reset();
-
         return this;
     }
 
-    public static Packet of()
+    public static Task<Packet> of()
     {
-        return new CLIENT_LOGOUT_CANCEL_REQUEST();
+        return new CLIENT_LOGOUT_CANCEL_REQUEST
+        {
+        }.Build();
     }
 }

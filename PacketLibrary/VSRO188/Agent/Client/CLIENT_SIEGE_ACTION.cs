@@ -22,7 +22,7 @@ public class CLIENT_SIEGE_ACTION : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

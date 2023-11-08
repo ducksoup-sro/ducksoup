@@ -22,7 +22,7 @@ public class CLIENT_HWID_PACKET : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

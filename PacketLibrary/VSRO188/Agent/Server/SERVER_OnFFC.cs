@@ -22,7 +22,7 @@ public class SERVER_OnFFC : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

@@ -22,7 +22,7 @@ public class CLIENT_EXCHANGE_CONFIRM : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

@@ -22,7 +22,7 @@ public class CLIENT_GUILD_00881F80 : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

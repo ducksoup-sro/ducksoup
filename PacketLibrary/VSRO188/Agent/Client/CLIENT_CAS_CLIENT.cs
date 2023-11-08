@@ -22,7 +22,7 @@ public class CLIENT_CAS_CLIENT : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

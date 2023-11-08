@@ -22,7 +22,7 @@ public class CLIENT_MAGICOPTION_GRANT : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

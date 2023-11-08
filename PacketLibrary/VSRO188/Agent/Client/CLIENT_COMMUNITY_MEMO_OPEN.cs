@@ -22,7 +22,7 @@ public class CLIENT_COMMUNITY_MEMO_OPEN : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

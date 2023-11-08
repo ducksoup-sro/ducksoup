@@ -22,7 +22,7 @@ public class CLIENT_SILK_GACHA_PLAY : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

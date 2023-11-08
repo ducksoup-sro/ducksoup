@@ -22,7 +22,7 @@ public class CLIENT_ACADEMY_UPDATE_COMMENT : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

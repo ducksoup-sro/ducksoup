@@ -22,7 +22,7 @@ public class CLIENT_ITEM_STORAGE_BOX : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

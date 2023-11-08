@@ -22,7 +22,7 @@ public class CLIENT_SILK_008A1360 : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }

@@ -22,7 +22,7 @@ public class CLIENT_GAME_INVITE : Packet
     {
         //throw new NotImplementedException();
 
-        Reset();
+        //Reset();
 
         return this;
     }
