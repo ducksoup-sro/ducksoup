@@ -293,4 +293,59 @@ public class _RefSkill
 
         return false;
     }
+
+    public int? GetNextParamValue(int paramValue)
+    {
+        if (Param1 == paramValue) return Param2;
+        if (Param2 == paramValue) return Param3;
+        if (Param3 == paramValue) return Param4;
+        if (Param4 == paramValue) return Param5;
+        if (Param5 == paramValue) return Param6;
+        if (Param6 == paramValue) return Param7;
+        if (Param7 == paramValue) return Param8;
+        if (Param8 == paramValue) return Param9;
+        if (Param9 == paramValue) return Param10;
+        if (Param10 == paramValue) return Param11;
+        if (Param11 == paramValue) return Param12;
+        if (Param12 == paramValue) return Param13;
+        if (Param13 == paramValue) return Param14;
+        if (Param14 == paramValue) return Param15;
+        if (Param15 == paramValue) return Param16;
+        if (Param16 == paramValue) return Param17;
+        if (Param17 == paramValue) return Param18;
+        if (Param18 == paramValue) return Param19;
+        if (Param19 == paramValue) return Param20;
+        if (Param20 == paramValue) return Param21;
+        if (Param21 == paramValue) return Param22;
+        if (Param22 == paramValue) return Param23;
+        if (Param23 == paramValue) return Param24;
+        if (Param24 == paramValue) return Param25;
+        if (Param25 == paramValue) return Param26;
+        if (Param26 == paramValue) return Param27;
+        if (Param27 == paramValue) return Param28;
+        if (Param28 == paramValue) return Param29;
+        if (Param29 == paramValue) return Param30;
+        if (Param30 == paramValue) return Param31;
+        if (Param31 == paramValue) return Param32;
+        if (Param32 == paramValue) return Param33;
+        if (Param33 == paramValue) return Param34;
+        if (Param34 == paramValue) return Param35;
+        if (Param35 == paramValue) return Param36;
+        if (Param36 == paramValue) return Param37;
+        if (Param37 == paramValue) return Param38;
+        if (Param38 == paramValue) return Param39;
+        if (Param39 == paramValue) return Param40;
+        if (Param40 == paramValue) return Param41;
+        if (Param41 == paramValue) return Param42;
+        if (Param42 == paramValue) return Param43;
+        if (Param43 == paramValue) return Param44;
+        if (Param44 == paramValue) return Param45;
+        if (Param45 == paramValue) return Param46;
+        if (Param46 == paramValue) return Param47;
+        if (Param47 == paramValue) return Param48;
+        if (Param48 == paramValue) return Param49;
+        if (Param49 == paramValue) return Param50;
+
+        return null;
+    }
 }

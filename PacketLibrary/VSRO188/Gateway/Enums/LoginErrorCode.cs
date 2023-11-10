@@ -1,7 +1,7 @@
 ﻿namespace PacketLibrary.VSRO188.Gateway.Enums;
 
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/blob/master/Packets/GATEWAY/LoginErrorCode.cs
-public enum LoginErrorCode
+public enum LoginErrorCode : byte
 {
     /// <summary>
     ///     <para>UIIT_STT_GLOBAL_PASSWORD_INPUT_ERROR</para>

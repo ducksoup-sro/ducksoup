@@ -122,7 +122,12 @@ public class DuckSession : ISession
         value = SessionData.ContainsKey(key);
         return this;
     }
-
+    
+    public ISession RemoveData(string key)
+    {
+        SessionData.Remove(key, out var _);
+        return this;
+    }
 
     [Obsolete("Debug only. Don't use")]
     public ConcurrentDictionary<string, object> GetRawSessionData()

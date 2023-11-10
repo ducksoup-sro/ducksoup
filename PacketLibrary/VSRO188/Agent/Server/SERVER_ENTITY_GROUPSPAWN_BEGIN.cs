@@ -6,9 +6,8 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 // https://www.elitepvpers.com/forum/sro-coding-corner/3970615-release-characterdata-entityspawn.html
 public class SERVER_ENTITY_GROUPSPAWN_BEGIN : Packet
 {
-    public ushort Amount;
-
     public SpawnInfoType SpawnInfoType;
+    public ushort Amount;
 
     public SERVER_ENTITY_GROUPSPAWN_BEGIN() : base(0x3017)
     {
@@ -31,12 +30,11 @@ public class SERVER_ENTITY_GROUPSPAWN_BEGIN : Packet
     {
         Reset();
         TryWrite(SpawnInfoType);
-        TryRead(out Amount);
-
+        TryWrite(Amount);
         return this;
     }
 
-    public static Packet of(SpawnInfoType spawnInfoType, ushort amount)
+    public static SERVER_ENTITY_GROUPSPAWN_BEGIN of(SpawnInfoType spawnInfoType, ushort amount)
     {
         return new SERVER_ENTITY_GROUPSPAWN_BEGIN
         {

@@ -53,4 +53,21 @@ public class State
             ActiveBuffs.Add(buff);
         }
     }
+
+    public float GetSpeed()
+    {
+        var speed = MovementType switch
+        {
+            MovementType.Walking => WalkSpeed,
+            MovementType.Running => RunSpeed,
+            _ => WalkSpeed
+        };
+
+        if (BodyState == BodyState.Berserk)
+        {
+            speed = BerzerkSpeed;
+        }
+
+        return speed;
+    }
 }

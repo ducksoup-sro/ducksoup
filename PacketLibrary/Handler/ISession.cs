@@ -98,6 +98,13 @@ public interface ISession
     ISession HasData(string key, out bool value);
 
     /// <summary>
+    ///     Removes the whole object out of the playerdata
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    ISession RemoveData(string key);
+
+    /// <summary>
     ///     Debug only. Don't use
     /// </summary>
     /// <returns></returns>

@@ -11,34 +11,58 @@ namespace DuckSoup.Library.Session;
 // ReSharper disable UnusedVariable
 public class CharInfo : ICharInfo
 {
-    private Packet _packet = new(0x3013);
+    private Packet? _packet = new(0x3013);
+    private bool _debug = false;
 
     public void Initialize()
     {
-        _packet = new Packet(0x3013);
+        _packet = new Packet(0x3013, false, true);
         TargetPosition = new Position(0, 0);
     }
 
     public void Append(Packet packet)
     {
-        var watch = Stopwatch.StartNew();
+        if (_packet == null)
+        {
+            return;
+        }
+
+        Stopwatch watch = null;
+        if (_debug)
+        {
+            watch = Stopwatch.StartNew();
+        }
+
         for (var i = 0; i < packet.GetBytes().Length; i++)
         {
             packet.TryRead(out byte b);
             _packet.TryWrite(b);
         }
 
-        watch.Stop();
-        double ticks = watch.ElapsedTicks;
-        var seconds = ticks / Stopwatch.Frequency;
-        var milliseconds = ticks / Stopwatch.Frequency * 1000;
-        var nanoseconds = ticks / Stopwatch.Frequency * 1000000000;
-        Log.Information("Append: {0}ns", nanoseconds);
+        if (_debug)
+        {
+            watch.Stop();
+            double ticks = watch.ElapsedTicks;
+            var seconds = ticks / Stopwatch.Frequency;
+            var milliseconds = ticks / Stopwatch.Frequency * 1000;
+            var nanoseconds = ticks / Stopwatch.Frequency * 1000000000;
+            Log.Information("CharInfo Append: {0}ms", milliseconds);
+        }
     }
 
     public async Task Read()
     {
-        var watch = Stopwatch.StartNew();
+        if (_packet == null)
+        {
+            return;
+        }
+
+        Stopwatch watch = null;
+        if (_debug)
+        {
+            watch = Stopwatch.StartNew();
+        }
+
         _packet.ToReadOnly();
 
         # region general
@@ -428,30 +452,30 @@ public class CharInfo : ICharInfo
         // Movement movement = Movement.MotionFromPacket(_packet);
 
         //State
-        _packet.TryRead(out LifeState); // 1   byte    State.LifeState         //1 = Alive, 2 = Dead
-        _packet.TryRead(out Unkbyte0); // 1   byte    State.unkByte0
-        _packet.TryRead(
-            out MotionState); // 1   byte    State.MotionState       //0 = None, 2 = Walking, 3 = Running, 4 = Sitting
-        _packet.TryRead(
-            out BodyState); // 1   byte    State.Status            //0 = None, 1 = Hwan, 2 = Untouchable, 3 = GameMasterInvincible, 5 = GameMasterInvisible, 5 = ?, 6 = Stealth, 7 = Invisible
-        _packet.TryRead(out WalkSpeed); // 4   float   State.WalkSpeed
-        _packet.TryRead(out RunSpeed); // 4   float   State.RunSpeed
-        _packet.TryRead(out HwanSpeed); // 4   float   State.HwanSpeed
-
-        _packet.TryRead(out byte stateBuffCount); // 1   byte    State.BuffCount
-        for (var i = 0; i < stateBuffCount; i++)
-        {
-            _packet.TryRead(out uint buffRefSkillId); // 4   uint    Buff.RefSkillID
-            _packet.TryRead(out uint buffDuration); // 4   uint    Buff.Duration
-
-            var skill = await Cache.GetRefSkillAsync((int)buffRefSkillId);
-            if (skill == null) continue;
-
-            if (skill.ParamsContains(1701213281))
-                //1701213281 -> atfe -> "auto transfer effect" like Recovery Division
-                _packet.TryRead(out bool isCreator); // 1   bool    IsCreator
-        }
-        // State state = State.FromPacket(_packet);
+        // _packet.TryRead(out LifeState); // 1   byte    State.LifeState         //1 = Alive, 2 = Dead
+        // _packet.TryRead(out Unkbyte0); // 1   byte    State.unkByte0
+        // _packet.TryRead(
+        //     out MotionState); // 1   byte    State.MotionState       //0 = None, 2 = Walking, 3 = Running, 4 = Sitting
+        // _packet.TryRead(
+        //     out BodyState); // 1   byte    State.Status            //0 = None, 1 = Hwan, 2 = Untouchable, 3 = GameMasterInvincible, 5 = GameMasterInvisible, 5 = ?, 6 = Stealth, 7 = Invisible
+        // _packet.TryRead(out WalkSpeed); // 4   float   State.WalkSpeed
+        // _packet.TryRead(out RunSpeed); // 4   float   State.RunSpeed
+        // _packet.TryRead(out HwanSpeed); // 4   float   State.HwanSpeed
+        //
+        // _packet.TryRead(out byte stateBuffCount); // 1   byte    State.BuffCount
+        // for (var i = 0; i < stateBuffCount; i++)
+        // {
+        //     _packet.TryRead(out uint buffRefSkillId); // 4   uint    Buff.RefSkillID
+        //     _packet.TryRead(out uint buffDuration); // 4   uint    Buff.Duration
+        //
+        //     var skill = await Cache.GetRefSkillAsync((int)buffRefSkillId);
+        //     if (skill == null) continue;
+        //
+        //     if (skill.ParamsContains(1701213281))
+        //         //1701213281 -> atfe -> "auto transfer effect" like Recovery Division
+        //         _packet.TryRead(out bool isCreator); // 1   bool    IsCreator
+        // }
+        State = State.FromPacket(_packet);
 
         _packet.TryRead(out CharName); // 2   ushort  Name.Length // *   string  Name
         _packet.TryRead(out JobName); // 2   ushort  JobName.Length // *   string  JobName
@@ -505,12 +529,15 @@ public class CharInfo : ICharInfo
 
         _packet.TryRead(out uint unkUshort0); // 4   uint    unkUShort0      //Structure changes!!!
         _packet.TryRead(out byte unkByte4); // 1   byte    unkByte4        //Structure changes!!!
-        watch.Stop();
-        double ticks = watch.ElapsedTicks;
-        var seconds = ticks / Stopwatch.Frequency;
-        var milliseconds = ticks / Stopwatch.Frequency * 1000;
-        var nanoseconds = ticks / Stopwatch.Frequency * 1000000000;
-        Log.Information("Read: {0}ns", nanoseconds);
+        if (_debug)
+        {
+            watch.Stop();
+            double ticks = watch.ElapsedTicks;
+            var seconds = ticks / Stopwatch.Frequency;
+            var milliseconds = ticks / Stopwatch.Frequency * 1000;
+            var nanoseconds = ticks / Stopwatch.Frequency * 1000000000;
+            Log.Information("CharInfo Read: {0}ms", milliseconds);
+        }
     }
 
     public void Clear()

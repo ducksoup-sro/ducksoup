@@ -56,12 +56,12 @@ public class FakeClient : TcpClient
 
             foreach (var packet in receivedPackets)
             {
-                Console.Write("[S -> P]");
-                if (packet.Encrypted)
-                    Console.Write("[E]");
-                if (packet.Massive)
-                    Console.Write("[M]");
-                Console.WriteLine($" Packet: 0x{packet.MsgId:X} - {Id}");
+                // Console.Write("[S -> P]");
+                // if (packet.Encrypted)
+                //     Console.Write("[E]");
+                // if (packet.Massive)
+                //     Console.Write("[M]");
+                // Console.WriteLine($" Packet: 0x{packet.MsgId:X} - {Id}");
 
                 if (packet.MsgId == 0x5000 || packet.MsgId == 0x9000) continue;
 

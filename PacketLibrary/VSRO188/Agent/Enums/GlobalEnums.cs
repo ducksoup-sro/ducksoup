@@ -61,7 +61,7 @@ public enum BodyState : byte
     Invisible = 7
 }
 
-public enum FortSiegeAuthority
+public enum FortSiegeAuthority : byte
 {
     None = 0,
     Commander = 1,
@@ -181,7 +181,7 @@ public enum Job : byte
     Hunter = 3
 }
 
-public enum InteractMode
+public enum InteractMode : byte
 {
     None = 0,
     P2P = 2,

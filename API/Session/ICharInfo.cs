@@ -36,7 +36,8 @@ public class ICharInfo
             if (TargetPosition.IsEmpty()) return CurPosition;
 
             var time = (DateTime.UtcNow.ToUnixTimeMilliseconds() - LastPositionUpdate) / 1000.0; // Convert to seconds
-            var speed = RunSpeed;
+
+            var speed = State.GetSpeed();
 
             double dx = TargetPosition.X - CurPosition.X;
             double dy = TargetPosition.Y - CurPosition.Y;
@@ -69,18 +70,14 @@ public class ICharInfo
 
     #region entityData
 
+    public uint UniqueCharId;
+    
     public long LastPositionUpdate;
     public Position CurPosition;
     public Position TargetPosition = new(0, 0);
-
-    public uint UniqueCharId;
-    public LifeState LifeState;
-    public byte Unkbyte0;
-    public MotionState MotionState;
-    public BodyState BodyState;
-    public float WalkSpeed;
-    public float RunSpeed;
-    public float HwanSpeed;
+    
+    public State State;
+    
     public string CharName;
     public string JobName;
     public Job JobType;
@@ -91,6 +88,7 @@ public class ICharInfo
     public PvpState PvpState;
     public bool TransportFlag;
     public BattleState InCombat;
+    public bool OnTransport = false; // CUSTOM
     public uint TransportUniqueId;
     public byte PvpFlag;
     public ulong GuideFlag;
