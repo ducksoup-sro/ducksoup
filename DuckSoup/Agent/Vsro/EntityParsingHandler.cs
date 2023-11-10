@@ -424,7 +424,7 @@ public class EntityParsingHandler
 
     private async Task<Packet> EntitySingleSpawn(SERVER_ENTITY_SPAWN data, ISession session)
     {
-        session.GetData(Data.EntityInfo, out var entityInfo, new EntityInfo());
+        session.GetData(Data.EntityInfo, out var entityInfo, new EntityInfo(session));
         entityInfo.Initialize(SpawnInfoType.Spawn, 1, 0x3015);
         entityInfo.Append(data);
 
@@ -441,7 +441,7 @@ public class EntityParsingHandler
 
     private async Task<Packet> EntitySingleDespawn(SERVER_ENTITY_DESPAWN data, ISession session)
     {
-        session.GetData(Data.EntityInfo, out var entityInfo, new EntityInfo());
+        session.GetData(Data.EntityInfo, out var entityInfo, new EntityInfo(session));
         entityInfo.Initialize(SpawnInfoType.Despawn, 1, 0x3016);
         entityInfo.Append(data);
 
@@ -458,7 +458,7 @@ public class EntityParsingHandler
 
     private async Task<Packet> EntityGroupSpawnBegin(SERVER_ENTITY_GROUPSPAWN_BEGIN data, ISession session)
     {
-        session.GetData(Data.EntityInfo, out var entityInfo, new EntityInfo());
+        session.GetData(Data.EntityInfo, out var entityInfo, new EntityInfo(session));
         entityInfo.Initialize(data.SpawnInfoType, data.Amount, 0x3019);
         
         return data;
@@ -466,7 +466,7 @@ public class EntityParsingHandler
 
     private async Task<Packet> EntityGroupSpawnData(SERVER_ENTITY_GROUPSPAWN_DATA data, ISession session)
     {
-        session.GetData(Data.EntityInfo, out var entityInfo, new EntityInfo());
+        session.GetData(Data.EntityInfo, out var entityInfo, new EntityInfo(session));
         entityInfo.Append(data);
 
         // data.ResultType = PacketResultType.Block;
@@ -475,7 +475,7 @@ public class EntityParsingHandler
 
     private async Task<Packet> EntityGroupSpawnEnd(SERVER_ENTITY_GROUPSPAWN_END data, ISession session)
     {
-        session.GetData(Data.EntityInfo, out var entityInfo, new EntityInfo());
+        session.GetData(Data.EntityInfo, out var entityInfo, new EntityInfo(session));
         var entityPacket = entityInfo.GetPacket();
         if (entityPacket == null) return data;
 

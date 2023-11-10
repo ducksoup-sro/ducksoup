@@ -6,6 +6,7 @@ using API.Session;
 using PacketLibrary.Handler;
 using PacketLibrary.VSRO188.Agent.Client;
 using PacketLibrary.VSRO188.Agent.Objects;
+using PacketLibrary.VSRO188.Agent.Objects.Cos;
 using PacketLibrary.VSRO188.Agent.Server;
 using SilkroadSecurityAPI.Message;
 
@@ -72,15 +73,41 @@ public class DataHandler
     private async Task<Packet> SERVER_MOVEMENT(SERVER_MOVEMENT_RESPONSE data, ISession session)
     {
         session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
-        if (charInfo == null) return data;
-
+        session.GetData(Data.Vehicle, out Cos? vehicle, null);
+        
+        if (charInfo == null || data.TargetId != charInfo.UniqueCharId &&
+            (vehicle == null || vehicle.UniqueId != data.TargetId))
+        {
+            return data;
+        }
+        
         charInfo.LastPositionUpdate = DateTime.UtcNow.ToUnixTimeMilliseconds();
         if (data.Movement.HasSource) charInfo.CurPosition = data.Movement.Source;
 
-        if (data.Movement.HasDestination)
+        if (data.Movement.HasDestination) {
             charInfo.TargetPosition = data.Movement.Destination;
-        else
+        } else {
             charInfo.TargetPosition = new Position(0, 0);
+        }
+        
+        var timerManager = session.GetTimerManager();
+        if (timerManager == null)
+        {
+            return data;
+        }
+        
+        if (timerManager.IsStarted() && timerManager.IsStopOnMove() &&
+            data.TargetId == charInfo.UniqueCharId)
+        {
+            timerManager.Stop();
+        }
+
+        if (timerManager.IsStarted() && timerManager.IsStopOnVehicleMove() &&
+            vehicle != null && vehicle.UniqueId == data.TargetId)
+        {
+            timerManager.Stop();
+        }
+        
         return data;
     }
     

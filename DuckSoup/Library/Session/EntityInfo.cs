@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using API;
+using API.Extensions;
 using Database.VSRO188;
+using PacketLibrary.Handler;
 using PacketLibrary.VSRO188.Agent.Enums;
 using PacketLibrary.VSRO188.Agent.Objects;
 using Serilog;
@@ -12,12 +17,18 @@ namespace DuckSoup.Library.Session;
 // Credits: Mostly taken from RSBot https://github.com/SDClowen/RSBot/
 public class EntityInfo
 {
+    private ISession _session;
     private SpawnInfoType? _spawnInfoType;
     private ushort _amount;
     private bool _single;
     private Packet? _packet = null;
     private bool _exit = false;
     private bool _debug = false;
+
+    public EntityInfo(ISession session)
+    {
+        _session = session;
+    }
 
     public void Initialize(SpawnInfoType spawnInfoType, ushort amount, ushort msgId)
     {
@@ -182,7 +193,7 @@ public class EntityInfo
 
                 // Is this base? Entity / Bionic?
                 _packet.TryRead(out uint Base_UniqueId);
-
+                
                 //Position
                 _packet.TryRead(out ushort Base_Position_RegionId)
                     .TryRead(out float Base_Position_X)
@@ -242,7 +253,7 @@ public class EntityInfo
                 if (refObjCommon.TypeID2 == 1)
                 {
                     //CHARACTER
-                    _packet.TryRead(out ushort Character_Name);
+                    _packet.TryRead(out string Character_Name);
 
                     _packet.TryRead(out Job Character_JobType); // byte
                     _packet.TryRead(out byte Character_JobLevel);
@@ -279,6 +290,21 @@ public class EntityInfo
 
                     _packet.TryRead(out byte Character_EquipmentCooldown);
                     _packet.TryRead(out byte Character_PKFlag);
+                    
+                    // -- DuckSoup start, b0ykoe
+                    var spawnedPlayerSession = await Helper.GetSessionByCharName(Character_Name);
+                    var timerManager = spawnedPlayerSession?.GetTimerManager();
+                    if (timerManager != null &&
+                        timerManager.IsStarted() &&
+                        timerManager.IsBroadcast())
+                    {
+                        Task.Run(() =>
+                        {
+                            Thread.Sleep(100);
+                            timerManager.Send(_session);
+                        });
+                    }
+                    // -- DuckSoup end, b0ykoe
                 }
                 else if (refObjCommon.TypeID2 == 2)
                 {
