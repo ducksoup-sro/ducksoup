@@ -1,6 +1,6 @@
 ﻿namespace PacketLibrary.VSRO188.Agent.Enums;
 
-public enum TrijobType : byte
+public enum TriJobType : byte
 {
     NoJob = 0x4,
     Hunter = 0x3,

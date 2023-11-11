@@ -2,9 +2,9 @@ using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Server;
 
-public class SERVER_OnB045 : Packet
+public class SERVER_ACTION_SELECT_RESPONSE : Packet
 {
-    public SERVER_OnB045() : base(0xB045)
+    public SERVER_ACTION_SELECT_RESPONSE() : base(0xB045)
     {
     }
 
@@ -29,6 +29,6 @@ public class SERVER_OnB045 : Packet
 
     public static Packet of()
     {
-        return new SERVER_OnB045();
+        return new SERVER_ACTION_SELECT_RESPONSE();
     }
 }

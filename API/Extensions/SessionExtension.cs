@@ -1,4 +1,6 @@
 ﻿using API.Session;
+using Database.VSRO188;
+using Database.VSRO188.SRO_VT_SHARD;
 using PacketLibrary.Handler;
 using PacketLibrary.VSRO188.Agent.Enums.Chat;
 using PacketLibrary.VSRO188.Agent.Server;
@@ -22,5 +24,16 @@ public static class SessionExtension
     {
         session.GetData(Data.CountDownManager, out ICountdownManager? countdownManager, null);
         return countdownManager;
+    }
+
+    public static async Task<_Char?> GetChar(this ISession session)
+    {
+        session.GetData(Data.CharId, out int charId, -1);
+        if (charId == -1)
+        {
+            return null;
+        }
+        
+        return await Cache.GetCharAsync(charId);
     }
 }

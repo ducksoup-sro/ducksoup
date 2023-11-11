@@ -290,7 +290,7 @@ public class EntityParsingHandler
         session.GetData<Growth?>(Data.Growth, out var growth, null);
         session.GetData<Fellow?>(Data.Fellow, out var fellow, null);
 
-        if (cosUniqueId == transport.UniqueId)
+        if (cosUniqueId == transport?.UniqueId)
             session.SetData(Data.Vehicle, transport);
 
         if (cosUniqueId == jobTransport?.UniqueId)

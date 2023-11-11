@@ -7,6 +7,17 @@ namespace API;
 
 public static class Helper
 {
+    public static Task<ISession?> GetSessionByUniqueId(uint uniqueId)
+    {
+        var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
+        return Task.FromResult(sharedObjects.AgentSessions.FirstOrDefault(session =>
+        {
+            session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
+            if (charInfo == null) return false;
+            return charInfo.UniqueCharId == uniqueId;
+        }));
+    }
+    
     public static Task<ISession?> GetSessionByGuid(Guid guid)
     {
         var sharedObjects = ServiceFactory.ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));

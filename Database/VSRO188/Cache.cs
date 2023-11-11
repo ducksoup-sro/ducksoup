@@ -269,4 +269,16 @@ public static class Cache
 
         return value;
     }
+    
+    public static async Task<_Char?> GetCharAsync(int charId)
+    {
+        await using var db = new Context.SRO_VT_SHARD();
+        return await db._Chars.FirstOrDefaultAsync(c => c.CharID == charId);
+    }
+
+    public static async Task<_Char?> GetCharAsync(Expression<Func<_Char, bool>> predicate)
+    {
+        await using var db = new Context.SRO_VT_SHARD();
+        return await db._Chars.FirstOrDefaultAsync(predicate);
+    }
 }

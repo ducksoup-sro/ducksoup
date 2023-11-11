@@ -1,9 +1,14 @@
+using PacketLibrary.VSRO188.Agent.Enums;
 using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Server;
 
 public class SERVER_JOB_UPDATE_EXP : Packet
 {
+    public TriJobType TriJobType; 
+    public byte JobLevel;
+    public uint JobExp;
+    
     public SERVER_JOB_UPDATE_EXP() : base(0x30E6)
     {
     }
@@ -14,15 +19,17 @@ public class SERVER_JOB_UPDATE_EXP : Packet
 
     public override async Task Read()
     {
-        //throw new NotImplementedException();
+        TryRead(out TriJobType);
+        TryRead(out JobLevel);
+        TryRead(out JobExp);
     }
 
     public override async Task<Packet> Build()
     {
-        //throw new NotImplementedException();
-
-        // Reset();
-
+        Reset();
+        TryWrite(TriJobType);
+        TryWrite(JobLevel);
+        TryWrite(JobExp);
         return this;
     }
 
