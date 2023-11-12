@@ -9,7 +9,7 @@ using API.ServiceFactory;
 using API.Services;
 using API.Webserver;
 using Serilog;
-using WatsonWebserver;
+using WatsonWebserver.Core;
 
 namespace DuckSoup.Library.Webserver;
 
@@ -18,7 +18,7 @@ public class WebserverManager : IWebserverManager
     private readonly IAuthService _authService;
     private readonly IUserService _userService;
     private Dictionary<string, List<UserRole>> _protectedRoutes;
-    private WatsonWebserver.Server _server;
+    private WatsonWebserver.Webserver _server;
 
     public WebserverManager()
     {
@@ -33,7 +33,11 @@ public class WebserverManager : IWebserverManager
     public void Start(string hostname, int port)
     {
         _protectedRoutes = new Dictionary<string, List<UserRole>>();
-        _server = new WatsonWebserver.Server("*", port, false, DefaultRoute);
+        _server = new WatsonWebserver.Webserver(new WebserverSettings
+        {
+            Hostname = hostname,
+            Port = port
+        }, DefaultRoute);
         _server.Routes.PreRouting = PreRoutingHandler;
         _server?.Start();
         Log.Information("Webserver on http://{0}:{1} started", hostname, port);
@@ -56,19 +60,19 @@ public class WebserverManager : IWebserverManager
         _protectedRoutes?.Add(path, roles.ToList());
     }
 
-    public void addStaticRoute(HttpMethod method, string path, Func<HttpContext, Task> handler)
+    public void addStaticRoute(HttpMethod method, string path, Func<HttpContextBase, Task> handler)
     {
-        _server?.Routes.Static.Add(method, path, handler);
+        _server?.Routes.PostAuthentication.Static.Add(method, path, handler);
     }
 
-    public void addStaticRoute(string path, Func<HttpContext, Task> handler)
+    public void addStaticRoute(string path, Func<HttpContextBase, Task> handler)
     {
         addStaticRoute(HttpMethod.GET, path, handler);
     }
 
     public void removeStaticRoute(HttpMethod method, string path)
     {
-        _server?.Routes.Static.Remove(method, path);
+        _server?.Routes.PostAuthentication.Static.Remove(method, path);
     }
 
     public void removeStaticRoute(string path)
@@ -76,19 +80,19 @@ public class WebserverManager : IWebserverManager
         removeStaticRoute(HttpMethod.GET, path);
     }
 
-    public void addParameterRoute(HttpMethod method, string path, Func<HttpContext, Task> handler)
+    public void addParameterRoute(HttpMethod method, string path, Func<HttpContextBase, Task> handler)
     {
-        _server?.Routes.Parameter.Add(method, path, handler);
+        _server?.Routes.PostAuthentication.Parameter.Add(method, path, handler);
     }
 
-    public void addParameterRoute(string path, Func<HttpContext, Task> handler)
+    public void addParameterRoute(string path, Func<HttpContextBase, Task> handler)
     {
         addParameterRoute(HttpMethod.GET, path, handler);
     }
 
     public void removeParameterRoute(HttpMethod method, string path)
     {
-        _server?.Routes.Parameter.Remove(method, path);
+        _server?.Routes.PostAuthentication.Parameter.Remove(method, path);
     }
 
     public void removeParameterRoute(string path)
@@ -96,7 +100,7 @@ public class WebserverManager : IWebserverManager
         removeParameterRoute(HttpMethod.GET, path);
     }
 
-    private Task<bool> PreRoutingHandler(HttpContext ctx)
+    private Task PreRoutingHandler(HttpContextBase ctx)
     {
         if (_protectedRoutes == null)
             // block access because we cannot verify if the route is legit or not
@@ -158,7 +162,7 @@ public class WebserverManager : IWebserverManager
         return Task.FromResult(true);
     }
 
-    private static async Task DefaultRoute(HttpContext ctx)
+    private static async Task DefaultRoute(HttpContextBase ctx)
     {
         ctx.Response.StatusCode = 200;
         await ctx.Response.Send("It works!");

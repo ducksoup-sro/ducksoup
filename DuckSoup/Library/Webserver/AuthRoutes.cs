@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Text.Json;
 using System.Threading.Tasks;
 using API.Database.DuckSoup;
 using API.Enums;
 using API.ServiceFactory;
 using API.Services;
 using API.Webserver;
+using Newtonsoft.Json;
 using WatsonWebserver;
+using WatsonWebserver.Core;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace DuckSoup.Library.Webserver;
 
@@ -33,7 +35,7 @@ public class AuthRoutes
         webserverManager.addProtectedPrefix("/api/v1/auth/me", new[] { UserRole.Authenticated });
     }
 
-    private async Task UserInfoRoute(HttpContext ctx)
+    private async Task UserInfoRoute(HttpContextBase ctx)
     {
         if (ctx.Metadata is not User user)
         {
@@ -46,7 +48,7 @@ public class AuthRoutes
         await ctx.Response.Send(JsonSerializer.Serialize(user));
     }
 
-    private async Task RefreshRoute(HttpContext ctx)
+    private async Task RefreshRoute(HttpContextBase ctx)
     {
         var hasCookie = ctx.Request.HeaderExists("Cookie");
         if (!hasCookie)
@@ -98,7 +100,7 @@ public class AuthRoutes
         await ctx.Response.Send("{ \"access_token\": \"" + accessToken + "\"}");
     }
 
-    private async Task InvalidateRoute(HttpContext ctx)
+    private async Task InvalidateRoute(HttpContextBase ctx)
     {
         if (ctx.Metadata is not User user)
         {
@@ -120,7 +122,7 @@ public class AuthRoutes
         await ctx.Response.Send("{ \"access_token\": \"" + accessToken + "\"}");
     }
 
-    private async Task LogoutRoute(HttpContext ctx)
+    private async Task LogoutRoute(HttpContextBase ctx)
     {
         if (ctx.Metadata is not User)
         {
@@ -136,12 +138,12 @@ public class AuthRoutes
         await ctx.Response.Send("{ \"status\": \"ok\"}");
     }
 
-    private async Task LoginRoute(HttpContext ctx)
+    private async Task LoginRoute(HttpContextBase ctx)
     {
-        LoginRequest req;
+        LoginRequest? req;
         try
         {
-            req = ctx.Request.DataAsJsonObject<LoginRequest>();
+            req = JsonConvert.DeserializeObject<LoginRequest>(ctx.Request.DataAsString);
 
             if (req == null || req.Username == null || req.Password == null ||
                 req.Username.Replace(" ", "").Length == 0 ||

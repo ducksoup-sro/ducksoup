@@ -11,7 +11,7 @@ public class AuthChangeRoleCommand : Command
 {
     private IUserService _service;
 
-    public AuthChangeRoleCommand() : base("changepassword", "auth role <username> <role>",
+    public AuthChangeRoleCommand() : base("changerole", "auth role <username> <role>",
         "Changes the role of the given user.", new[] { "role" })
     {
     }
