@@ -126,7 +126,7 @@ public class _Char
         {
             if (_refObjChar != null) return _refObjChar;
 
-            _refObjChar = Cache.GetRefObjCharAsync(RefObjID).Result;
+            _refObjChar = Cache.GetRefObjCharAsync(RefObjCommon.Link).Result;
             return _refObjChar;
         }
     }
