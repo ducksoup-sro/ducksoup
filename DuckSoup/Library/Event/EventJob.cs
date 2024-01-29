@@ -8,7 +8,7 @@ public class EventJob : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
-        using var eEvent = context.JobDetail.JobDataMap["event"] as IEvent;
+        var eEvent = context.JobDetail.JobDataMap["event"] as IEvent; // using disposes at the end
         if (eEvent == null) return;
 
         await Task.Run(() => { eEvent.SetEventState(EventStateEnum.Starting); });
