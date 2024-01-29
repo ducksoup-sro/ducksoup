@@ -37,6 +37,8 @@ public class AuthRoutes
 
     private async Task UserInfoRoute(HttpContextBase ctx)
     {
+        ctx.Response.ContentType = "application/json";
+
         if (ctx.Metadata is not User user)
         {
             ctx.Response.StatusCode = 401;
@@ -50,6 +52,8 @@ public class AuthRoutes
 
     private async Task RefreshRoute(HttpContextBase ctx)
     {
+        ctx.Response.ContentType = "application/json";
+
         var hasCookie = ctx.Request.HeaderExists("Cookie");
         if (!hasCookie)
         {
@@ -102,6 +106,8 @@ public class AuthRoutes
 
     private async Task InvalidateRoute(HttpContextBase ctx)
     {
+        ctx.Response.ContentType = "application/json";
+
         if (ctx.Metadata is not User user)
         {
             ctx.Response.StatusCode = 401;
@@ -124,6 +130,8 @@ public class AuthRoutes
 
     private async Task LogoutRoute(HttpContextBase ctx)
     {
+        ctx.Response.ContentType = "application/json";
+
         if (ctx.Metadata is not User)
         {
             ctx.Response.StatusCode = 401;
@@ -140,6 +148,8 @@ public class AuthRoutes
 
     private async Task LoginRoute(HttpContextBase ctx)
     {
+        ctx.Response.ContentType = "application/json";
+
         LoginRequest? req;
         try
         {
