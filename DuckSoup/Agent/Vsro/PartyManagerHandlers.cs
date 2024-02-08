@@ -68,9 +68,9 @@ public class PartyManagerHandlers
                 var tParty = _partyManager.GetParty(session);
                 foreach (var tPartyMember in tParty.Members)
                 {
-                    tPartyMember.GetData("jid", out uint? tPartyJid, null);
-                    sess.GetData("jid", out uint? sessJid, null);
-                    if (tPartyJid == sessJid) needsAdding = false;
+                    tPartyMember.GetData(Data.CharInfo, out CharInfo? tPartyData, null);
+                    sess.GetData(Data.CharInfo, out CharInfo? sessData, null);
+                    if (tPartyData.Jid == sessData.Jid) needsAdding = false;
                 }
 
                 if (needsAdding) tParty.Members.Add(sess);
