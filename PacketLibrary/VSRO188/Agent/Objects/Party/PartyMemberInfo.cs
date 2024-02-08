@@ -85,44 +85,44 @@ public class PartyMemberInfo
         // we should set the MemberInfoFlag to all
         MemberInfoFlag = (PartyMemberInfoFlag)0xFF;
 
-        packet.TryWrite(MemberInfoFlag);
-        if (MemberInfoFlag.HasFlag(PartyMemberInfoFlag.JID)) packet.TryWrite(JID);
+        packet.TryWrite<byte>((byte)MemberInfoFlag);
+        if (MemberInfoFlag.HasFlag(PartyMemberInfoFlag.JID)) packet.TryWrite<int>(JID);
 
         if (MemberInfoFlag.HasFlag(PartyMemberInfoFlag.NameRefObjID))
             packet.TryWrite(Name)
-                .TryWrite(RefObjID);
+                .TryWrite<uint>(RefObjID);
 
-        if (MemberInfoFlag.HasFlag(PartyMemberInfoFlag.Level)) packet.TryWrite(Level);
+        if (MemberInfoFlag.HasFlag(PartyMemberInfoFlag.Level)) packet.TryWrite<byte>(Level);
 
         if (MemberInfoFlag.HasFlag(PartyMemberInfoFlag.Vitality))
             // (MSB)                       (LSB)
             // | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
             // |       HP      |       MP      |
-            packet.TryWrite(Vitality);
+            packet.TryWrite<byte>(Vitality);
 
         if (MemberInfoFlag.HasFlag(PartyMemberInfoFlag.Position))
         {
-            packet.TryWrite(RID);
+            packet.TryWrite<ushort>(RID);
             if ((RID & 0x8000) != 0) // IsDungeon
-                packet.TryWrite(DungeonX)
-                    .TryWrite(DungeonY)
-                    .TryWrite(DungeonZ);
+                packet.TryWrite<int>(DungeonX)
+                    .TryWrite<int>(DungeonY)
+                    .TryWrite<int>(DungeonZ);
             else
-                packet.TryWrite(X)
-                    .TryWrite(Y)
-                    .TryWrite(Z);
+                packet.TryWrite<short>(X)
+                    .TryWrite<short>(Y)
+                    .TryWrite<short>(Z);
 
-            packet.TryWrite(WorldId)
-                .TryWrite(LayerId);
+            packet.TryWrite<ushort>(WorldId)
+                .TryWrite<ushort>(LayerId);
         }
 
         if (MemberInfoFlag.HasFlag(PartyMemberInfoFlag.Guild)) packet.TryWrite(GuildName);
 
-        if (MemberInfoFlag.HasFlag(PartyMemberInfoFlag.JobState)) packet.TryWrite(JobState);
+        if (MemberInfoFlag.HasFlag(PartyMemberInfoFlag.JobState)) packet.TryWrite<byte>((byte)JobState);
 
         if (MemberInfoFlag.HasFlag(PartyMemberInfoFlag.Mastery))
-            packet.TryWrite(PrimaryMastery)
-                .TryWrite(SecondaryMastery);
+            packet.TryWrite<uint>(PrimaryMastery)
+                .TryWrite<uint>(SecondaryMastery);
 
         return packet;
     }

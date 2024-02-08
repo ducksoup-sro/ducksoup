@@ -68,6 +68,7 @@ public enum PartyUpdateType : byte
     Joined = 2,
     Leave = 3,
     Member = 6,
+    PartyChat = 7,
     Leader = 9 // vsro
 }
 

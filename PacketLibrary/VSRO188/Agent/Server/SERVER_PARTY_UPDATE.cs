@@ -51,25 +51,26 @@ public class SERVER_PARTY_UPDATE : Packet
 
     public override async Task<Packet> Build()
     {
-        TryWrite(PartyUpdateType);
+        Reset();
+        TryWrite<byte>((byte)PartyUpdateType);
         switch (PartyUpdateType)
         {
             case PartyUpdateType.Dismissed:
-                TryWrite(ErrorCode);
+                TryWrite<byte>((byte)ErrorCode);
                 break;
             case PartyUpdateType.Joined:
                 MemberInfo.Build(this);
                 break;
             case PartyUpdateType.Leave:
-                TryWrite(UserJID);
-                TryWrite(LeaveType);
+                TryWrite<uint>(UserJID);
+                TryWrite<byte>((byte)LeaveType);
                 break;
             case PartyUpdateType.Member:
-                TryWrite(UserJID);
+                TryWrite<uint>(UserJID);
                 MemberInfo.Build(this);
                 break;
             case PartyUpdateType.Leader:
-                TryWrite(UserJID);
+                TryWrite<uint>(UserJID);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
