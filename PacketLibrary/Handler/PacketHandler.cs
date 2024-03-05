@@ -125,7 +125,7 @@ public class PacketHandler : IPacketHandler
         var msgId = new T().MsgId;
         if (_serverHandlers.GetValueOrDefault(msgId, null) == null) return;
 
-        var keysToRemove = _serverHandlers[msgId].Where(m => m.Value.Equals(handler)).Select(c => c.Key).ToList();
+        var keysToRemove = _serverHandlers[msgId].Where(m => m.Value.IsEqual(handler)).Select(c => c.Key).ToList();
         keysToRemove.ForEach(key => _serverHandlers[msgId].Remove(key, out var tempObject));
     }
 
@@ -179,8 +179,8 @@ public class PacketHandler : IPacketHandler
     {
         var msgId = new T().MsgId;
         if (_clientHandlers.GetValueOrDefault(msgId, null) == null) return;
-
-        var keysToRemove = _clientHandlers[msgId].Where(m => m.Value.Equals(handler)).Select(c => c.Key).ToList();
+        
+        var keysToRemove = _clientHandlers[msgId].Where(m => m.Value.IsEqual(handler)).Select(c => c.Key).ToList();
         keysToRemove.ForEach(key => _clientHandlers[msgId].Remove(key, out var tempObject));
     }
 

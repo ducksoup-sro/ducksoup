@@ -23,11 +23,22 @@ public class _PacketHandler<T> : IBasePacketHandler where T : Packet, new()
 
         return await _handlerAction((T)packet, session);
     }
+
+    public bool IsEqual<T>(Func<T, ISession, Task<Packet>> otherHandler)
+    {
+        if (_handlerAction.Equals(otherHandler))
+        {
+            return true;
+        }
+
+        return false;
+    }
 }
 
 public interface IBasePacketHandler
 {
     Task<Packet> Handle(Packet packet, ISession session);
+    bool IsEqual<T>(Func<T, ISession, Task<Packet>> otherHandler);
 }
 
 public class PacketResult : IDisposable
