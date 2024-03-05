@@ -7,6 +7,15 @@
         <Version>2.0.0-ALPHA</Version>
         <LangVersion>12</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>DuckSoup.Database</PackageId>
+        <Title>DuckSoup Database</Title>
+        <Authors>b0ykoe</Authors>
+        <Description>DuckSoup Database</Description>
+        <Copyright>DON'T BE A DICK PUBLIC LICENSE</Copyright>
+        <PackageProjectUrl>https://github.com/b0ykoe/ducksoup</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/b0ykoe/ducksoup/blob/main/LICENSE.txt</PackageLicenseUrl>
+        <PackageIcon>DuckSoup.png</PackageIcon>
+        <RepositoryUrl>https://github.com/b0ykoe/ducksoup</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
@@ -22,6 +31,13 @@
         </PackageReference>
         <PackageReference Include="Serilog" Version="3.1.0-dev-02083"/>
         <PackageReference Include="Serilog.Sinks.Console" Version="5.0.0-dev-00923"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="DuckSoup.png">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+      </None>
     </ItemGroup>
 
 </Project>
