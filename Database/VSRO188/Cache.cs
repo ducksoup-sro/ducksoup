@@ -15,7 +15,7 @@ public static class Cache
     private static readonly Dictionary<int, _RefQuest> RefQuests = new();
     private static readonly Dictionary<int, _RefQuestReward> RefQuestRewards = new();
     private static readonly Dictionary<int, _RefQuestRewardItem> RefQuestRewardItems = new();
-    private static readonly Dictionary<int, _RefLevel> RefLevels = new();
+    private static readonly Dictionary<byte, _RefLevel> RefLevels = new();
 
     private static readonly Dictionary<int, _Notice> Notices = new();
 
@@ -220,7 +220,7 @@ public static class Cache
         return value;
     }
 
-    public static async Task<_RefLevel?> GetRefLevelAsync(int level)
+    public static async Task<_RefLevel?> GetRefLevelAsync(byte level)
     {
         if (RefLevels.TryGetValue(level, out var value)) return value;
 
