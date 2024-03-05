@@ -38,25 +38,6 @@ public class VSRO188_AgentServer : FakeServer
         var entityParsingHandlers = new EntityParsingHandler(PacketHandler);
         var exploitHandlers = new ExploitHandler(PacketHandler);
         var partyManagerHandlers = new PartyManagerHandlers(PacketHandler);
-
-        PacketHandler.RegisterClientHandler<CLIENT_CHAT_REQUEST>(async (data, session) =>
-        {
-            var split = data.Message.ToLower().Split(' ');
-            if (split.Length == 2 && split[0] == "start")
-                session.GetTimerManager().Start(int.Parse(split[1]), async () => { await session.SendNotice("Test"); });
-
-            if (split.Length == 1 && split[0] == "stop") session.GetTimerManager().Stop();
-
-            if (split.Length == 2 && split[0] == "start2")
-                session.GetCountdownManager()
-                    .Start(int.Parse(split[1]), async () => { await session.SendNotice("Test"); });
-
-            if (split.Length == 1 && split[0] == "stop2") session.GetCountdownManager().Stop();
-            
-            if (split.Length == 1 && split[0] == "debug") Log.Information("{0}", JsonConvert.SerializeObject(session.GetRawSessionData(), Formatting.Indented));
-            
-            return data;
-        });
     }
 
     /*
