@@ -20,15 +20,15 @@ public class CLIENT_PARTY_CREATE_REQUEST : Packet
 
     public override async Task Read()
     {
-        TryRead(out GID);
-        TryRead(out PartySettings);
+        TryRead<uint>(out GID);
+        TryRead<PartySettingsFlag>(out PartySettings);
     }
 
     public override async Task<Packet> Build()
     {
         Reset();
-        TryWrite(GID);
-        TryWrite(PartySettings);
+        TryWrite<uint>(GID);
+        TryWrite<byte>((byte)PartySettings);
         return this;
     }
 

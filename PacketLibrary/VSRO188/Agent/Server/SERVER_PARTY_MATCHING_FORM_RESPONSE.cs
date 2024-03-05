@@ -30,16 +30,16 @@ public class SERVER_PARTY_MATCHING_FORM_RESPONSE : Packet
         switch (Result)
         {
             case 0x01:
-                TryRead(out MatchingId);
-                TryRead(out Id);
-                TryRead(out partySetting);
-                TryRead(out partyPurpose);
-                TryRead(out LevelRangeMin);
-                TryRead(out LevelRangeMax);
+                TryRead<uint>(out MatchingId);
+                TryRead<uint>(out Id);
+                TryRead<PartySettingsFlag>(out partySetting);
+                TryRead<PartyPurposeType>(out partyPurpose);
+                TryRead<byte>(out LevelRangeMin);
+                TryRead<byte>(out LevelRangeMax);
                 TryRead(out Title);
                 break;
             case 0x02:
-                TryRead(out errorCode);
+                TryRead<PartyErrorCode>(out errorCode);
                 break;
         }
     }
@@ -51,16 +51,16 @@ public class SERVER_PARTY_MATCHING_FORM_RESPONSE : Packet
         switch (Result)
         {
             case 0x01:
-                TryWrite(MatchingId);
-                TryWrite(Id);
-                TryWrite(partySetting);
-                TryWrite(partyPurpose);
-                TryWrite(LevelRangeMin);
-                TryWrite(LevelRangeMax);
+                TryWrite<uint>(MatchingId);
+                TryWrite<uint>(Id);
+                TryWrite<byte>((byte) partySetting);
+                TryWrite<byte>((byte) partyPurpose);
+                TryWrite<byte>(LevelRangeMin);
+                TryWrite<byte>(LevelRangeMax);
                 TryWrite(Title);
                 break;
             case 0x02:
-                TryWrite(errorCode);
+                TryWrite<ushort>((ushort)errorCode);
                 break;
         }
 

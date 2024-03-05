@@ -25,24 +25,24 @@ public class CLIENT_PARTY_MATCHING_FORM_REQUEST : Packet
 
     public override async Task Read()
     {
-        TryRead(out MatchingId);
-        TryRead(out Id);
-        TryRead(out partySetting);
-        TryRead(out partyPurpose);
-        TryRead(out LevelRangeMin);
-        TryRead(out LevelRangeMax);
+        TryRead<uint>(out MatchingId);
+        TryRead<uint>(out Id);
+        TryRead<PartySettingsFlag>(out partySetting);
+        TryRead<PartyPurposeType>(out partyPurpose);
+        TryRead<byte>(out LevelRangeMin);
+        TryRead<byte>(out LevelRangeMax);
         TryRead(out Title);
     }
 
     public override async Task<Packet> Build()
     {
         Reset();
-        TryWrite(MatchingId);
-        TryWrite(Id);
-        TryWrite(partySetting);
-        TryWrite(partyPurpose);
-        TryWrite(LevelRangeMin);
-        TryWrite(LevelRangeMax);
+        TryWrite<uint>(MatchingId);
+        TryWrite<uint>(Id);
+        TryWrite<byte>((byte)partySetting);
+        TryWrite<byte>((byte)partyPurpose);
+        TryWrite<byte>(LevelRangeMin);
+        TryWrite<byte>(LevelRangeMax);
         TryWrite(Title);
         return this;
     }

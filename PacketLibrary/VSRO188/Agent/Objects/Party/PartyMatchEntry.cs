@@ -28,30 +28,30 @@ public class PartyMatchEntry
 
     public Task Read(Packet packet)
     {
-        packet.TryRead(out Number)
-            .TryRead(out MasterJID)
+        packet.TryRead<uint>(out Number)
+            .TryRead<uint>(out MasterJID)
             .TryRead(out MasterName)
-            .TryRead(out CountryType)
-            .TryRead(out MemberCount)
-            .TryRead(out PartySettingsFlag)
-            .TryRead(out PurposeType)
-            .TryRead(out LevelMin)
-            .TryRead(out LevelMax)
+            .TryRead<byte>(out CountryType)
+            .TryRead<byte>(out MemberCount)
+            .TryRead<PartySettingsFlag>(out PartySettingsFlag)
+            .TryRead<PartyPurposeType>(out PurposeType)
+            .TryRead<byte>(out LevelMin)
+            .TryRead<byte>(out LevelMax)
             .TryRead(out Title);
         return Task.CompletedTask;
     }
 
     public Packet Build(Packet packet)
     {
-        packet.TryWrite(Number)
-            .TryWrite(MasterJID)
+        packet.TryWrite<uint>(Number)
+            .TryWrite<uint>(MasterJID)
             .TryWrite(MasterName)
-            .TryWrite(CountryType)
-            .TryWrite(MemberCount)
-            .TryWrite(PartySettingsFlag)
-            .TryWrite(PurposeType)
-            .TryWrite(LevelMin)
-            .TryWrite(LevelMax)
+            .TryWrite<byte>(CountryType)
+            .TryWrite<byte>(MemberCount)
+            .TryWrite<byte>((byte)PartySettingsFlag)
+            .TryWrite<byte>((byte)PurposeType)
+            .TryWrite<byte>(LevelMin)
+            .TryWrite<byte>(LevelMax)
             .TryWrite(Title);
         return packet;
     }

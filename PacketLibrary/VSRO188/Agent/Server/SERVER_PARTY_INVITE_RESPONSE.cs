@@ -20,15 +20,21 @@ public class SERVER_PARTY_INVITE_RESPONSE : Packet
 
     public override async Task Read()
     {
-        TryRead(out Result);
-        if (Result == 0x02) TryRead(out ErrorCode);
+        TryRead<byte>(out Result);
+        if (Result == 0x02)
+        {
+            TryRead<PartyErrorCode>(out ErrorCode);
+        }
     }
 
     public override async Task<Packet> Build()
     {
         Reset();
-        TryWrite(Result);
-        if (Result == 0x02) TryWrite(ErrorCode);
+        TryWrite<byte>(Result);
+        if (Result == 0x02)
+        {
+            TryWrite<ushort>((ushort)ErrorCode);
+        }
         return this;
     }
 

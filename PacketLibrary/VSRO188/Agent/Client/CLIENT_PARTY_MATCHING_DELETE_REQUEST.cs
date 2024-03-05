@@ -18,13 +18,13 @@ public class CLIENT_PARTY_MATCHING_DELETE_REQUEST : Packet
 
     public override async Task Read()
     {
-        TryRead(out MatchingId);
+        TryRead<uint>(out MatchingId);
     }
 
     public override async Task<Packet> Build()
     {
         Reset();
-        TryWrite(MatchingId);
+        TryWrite<uint>(MatchingId);
         return this;
     }
 

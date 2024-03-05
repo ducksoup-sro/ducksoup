@@ -25,24 +25,24 @@ public class CLIENT_PARTY_MATCHING_CHANGE_REQUEST : Packet
 
     public override async Task Read()
     {
-        TryRead(out MatchingId);
-        TryRead(out Id);
-        TryRead(out SettingsFlag);
-        TryRead(out Purpose);
-        TryRead(out LevelRangeMin);
-        TryRead(out LevelRangeMax);
+        TryRead<uint>(out MatchingId);
+        TryRead<uint>(out Id);
+        TryRead<PartySettingsFlag>(out SettingsFlag);
+        TryRead<PartyPurposeType>(out Purpose);
+        TryRead<byte>(out LevelRangeMin);
+        TryRead<byte>(out LevelRangeMax);
         TryRead(out Title);
     }
 
     public override async Task<Packet> Build()
     {
         Reset();
-        TryWrite(MatchingId);
-        TryWrite(Id);
-        TryWrite(SettingsFlag);
-        TryWrite(Purpose);
-        TryWrite(LevelRangeMin);
-        TryWrite(LevelRangeMax);
+        TryWrite<uint>(MatchingId);
+        TryWrite<uint>(Id);
+        TryWrite<byte>((byte)SettingsFlag);
+        TryWrite<byte>((byte)Purpose);
+        TryWrite<byte>(LevelRangeMin);
+        TryWrite<byte>(LevelRangeMax);
         TryWrite(Title);
         return this;
     }

@@ -25,17 +25,17 @@ public class SERVER_PARTY_CREATE_FROM_MATCHING : Packet
 
     public override async Task Read()
     {
-        TryRead(out PartyInfoFlag);
-        TryRead(out ID);
+        TryRead<PartyInfoFlag>(out PartyInfoFlag);
+        TryRead<int>(out ID);
         if (PartyInfoFlag.HasFlag(PartyInfoFlag.Options))
         {
-            TryRead(out LeaderJID);
-            TryRead(out PartySettingsFlag);
+            TryRead<int>(out LeaderJID);
+            TryRead<PartySettingsFlag>(out PartySettingsFlag);
         }
 
         if (PartyInfoFlag.HasFlag(PartyInfoFlag.MemberList))
         {
-            TryRead(out MemberCount);
+            TryRead<byte>(out MemberCount);
             for (var i = 0; i < MemberCount; i++) MemberInfos.Add(new PartyMemberInfo(this));
         }
     }
@@ -43,17 +43,17 @@ public class SERVER_PARTY_CREATE_FROM_MATCHING : Packet
     public override async Task<Packet> Build()
     {
         Reset();
-        TryWrite(PartyInfoFlag);
-        TryWrite(ID);
+        TryWrite<byte>((byte)PartyInfoFlag);
+        TryWrite<int>(ID);
         if (PartyInfoFlag.HasFlag(PartyInfoFlag.Options))
         {
-            TryWrite(LeaderJID);
-            TryWrite(PartySettingsFlag);
+            TryWrite<int>(LeaderJID);
+            TryWrite<byte>((byte)PartySettingsFlag);
         }
 
         if (PartyInfoFlag.HasFlag(PartyInfoFlag.MemberList))
         {
-            TryWrite(MemberCount);
+            TryWrite<byte>(MemberCount);
             MemberInfos.ForEach(partyMemberInfo => partyMemberInfo.Build(this));
         }
 

@@ -25,24 +25,24 @@ public class SERVER_PARTY_MATCHING_PLAYER_JOIN_REQUEST : Packet
 
     public override async Task Read()
     {
-        TryRead(out RequestID);
-        TryRead(out UserJID);
-        TryRead(out MatchingID);
-        TryRead(out PrimaryMastery);
-        TryRead(out SecondaryMastery);
-        TryRead(out JobState);
+        TryRead<uint>(out RequestID);
+        TryRead<uint>(out UserJID);
+        TryRead<uint>(out MatchingID);
+        TryRead<uint>(out PrimaryMastery);
+        TryRead<uint>(out SecondaryMastery);
+        TryRead<byte>(out JobState);
         var memberInfo = new PartyMemberInfo(this);
     }
 
     public override async Task<Packet> Build()
     {
         Reset();
-        TryWrite(RequestID);
-        TryWrite(UserJID);
-        TryWrite(MatchingID);
-        TryWrite(PrimaryMastery);
-        TryWrite(SecondaryMastery);
-        TryWrite(JobState);
+        TryWrite<uint>(RequestID);
+        TryWrite<uint>(UserJID);
+        TryWrite<uint>(MatchingID);
+        TryWrite<uint>(PrimaryMastery);
+        TryWrite<uint>(SecondaryMastery);
+        TryWrite<byte>(JobState);
         memberInfo.Build(this);
         return this;
     }

@@ -24,19 +24,19 @@ public class SERVER_PARTY_MATCHING_LIST_RESPONSE : Packet
 
     public override async Task Read()
     {
-        TryRead(out Result);
+        TryRead<byte>(out Result);
         switch (Result)
         {
             case 1:
             {
-                TryRead(out PageCount);
-                TryRead(out PageIndex);
-                TryRead(out PartyCount);
+                TryRead<byte>(out PageCount);
+                TryRead<byte>(out PageIndex);
+                TryRead<byte>(out PartyCount);
                 for (var i = 0; i < PartyCount; i++) PartyMatch.Add(new PartyMatchEntry(this));
                 break;
             }
             case 2:
-                TryRead(out ErrorCode);
+                TryRead<ushort>(out ErrorCode);
                 break;
         }
     }
@@ -44,19 +44,19 @@ public class SERVER_PARTY_MATCHING_LIST_RESPONSE : Packet
     public override async Task<Packet> Build()
     {
         Reset();
-        TryWrite(Result);
+        TryWrite<byte>(Result);
         switch (Result)
         {
             case 1:
             {
-                TryWrite(PageCount);
-                TryWrite(PageIndex);
-                TryWrite(PartyCount);
+                TryWrite<byte>(PageCount);
+                TryWrite<byte>(PageIndex);
+                TryWrite<byte>(PartyCount);
                 foreach (var partyMatchEntry in PartyMatch) partyMatchEntry.Build(this);
                 break;
             }
             case 2:
-                TryWrite(ErrorCode);
+                TryWrite<ushort>(ErrorCode);
                 break;
         }
 

@@ -18,13 +18,13 @@ public class CLIENT_PARTY_MATCHING_LIST_REQUEST : Packet
 
     public override async Task Read()
     {
-        TryRead(out PageIndex);
+        TryRead<byte>(out PageIndex);
     }
 
     public override async Task<Packet> Build()
     {
         Reset();
-        TryWrite(PageIndex);
+        TryWrite<byte>(PageIndex);
         return this;
     }
 

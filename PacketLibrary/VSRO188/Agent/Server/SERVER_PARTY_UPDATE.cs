@@ -1,5 +1,6 @@
 using PacketLibrary.VSRO188.Agent.Enums;
 using PacketLibrary.VSRO188.Agent.Objects.Party;
+using Serilog;
 using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Server;
@@ -24,25 +25,26 @@ public class SERVER_PARTY_UPDATE : Packet
 
     public override async Task Read()
     {
-        TryRead(out PartyUpdateType);
+        TryRead<PartyUpdateType>(out PartyUpdateType);
         switch (PartyUpdateType)
         {
             case PartyUpdateType.Dismissed:
-                TryRead(out ErrorCode);
+                TryRead<PartyErrorCode>(out ErrorCode);
                 break;
             case PartyUpdateType.Joined:
                 MemberInfo = new PartyMemberInfo(this);
                 break;
             case PartyUpdateType.Leave:
-                TryRead(out UserJID);
-                TryRead(out LeaveType);
+                TryRead<uint>(out UserJID);
+                TryRead<PartyLeaveType>(out LeaveType);
                 break;
             case PartyUpdateType.Member:
-                TryRead(out UserJID);
+                Log.Information("Hello?");
+                TryRead<uint>(out UserJID);
                 MemberInfo = new PartyMemberInfo(this);
                 break;
             case PartyUpdateType.Leader:
-                TryRead(out UserJID);
+                TryRead<uint>(out UserJID);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -56,7 +58,7 @@ public class SERVER_PARTY_UPDATE : Packet
         switch (PartyUpdateType)
         {
             case PartyUpdateType.Dismissed:
-                TryWrite<byte>((byte)ErrorCode);
+                TryWrite<ushort>((ushort)ErrorCode);
                 break;
             case PartyUpdateType.Joined:
                 MemberInfo.Build(this);

@@ -21,14 +21,14 @@ public class SERVER_PARTY_MATCHING_JOIN_RESPONSE : Packet
 
     public override async Task Read()
     {
-        TryRead(out Result);
+        TryRead<byte>(out Result);
         switch (Result)
         {
             case 0x01:
-                TryRead(out JoinResult);
+                TryRead<PartyMatchingJoinResult>(out JoinResult);
                 break;
             case 0x02:
-                TryRead(out ErrorCode);
+                TryRead<PartyErrorCode>(out ErrorCode);
                 break;
         }
     }
@@ -40,10 +40,10 @@ public class SERVER_PARTY_MATCHING_JOIN_RESPONSE : Packet
         switch (Result)
         {
             case 0x01:
-                TryWrite(JoinResult);
+                TryWrite<ushort>((ushort)JoinResult);
                 break;
             case 0x02:
-                TryWrite(ErrorCode);
+                TryWrite<ushort>((ushort)ErrorCode);
                 break;
         }
 

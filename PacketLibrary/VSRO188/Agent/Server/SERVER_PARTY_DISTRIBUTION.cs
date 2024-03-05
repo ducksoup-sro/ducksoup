@@ -22,20 +22,20 @@ public class SERVER_PARTY_DISTRIBUTION : Packet
 
     public override async Task Read()
     {
-        TryRead(out UserJID);
-        TryRead(out RefItemID);
+        TryRead<uint>(out UserJID);
+        TryRead<uint>(out RefItemID);
         var item = await Cache.GetRefObjCommonAsync((int)RefItemID);
         if (item == null || item.TypeID1 != 3) return;
         switch (item.TypeID2)
         {
             case 1:
-                TryRead(out OptLevel);
+                TryRead<byte>(out OptLevel);
                 break;
             case 2:
                 // No message triggered by server.        
                 break;
             case 3:
-                TryRead(out Quantity);
+                TryRead<ushort>(out Quantity);
                 break;
         }
     }
@@ -43,20 +43,20 @@ public class SERVER_PARTY_DISTRIBUTION : Packet
     public override async Task<Packet> Build()
     {
         Reset();
-        TryWrite(UserJID);
-        TryWrite(RefItemID);
+        TryWrite<uint>(UserJID);
+        TryWrite<uint>(RefItemID);
         var item = await Cache.GetRefObjCommonAsync((int)RefItemID);
         if (item == null || item.TypeID1 != 3) return this;
         switch (item.TypeID2)
         {
             case 1:
-                TryWrite(OptLevel);
+                TryWrite<byte>(OptLevel);
                 break;
             case 2:
                 // No message triggered by server.        
                 break;
             case 3:
-                TryWrite(Quantity);
+                TryWrite<ushort>(Quantity);
                 break;
         }
 

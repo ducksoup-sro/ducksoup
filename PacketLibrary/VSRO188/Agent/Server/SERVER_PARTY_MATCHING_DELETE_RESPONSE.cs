@@ -21,14 +21,14 @@ public class SERVER_PARTY_MATCHING_DELETE_RESPONSE : Packet
 
     public override async Task Read()
     {
-        TryRead(out Result);
+        TryRead<byte>(out Result);
         switch (Result)
         {
             case 0x01:
-                TryRead(out MatchingId);
+                TryRead<uint>(out MatchingId);
                 break;
             case 0x02:
-                TryRead(out ErrorCode);
+                TryRead<PartyErrorCode>(out ErrorCode);
                 break;
         }
     }
@@ -36,14 +36,14 @@ public class SERVER_PARTY_MATCHING_DELETE_RESPONSE : Packet
     public override async Task<Packet> Build()
     {
         Reset();
-        TryWrite(Result);
+        TryWrite<byte>(Result);
         switch (Result)
         {
             case 0x01:
-                TryWrite(MatchingId);
+                TryWrite<uint>(MatchingId);
                 break;
             case 0x02:
-                TryWrite(ErrorCode);
+                TryWrite<ushort>((ushort)ErrorCode);
                 break;
         }
 

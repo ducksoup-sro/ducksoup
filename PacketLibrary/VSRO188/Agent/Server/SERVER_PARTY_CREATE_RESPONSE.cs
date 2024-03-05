@@ -21,14 +21,14 @@ public class SERVER_PARTY_CREATE_RESPONSE : Packet
 
     public override async Task Read()
     {
-        TryRead(out Result);
+        TryRead<byte>(out Result);
         switch (Result)
         {
             case 0x01:
-                TryRead(out JID);
+                TryRead<uint>(out JID);
                 break;
             case 0x2:
-                TryRead(out ErrorCode);
+                TryRead<PartyErrorCode>(out ErrorCode);
                 break;
         }
     }
@@ -36,14 +36,14 @@ public class SERVER_PARTY_CREATE_RESPONSE : Packet
     public override async Task<Packet> Build()
     {
         Reset();
-        TryWrite(Result);
+        TryWrite<byte>(Result);
         switch (Result)
         {
             case 0x01:
-                TryWrite(JID);
+                TryWrite<uint>(JID);
                 break;
             case 0x2:
-                TryWrite(ErrorCode);
+                TryWrite<ushort>((ushort)ErrorCode);
                 break;
         }
 

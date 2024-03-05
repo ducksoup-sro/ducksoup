@@ -18,13 +18,13 @@ public class CLIENT_PARTY_KICK_REQUEST : Packet
 
     public override async Task Read()
     {
-        TryRead(out MemberJid);
+        TryRead<uint>(out MemberJid);
     }
 
     public override async Task<Packet> Build()
     {
         Reset();
-        TryWrite(MemberJid);
+        TryWrite<uint>(MemberJid);
         return this;
     }
 
