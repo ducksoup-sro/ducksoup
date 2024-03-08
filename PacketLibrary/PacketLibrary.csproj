@@ -14,7 +14,7 @@
         <PackageProjectUrl>https://github.com/b0ykoe/ducksoup</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/b0ykoe/ducksoup/blob/main/LICENSE.txt</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/b0ykoe/ducksoup</RepositoryUrl>
-        <Version>2.0.1-ALPHA</Version>
+        <Version>2.0.2-ALPHA</Version>
     </PropertyGroup>
 
     <ItemGroup>

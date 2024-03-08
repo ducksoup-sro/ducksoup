@@ -6,7 +6,7 @@
         <RootNamespace>DuckSoup</RootNamespace>
         <ProductVersion>2.0.0</ProductVersion>
         <LangVersion>12</LangVersion>
-        <Version>2.0.1-ALPHA</Version>
+        <Version>2.0.2-ALPHA</Version>
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
