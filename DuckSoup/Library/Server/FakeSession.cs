@@ -39,14 +39,14 @@ public class FakeSession : TcpSession
 
     protected override void OnConnected()
     {
-        Console.WriteLine($"FakeSession connected with Id {Id} connected!");
+        Log.Debug($"FakeSession connected with Id {Id} connected!");
         FakeServer.AddSession(Session);
     }
 
     protected override void OnDisconnected()
     {
         FakeServer.RemoveSession(Session);
-        Console.WriteLine($"FakeSession disconnected with Id {Id} disconnected!");
+        Log.Debug($"FakeSession disconnected with Id {Id} disconnected!");
         Session.Disconnect();
     }
 
@@ -77,12 +77,9 @@ public class FakeSession : TcpSession
 
             foreach (var packet in receivedPackets)
             {
-                // Console.Write("[C -> P]");
-                // if (packet.Encrypted)
-                //     Console.Write("[E]");
-                // if (packet.Massive)
-                //     Console.Write("[M]");
-                // Console.WriteLine($" Packet: 0x{packet.MsgId:X} - {Id}");
+                var packetType = packet.Encrypted ? "[E]" : packet.Massive ? "[M]" : "";
+                var message = $"[C -> P] {packetType} Packet: 0x{packet.MsgId:X} - {Id}";
+                Log.Debug(message);
 
                 if (packet.MsgId == 0x5000 || packet.MsgId == 0x9000 || packet.MsgId == 0x2001) continue;
 

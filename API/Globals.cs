@@ -20,15 +20,3 @@ public enum ServerType
     GatewayServer,
     AgentServer
 }
-
-public enum DebugLevel
-{
-    Nothing, // do not use!
-    Fatal, // failure but the server can't keep going
-    Critical, // failure but the server can keep going
-    Warning, // exploits, protection stuff
-    Info, // everything that regards the server
-    Connections, // Connection stuff (incoming / outgoing, destroying and so on)
-    Debug, // debugging of Packets
-    Everything
-}

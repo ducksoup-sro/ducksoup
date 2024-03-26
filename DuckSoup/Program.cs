@@ -17,6 +17,7 @@ using DuckSoup.Library.Services;
 using DuckSoup.Library.Settings;
 using DuckSoup.Library.Webserver;
 using Serilog;
+using Serilog.Core;
 using Serilog.Events;
 
 #endregion
@@ -25,14 +26,17 @@ namespace DuckSoup;
 
 public static class Program
 {
+    public static LoggingLevelSwitch LoggingLevelSwitch { get; } = new LoggingLevelSwitch();
+
     private static void Main()
     {
+        LoggingLevelSwitch.MinimumLevel = LogEventLevel.Debug; 
+
         Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
-            .MinimumLevel.Override("Quartz", LogEventLevel.Warning)
-            .WriteTo.Console(
-                outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {Message:l}{NewLine}{Exception}"
-            )
+            .MinimumLevel.ControlledBy(LoggingLevelSwitch)
+            .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}")
+            .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day, 
+                outputTemplate: "{Timestamp:HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}")
             .CreateLogger();
 
         Log.Debug("Testing: Debug");

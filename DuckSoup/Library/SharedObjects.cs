@@ -3,12 +3,14 @@ using API;
 using API.Database;
 using API.ServiceFactory;
 using PacketLibrary.Handler;
+using Serilog;
+using Serilog.Events;
 
 namespace DuckSoup.Library;
 
 public class SharedObjects : ISharedObjects
 {
-    public static DebugLevel DebugLevel;
+    public static LogEventLevel DebugLevel;
     public static string ServerName;
 
     public SharedObjects()
@@ -17,9 +19,13 @@ public class SharedObjects : ISharedObjects
 
         ServerName = DatabaseHelper.GetSettingOrDefault("Name", "Filter");
         DebugLevel =
-            (DebugLevel)int.Parse(
-                DatabaseHelper.GetSettingOrDefault("DebugLevel", ((byte)DebugLevel.Info).ToString()));
-
+            (LogEventLevel) int.Parse(
+                DatabaseHelper.GetSettingOrDefault("DebugLevel", ((byte)LogEventLevel.Information).ToString()));
+        
+        Program.LoggingLevelSwitch.MinimumLevel = LogEventLevel.Verbose;
+        Log.Information("Log is on {0} ({1}) its recommend to set it to 2 (Information) in the database", (byte) DebugLevel, DebugLevel);
+        Program.LoggingLevelSwitch.MinimumLevel = DebugLevel;
+        
         AgentSessions = new HashSet<ISession>();
         DownloadSessions = new HashSet<ISession>();
         GatewaySessions = new HashSet<ISession>();

@@ -27,18 +27,18 @@ public class FakeClient : TcpClient
 
     protected override void OnConnected()
     {
-        Console.WriteLine($"FakeRemoteClient connected a new session with Id {Id}");
+        Log.Debug($"FakeRemoteClient connected a new session with Id {Id}");
     }
 
     protected override void OnDisconnected()
     {
-        Console.WriteLine($"FakeRemoteClient disconnected a session with Id {Id}");
+        Log.Debug($"FakeRemoteClient disconnected a session with Id {Id}");
         Session.Disconnect();
     }
 
     protected override void OnError(SocketError error)
     {
-        Console.WriteLine($"FakeRemoteClient caught an error with code {error}");
+        Log.Debug($"FakeRemoteClient caught an error with code {error}");
         Session.Disconnect();
     }
 
@@ -56,12 +56,10 @@ public class FakeClient : TcpClient
 
             foreach (var packet in receivedPackets)
             {
-                // Console.Write("[S -> P]");
-                // if (packet.Encrypted)
-                //     Console.Write("[E]");
-                // if (packet.Massive)
-                //     Console.Write("[M]");
-                // Console.WriteLine($" Packet: 0x{packet.MsgId:X} - {Id}");
+                
+                var packetType = packet.Encrypted ? "[E]" : packet.Massive ? "[M]" : "";
+                var message = $"[S -> P] {packetType} Packet: 0x{packet.MsgId:X} - {Id}";
+                Log.Debug(message);
 
                 if (packet.MsgId == 0x5000 || packet.MsgId == 0x9000) continue;
 

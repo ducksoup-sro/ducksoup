@@ -14,7 +14,7 @@
         <PackageProjectUrl>https://github.com/b0ykoe/ducksoup</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/b0ykoe/ducksoup/blob/main/LICENSE.txt</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/b0ykoe/ducksoup</RepositoryUrl>
-        <Version>2.0.2-ALPHA</Version>
+        <Version>2.0.3-ALPHA</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -49,10 +49,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="LanguageExt.Core" Version="4.4.7"/>
+        <PackageReference Include="LanguageExt.Core" Version="4.4.8" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="Serilog" Version="3.1.0-dev-02083"/>
-        <PackageReference Include="Serilog.Sinks.Console" Version="5.0.0-dev-00923"/>
+        <PackageReference Include="Serilog" Version="4.0.0-dev-02122" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="5.1.0-dev-00943" />
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00972" />
     </ItemGroup>
 
 </Project>

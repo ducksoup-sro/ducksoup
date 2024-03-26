@@ -9,6 +9,7 @@ using DuckSoup.Library.Commands.Auth;
 using DuckSoup.Library.Commands.Event;
 using DuckSoup.Library.Commands.Plugin;
 using DuckSoup.Library.Commands.Server;
+using DuckSoup.Library.Commands.Utils;
 using LanguageExt.Common;
 using Serilog;
 using Void = LanguageExt.Pipes.Void;
@@ -25,6 +26,7 @@ public class CommandManager : ICommandManager
 
         _commands = new List<Command>();
         _helpCommand = new HelpCommand(_commands);
+        _commands.Add(new LogLevelCommand());
         _commands.Add(new AuthCommand());
         _commands.Add(new ServerCommand());
         _commands.Add(new PluginCommand());

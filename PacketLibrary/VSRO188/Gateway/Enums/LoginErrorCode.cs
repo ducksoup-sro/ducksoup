@@ -30,7 +30,8 @@ public enum LoginErrorCode : byte
     /// <summary>
     ///     Cannot connect to the server because access to the current IP has exceeded its limit.
     /// </summary>
-    IPLimit = 0xB,
+    VSRO_IPLimit = 0x8,
+    ISRO_IPLimit = 0xB,
 
     /// <summary>
     ///     <para>TRANSLATION MISSING</para>
