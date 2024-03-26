@@ -39,7 +39,6 @@ public class SERVER_PARTY_UPDATE : Packet
                 TryRead<PartyLeaveType>(out LeaveType);
                 break;
             case PartyUpdateType.Member:
-                Log.Information("Hello?");
                 TryRead<uint>(out UserJID);
                 MemberInfo = new PartyMemberInfo(this);
                 break;
