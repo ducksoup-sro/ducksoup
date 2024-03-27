@@ -99,7 +99,8 @@ public class EntityParsingHandler
                         Health = hp,
                         MaxHealth = maxHp,
                     };
-                    ability.Deserialize(data);
+                    // TODO :: 
+                    // ability.Deserialize(data);
                     session.SetData(Data.AbilityPet, ability);
                     break;
                 case 9:
@@ -110,7 +111,8 @@ public class EntityParsingHandler
                         Health = hp,
                         MaxHealth = maxHp,
                     };
-                    fellow.Deserialize(data);
+                    // TODO :: 
+                    // fellow.Deserialize(data);
                     session.SetData(Data.Fellow, fellow);
                     break;
             }
