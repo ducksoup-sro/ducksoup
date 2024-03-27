@@ -183,15 +183,19 @@ public class CharInfo : ICharInfo
 
                             // Maybe?!
                             // might be service thing
-                            _packet.TryRead(out byte hasInventoryTime); // 1 byte unkByte0
-
-                            if (hasInventoryTime == 0x1)
+                            _packet.TryRead(out byte hasInventoryTimeAmount); // 1 byte unkByte0
+                            Log.Information("1 {0}", hasInventoryTimeAmount);
+                            // According to my research this increases by one for every _TimedJobForPet line u have. You should have one for every pet page to prevent gs crashed
+                            // this is also explained in BimBums screenshot
+                            // 2383	32206	5	22926	1806184800	1111708465	1	28	0	0	0	0	0	0	0
+                            for (int h = 0; h < hasInventoryTimeAmount; h++)
                             {
                                 // Perhaps inventory span
                                 _packet.TryRead(out byte unk1222); // NANI
                                 _packet.TryRead(out uint unk1223); // THE
                                 _packet.TryRead(out uint unk1224); // FUCK
-                                if (unk1224 == 5)
+
+                                if (unk1222 == 5)
                                 {
                                     // Special Thanks to BimBum1337
                                     // https://i.rapture.pw/BAKE5/ZEqISAFo33.png/raw
@@ -199,6 +203,29 @@ public class CharInfo : ICharInfo
                                     _packet.TryRead(out byte unk1226);
                                 }
                             }
+                            // _packet.TryRead(out byte hasInventoryTime); // 1 byte unkByte0
+                            // if (hasInventoryTime == 0x1)
+                            // {
+                            //     // Perhaps inventory span
+                            //     _packet.TryRead(out byte unk1222); // NANI
+                            //     _packet.TryRead(out uint unk1223); // THE
+                            //     _packet.TryRead(out uint unk1224); // FUCK
+                            //     Log.Information("1 {0}", unk1222);
+                            //     Log.Information("1 {0}", unk1223);
+                            //     Log.Information("1 {0}", unk1224);
+                            //
+                            //     if (unk1222 == 5)
+                            //     {
+                            //         // Special Thanks to BimBum1337
+                            //         // https://i.rapture.pw/BAKE5/ZEqISAFo33.png/raw
+                            //         _packet.TryRead(out uint unk1225); // ?!
+                            //         _packet.TryRead(out byte unk1226);
+                            //         
+                            //         Log.Information("1 {0}", unk1225);
+                            //         Log.Information("1 {0}", unk1226);
+                            //
+                            //     }
+                            // }
                         }
                     }
                     else if (item.TypeID3 == 2)
