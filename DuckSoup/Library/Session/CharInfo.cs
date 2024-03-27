@@ -184,7 +184,6 @@ public class CharInfo : ICharInfo
                             // Maybe?!
                             // might be service thing
                             _packet.TryRead(out byte hasInventoryTimeAmount); // 1 byte unkByte0
-                            Log.Information("1 {0}", hasInventoryTimeAmount);
                             // According to my research this increases by one for every _TimedJobForPet line u have. You should have one for every pet page to prevent gs crashed
                             // this is also explained in BimBums screenshot
                             // 2383	32206	5	22926	1806184800	1111708465	1	28	0	0	0	0	0	0	0
