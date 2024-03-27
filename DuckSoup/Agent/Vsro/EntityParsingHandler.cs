@@ -233,7 +233,8 @@ public class EntityParsingHandler
                     session.RemoveData(Data.AbilityPet);
                     break;
                 case 2:
-                    abilityPet.Inventory.Deserialize(data);
+                    // TODO ::
+                    // abilityPet.Inventory.Deserialize(data);
                     break;
                 case 5:
                     data.TryRead(out abilityPet.Name);
@@ -254,7 +255,8 @@ public class EntityParsingHandler
                     session.RemoveData(Data.JobTransport);
                     break;
                 case 2:
-                    jobTransport.Inventory.Deserialize(data);
+                    // TODO ::
+                    // jobTransport.Inventory.Deserialize(data);
                     break;
             }
         }

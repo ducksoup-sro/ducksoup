@@ -41,7 +41,7 @@ public class InventoryItem
         if (destinationSlot == 0xFE) packet.TryRead(out item.Slot);
 
         item.Rental = RentInfo.FromPacket(packet);
-        packet.TryRead(out item.ItemId);
+        packet.TryRead<uint>(out item.ItemId);
         var record = item.Record;
         if (record == null) return null;
 
@@ -53,9 +53,9 @@ public class InventoryItem
 
         if (record.IsEquip || record.IsFellowEquip || record.IsJobEquip)
         {
-            packet.TryRead(out item.OptLevel)
+            packet.TryRead<byte>(out item.OptLevel)
                 .TryRead<ulong>(out var attributes)
-                .TryRead(out item.Durability)
+                .TryRead<uint>(out item.Durability)
                 .TryRead<byte>(out var magicOptionsAmount);
             item.Attributes = new ItemAttributesInfo(attributes);
 
