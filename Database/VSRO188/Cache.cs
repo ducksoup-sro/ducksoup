@@ -8,17 +8,17 @@ namespace Database.VSRO188;
 
 public static class Cache
 {
-    private static readonly Dictionary<int, _RefObjCommon> RefObjCommons = new();
-    private static readonly Dictionary<int, _RefObjItem> RefObjItems = new();
-    private static readonly Dictionary<int, _RefObjChar> RefObjChars = new();
-    private static readonly Dictionary<int, _RefSkill> RefSkills = new();
-    private static readonly Dictionary<int, _RefRegion> RefRegions = new();
-    private static readonly Dictionary<int, _RefQuest> RefQuests = new();
-    private static readonly Dictionary<int, _RefQuestReward> RefQuestRewards = new();
-    private static readonly Dictionary<int, _RefQuestRewardItem> RefQuestRewardItems = new();
-    private static readonly Dictionary<byte, _RefLevel> RefLevels = new();
+    public static readonly Dictionary<int, _RefObjCommon> RefObjCommons = new();
+    public static readonly Dictionary<int, _RefObjItem> RefObjItems = new();
+    public static readonly Dictionary<int, _RefObjChar> RefObjChars = new();
+    public static readonly Dictionary<int, _RefSkill> RefSkills = new();
+    public static readonly Dictionary<int, _RefRegion> RefRegions = new();
+    public static readonly Dictionary<int, _RefQuest> RefQuests = new();
+    public static readonly Dictionary<int, _RefQuestReward> RefQuestRewards = new();
+    public static readonly Dictionary<int, _RefQuestRewardItem> RefQuestRewardItems = new();
+    public static readonly Dictionary<byte, _RefLevel> RefLevels = new();
 
-    private static readonly Dictionary<int, _Notice> Notices = new();
+    public static readonly Dictionary<int, _Notice> Notices = new();
 
     public static void FillCache() {
         using var shard = new Context.SRO_VT_SHARD();
@@ -34,6 +34,20 @@ public static class Cache
              
         using var account = new Context.SRO_VT_ACCOUNT();
         account._Notices.ForEachAsync((entry) => { Notices.TryAdd(entry.ID, entry); });
+    }
+
+    public static void ClearCache()
+    {
+        RefObjCommons.Clear();
+        RefObjItems.Clear();
+        RefObjChars.Clear();
+        RefSkills.Clear();
+        RefRegions.Clear();
+        RefQuests.Clear();
+        RefQuestRewards.Clear();
+        RefQuestRewardItems.Clear();
+        RefLevels.Clear();
+        Notices.Clear();
     }
     
     public static async Task<_RefObjCommon?> GetRefObjCommonAsync(int id)
