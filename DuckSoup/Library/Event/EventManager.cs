@@ -134,13 +134,6 @@ public class EventManager : IEventManager
         return check;
     }
 
-    public List<string> GetFilesInDirectory(string directory)
-    {
-        return !Directory.Exists(directory)
-            ? null
-            : Directory.GetFiles(directory).Where(file => file.EndsWith(".dll")).ToList();
-    }
-
     public string SearchEvent(string directory, string eventName)
     {
         if (!Directory.Exists(directory)) return null;
@@ -188,13 +181,14 @@ public class EventManager : IEventManager
     private void Setup()
     {
         Log.Information("Loading events..");
-        var pluginFiles = GetFilesInDirectory("events");
-        if (pluginFiles == null)
+        if (!Directory.Exists("events"))
         {
             Log.Information("No eventfolder found. Creating one..");
             Directory.CreateDirectory("events");
             return;
         }
+        
+        var pluginFiles = Directory.GetFiles("events").Where(file => file.EndsWith(".dll")).ToList();
 
         var temp = new List<PluginLoader>();
         foreach (var file in pluginFiles)

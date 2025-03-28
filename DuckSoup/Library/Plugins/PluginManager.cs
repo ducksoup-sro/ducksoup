@@ -168,14 +168,14 @@ public class PluginManager : IPluginManager
     private void Setup()
     {
         Log.Information("Loading plugins..");
-        var pluginFolders = Directory.GetDirectories("plugins");
-        if (pluginFolders.Length == 0)
+        if (!Directory.Exists("plugins"))
         {
             Log.Information("No pluginfolder found. Creating one..");
             Directory.CreateDirectory("plugins");
             return;
         }
 
+        var pluginFolders = Directory.GetDirectories("plugins");
         var temp = new List<PluginLoader>();
         foreach (var folder in pluginFolders)
         {
