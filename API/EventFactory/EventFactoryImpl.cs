@@ -55,6 +55,13 @@ public class EventFactoryImpl : IEventFactory
         });
     }
 
+    public bool HasSubscriptions(string name)
+    {
+        if(Listeners == null || !Listeners.TryGetValue(name, out var listener)) return false;
+        
+        return listener.Count > 0;
+    }
+
     public void Dispose()
     {
         if (Listeners == null) throw new DisposedException(nameof(EventFactoryImpl));

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
 using API.Database.DuckSoup;
+using API.EventFactory;
 using API.Session;
 using PacketLibrary.Handler;
 using Serilog;
@@ -90,6 +91,10 @@ public class FakeClient : TcpClient
                 message = $"[S -> P] {packetType} Packet: 0x{packet.MsgId:X} - {Id}";
                 Log.Verbose(message);
 
+                if(EventFactory.HasSubscriptions(EventFactoryNames.OnModuleReceivePacket)) {
+                    EventFactory.Publish(EventFactoryNames.OnModuleReceivePacket, DateTime.Now, FakeServer.Service.ServerType, Session, new Packet(packet));
+                }
+                
                 if (packet.MsgId == 0x5000 || packet.MsgId == 0x9000) continue;
 
                 var packetResult = FakeServer.PacketHandler.HandleServer(packet, Session).Result;
@@ -136,7 +141,11 @@ public class FakeClient : TcpClient
         try
         {
             ServerSecurity.Send(packet);
-
+            
+            if(EventFactory.HasSubscriptions(EventFactoryNames.OnModuleTransferPacket)) {
+                EventFactory.Publish(EventFactoryNames.OnModuleTransferPacket, DateTime.Now, FakeServer.Service.ServerType, Session, new Packet(packet));
+            }
+            
             if (transfer) Transfer();
         }
         catch (Exception exception)

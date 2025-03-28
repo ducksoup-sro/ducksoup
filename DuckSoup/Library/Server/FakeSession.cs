@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
 using API.Database.DuckSoup;
+using API.EventFactory;
 using API.Session;
 using DuckSoup.Library.Session;
 using NetCoreServer;
@@ -114,6 +115,10 @@ public class FakeSession : TcpSession
                 message = $"[C -> P] {packetType} Packet: 0x{packet.MsgId:X} - {Id}";
                 Log.Verbose(message);
 
+                if(EventFactory.HasSubscriptions(EventFactoryNames.OnClientReceivePacket)) {
+                    EventFactory.Publish(EventFactoryNames.OnClientReceivePacket, DateTime.Now, FakeServer.Service.ServerType, Session, new Packet(packet));
+                }
+                
                 if (packet.MsgId == 0x5000 || packet.MsgId == 0x9000 || packet.MsgId == 0x2001) continue;
 
                 var packetResult = FakeServer.PacketHandler.HandleClient(packet, Session).Result;
@@ -166,6 +171,10 @@ public class FakeSession : TcpSession
         {
             ClientSecurity.Send(packet);
 
+            if(EventFactory.HasSubscriptions(EventFactoryNames.OnClientTransferPacket)) {
+                EventFactory.Publish(EventFactoryNames.OnClientTransferPacket, DateTime.Now, FakeServer.Service.ServerType, Session, new Packet(packet));
+            }
+            
             if (transfer) Transfer();
         }
         catch (Exception exception)

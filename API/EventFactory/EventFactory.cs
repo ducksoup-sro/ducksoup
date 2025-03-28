@@ -41,6 +41,13 @@ public static class EventFactory
         _eventFactoryImpl.Publish(name, parameters);
     }
 
+    public static bool HasSubscriptions(string name)
+    {
+        if (_eventFactoryImpl == null) throw new DisposedException(nameof(ServiceFactory));
+
+        return _eventFactoryImpl.HasSubscriptions(name);
+    }
+
 
     public static void Dispose()
     {

@@ -7,4 +7,5 @@ public interface IEventFactory : IDisposable
     void Unsubscribe(string name, Action? handler);
     void Unsubscribe(string name, Delegate? handler);
     void Publish(string name, params object[] parameters);
+    bool HasSubscriptions(string name);
 }

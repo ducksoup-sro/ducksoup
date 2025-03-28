@@ -6,6 +6,11 @@ public static class EventFactoryNames
     public const string OnSessionStart = "OnSessionStart"; // ISession
     public const string OnSessionEnd = "OnSessionEnd"; // ISession
 
+    public const string OnClientReceivePacket = "OnClientReceivePacket"; // DateTime, FakeServer.Service.ServerType, ISession, Packet
+    public const string OnClientTransferPacket = "OnClientTransferPacket"; // DateTime, FakeServer.Service.ServerType, ISession, Packet
+    public const string OnModuleReceivePacket = "OnModuleReceivePacket"; // DateTime, FakeServer.Service.ServerType, ISession, Packet
+    public const string OnModuleTransferPacket = "OnModuleTransferPacket"; // DateTime, FakeServer.Service.ServerType, ISession, Packet
+
     // Login and pre game stuff
     public const string OnUserAgentLogin = "OnUserAgentLogin"; // ISession
     public const string OnUserJoinCharScreen = "OnUserJoinCharScreen"; // ISession
