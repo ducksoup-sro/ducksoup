@@ -34,8 +34,10 @@ public class FakeServer : TcpServer, IFakeServer
         Log.Information("{0} - Redirecting Sessions from {1}:{2} to {3}:{4}", Service.Name,
             Service.LocalMachine_Machine.Address, Service.BindPort,
             Service.RemoteMachine_Machine.Address, Service.RemotePort);
-        Log.Information("{0} - Spoofing to {1}:{2}", Service.Name,
-            Service.SpoofMachine_Machine?.Address, Service.BindPort);
+        if(Service.SpoofMachine_Machine != null) {
+            Log.Information("{0} - Spoofing to {1}:{2}", Service.Name,
+                Service.SpoofMachine_Machine?.Address, Service.BindPort);
+        }
     }
 
     public Service Service { get; }
