@@ -42,7 +42,6 @@ public class CommandManager : ICommandManager
         Log.Information("Enter `help` to see all commands!");
         while (!_stopped)
         {
-            Log.Debug("CommandManager:45");
             if (_commands == null) return new Result<Void>(new DisposedException(nameof(CommandManager)));
 
             var consoleInput = Console.ReadLine();
