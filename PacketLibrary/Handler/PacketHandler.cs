@@ -204,11 +204,31 @@ public class PacketHandler : IPacketHandler
         if (!_clientWhitelist.Contains(packet.MsgId))
             return await _unknownClientHandler.Handle(packet, session);
 
-        _clientHandlers.TryGetValue(packet.MsgId, out var handler);
+        _clientHandlers.TryGetValue(0x0, out var catchAllHandler);
+        _clientHandlers.TryGetValue(packet.MsgId, out var clientHandlers);
 
+        
         var outcome = await _defaultHandler.Handle(packet, session);
-        if (handler == null) return outcome;
+        if (catchAllHandler == null && clientHandlers == null) return outcome;
 
+        SortedDictionary<int, IBasePacketHandler> handler = new SortedDictionary<int, IBasePacketHandler>();
+        int index = 0;
+        if (clientHandlers != null)
+        {
+            foreach (var basePacketHandler in clientHandlers)
+            {
+                handler.Add(index++, basePacketHandler.Value);
+            }
+        }
+        
+        if (catchAllHandler != null)
+        {
+            foreach (var basePacketHandler in catchAllHandler)
+            {
+                handler.Add(index++, basePacketHandler.Value);
+            }
+        }
+        
         var last = 0;
         if (handler.Count > 0) last = handler.Last().Key;
 
@@ -247,9 +267,38 @@ public class PacketHandler : IPacketHandler
 
     public async Task<Packet> HandleServer(Packet packet, ISession session)
     {
-        _serverHandlers.TryGetValue(packet.MsgId, out var handler);
+        _serverHandlers.TryGetValue(0x0, out var catchAllHandler);
+        _serverHandlers.TryGetValue(packet.MsgId, out var serverHandlers);
+
+        
         var outcome = await _defaultHandler.Handle(packet, session);
-        if (handler == null) return outcome;
+        if (catchAllHandler == null && serverHandlers == null) return outcome;
+
+        SortedDictionary<int, IBasePacketHandler> handler = new SortedDictionary<int, IBasePacketHandler>();
+        int index = 0;
+        if (serverHandlers != null)
+        {
+            foreach (var basePacketHandler in serverHandlers)
+            {
+                handler.Add(index++, basePacketHandler.Value);
+            }
+        }
+        
+        if (catchAllHandler != null)
+        {
+            foreach (var basePacketHandler in catchAllHandler)
+            {
+                handler.Add(index++, basePacketHandler.Value);
+            }
+        }
+
+
+        
+        // _serverHandlers.TryGetValue(packet.MsgId, out var handler);
+        //
+        // var outcome = await _defaultHandler.Handle(packet, session);
+        // if (handler == null) return outcome;
+        
         var last = 0;
         if (handler.Count > 0) last = handler.Last().Key;
 
