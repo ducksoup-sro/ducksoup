@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <LangVersion>12</LangVersion>
-        <Version>2.1.0</Version>
+        <Version>2.1.1</Version>
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
