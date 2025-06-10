@@ -219,7 +219,7 @@ public enum CaptureTheFlag : byte
     Blue = 2
 }
 
-public enum ScrollState
+public enum ScrollState : byte
 {
     Cancel = 0,
     NormalScroll = 1,
@@ -260,7 +260,7 @@ public enum BindingOptionType : byte
     AdvancedElixir = 2
 }
 
-public enum InventoryItemState
+public enum InventoryItemState : byte
 {
     Inactive = 1,
     Summoned = 2,
@@ -268,7 +268,7 @@ public enum InventoryItemState
     Dead = 4
 }
 
-public enum ItemAttributeGroup
+public enum ItemAttributeGroup : byte
 {
     Durability,
     PhysicalSpecialize,
