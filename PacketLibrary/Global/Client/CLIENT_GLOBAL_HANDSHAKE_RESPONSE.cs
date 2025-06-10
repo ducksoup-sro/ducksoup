@@ -13,12 +13,16 @@ public class CLIENT_GLOBAL_HANDSHAKE_RESPONSE : Packet
 
     public override async Task Read()
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     public override async Task<Packet> Build()
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
+
+        //Reset();
+
+        return this;
     }
 
     public static Packet of()
