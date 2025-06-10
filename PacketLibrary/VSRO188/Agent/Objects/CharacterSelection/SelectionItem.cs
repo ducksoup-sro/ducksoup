@@ -19,13 +19,13 @@ public class SelectionItem
 
     public async Task Read(Packet packet)
     {
-        packet.TryRead(out RefItemId)
-            .TryRead(out Plus);
+        packet.TryRead<uint>(out RefItemId)
+            .TryRead<byte>(out Plus);
     }
 
     public async Task Build(Packet packet)
     {
-        packet.TryWrite(RefItemId)
-            .TryWrite(Plus);
+        packet.TryWrite<uint>(RefItemId)
+            .TryWrite<byte>(Plus);
     }
 }

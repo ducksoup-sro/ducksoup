@@ -37,59 +37,59 @@ public class SelectionCharacter
 
     public async Task Read(Packet packet)
     {
-        packet.TryRead(out RefObjId)
-            .TryRead(out Name)
-            .TryRead(out Scale)
-            .TryRead(out CurLevel)
-            .TryRead(out Exp)
-            .TryRead(out Strength)
-            .TryRead(out Intelligence)
-            .TryRead(out StatPoint)
-            .TryRead(out CurHP)
-            .TryRead(out CurMP)
-            .TryRead(out IsDeleting);
+        packet.TryRead<uint>(out RefObjId)
+            .TryReadString(out Name)
+            .TryRead<byte>(out Scale)
+            .TryRead<byte>(out CurLevel)
+            .TryRead<ulong>(out Exp)
+            .TryRead<ushort>(out Strength)
+            .TryRead<ushort>(out Intelligence)
+            .TryRead<ushort>(out StatPoint)
+            .TryRead<uint>(out CurHP)
+            .TryRead<uint>(out CurMP)
+            .TryRead<bool>(out IsDeleting);
 
-        if (IsDeleting) packet.TryRead(out DeleteTime);
+        if (IsDeleting) packet.TryRead<uint>(out DeleteTime);
 
-        packet.TryRead(out GuildMemberClass)
-            .TryRead(out IsGuildRenameRequired);
+        packet.TryRead<byte>(out GuildMemberClass)
+            .TryRead<bool>(out IsGuildRenameRequired);
 
-        if (IsGuildRenameRequired) packet.TryRead(out CurGuildName);
+        if (IsGuildRenameRequired) packet.TryReadString(out CurGuildName);
 
-        packet.TryRead(out AcademyMemberClass)
-            .TryRead(out byte itemCount);
+        packet.TryRead<byte>(out AcademyMemberClass)
+            .TryRead<byte>(out byte itemCount);
         for (var i = 0; i < itemCount; i++) Items.Add(new SelectionItem(packet));
 
-        packet.TryRead(out byte avatarItemCount);
+        packet.TryRead<byte>(out byte avatarItemCount);
         for (var i = 0; i < avatarItemCount; i++) AvatarItems.Add(new SelectionItem(packet));
     }
 
     public async Task Build(Packet packet)
     {
-        packet.TryWrite(RefObjId)
-            .TryWrite(Name)
-            .TryWrite(Scale)
-            .TryWrite(CurLevel)
-            .TryWrite(Exp)
-            .TryWrite(Strength)
-            .TryWrite(Intelligence)
-            .TryWrite(StatPoint)
-            .TryWrite(CurHP)
-            .TryWrite(CurMP)
-            .TryWrite(IsDeleting);
+        packet.TryWrite<uint>(RefObjId)
+            .TryWriteString(Name)
+            .TryWrite<byte>(Scale)
+            .TryWrite<byte>(CurLevel)
+            .TryWrite<ulong>(Exp)
+            .TryWrite<ushort>(Strength)
+            .TryWrite<ushort>(Intelligence)
+            .TryWrite<ushort>(StatPoint)
+            .TryWrite<uint>(CurHP)
+            .TryWrite<uint>(CurMP)
+            .TryWrite<bool>(IsDeleting);
 
-        if (IsDeleting) packet.TryWrite(DeleteTime);
+        if (IsDeleting) packet.TryWrite<uint>(DeleteTime);
 
-        packet.TryWrite(GuildMemberClass)
-            .TryWrite(IsGuildRenameRequired);
+        packet.TryWrite<byte>(GuildMemberClass)
+            .TryWrite<bool>(IsGuildRenameRequired);
 
-        if (IsGuildRenameRequired) packet.TryWrite(CurGuildName);
+        if (IsGuildRenameRequired) packet.TryWriteString(CurGuildName);
 
-        packet.TryWrite(AcademyMemberClass)
-            .TryWrite(Items.Count);
+        packet.TryWrite<byte>(AcademyMemberClass)
+            .TryWrite<byte>((byte)Items.Count);
         foreach (var selectionItem in Items) await selectionItem.Build(packet);
 
-        packet.TryWrite(AvatarItems.Count);
+        packet.TryWrite<byte>((byte)AvatarItems.Count);
         foreach (var selectionItem in AvatarItems) await selectionItem.Build(packet);
     }
 }
