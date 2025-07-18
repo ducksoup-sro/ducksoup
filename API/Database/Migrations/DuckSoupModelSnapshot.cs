@@ -17,33 +17,10 @@ namespace API.Database.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.2")
+                .HasAnnotation("ProductVersion", "8.0.0-preview.6.23329.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("API.Database.DuckSoup.Blacklist", b =>
-                {
-                    b.Property<int>("BlacklistId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BlacklistId"));
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MsgId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ServerType")
-                        .HasColumnType("int");
-
-                    b.HasKey("BlacklistId")
-                        .HasName("PK_dbo.Blacklist");
-
-                    b.ToTable("Blacklist", (string)null);
-                });
 
             modelBuilder.Entity("API.Database.DuckSoup.Event", b =>
                 {
@@ -144,6 +121,9 @@ namespace API.Database.Migrations
                     b.Property<int>("RemotePort")
                         .HasColumnType("int");
 
+                    b.Property<byte>("SecurityType")
+                        .HasColumnType("tinyint");
+
                     b.Property<int>("ServerType")
                         .HasColumnType("int");
 
@@ -190,29 +170,6 @@ namespace API.Database.Migrations
                         .HasName("PK_dbo.User");
 
                     b.ToTable("User", (string)null);
-                });
-
-            modelBuilder.Entity("API.Database.DuckSoup.Whitelist", b =>
-                {
-                    b.Property<int>("WhitelistId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WhitelistId"));
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MsgId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ServerType")
-                        .HasColumnType("int");
-
-                    b.HasKey("WhitelistId")
-                        .HasName("PK_dbo.Whitelist");
-
-                    b.ToTable("Whitelist", (string)null);
                 });
 
             modelBuilder.Entity("API.Database.DuckSoup.Service", b =>

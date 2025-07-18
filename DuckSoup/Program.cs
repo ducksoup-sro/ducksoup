@@ -2,15 +2,15 @@
 
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Reflection;
+using System.Threading;
 using API;
 using API.Command;
-using API.Database;
 using API.Server;
 using API.ServiceFactory;
 using DuckSoup.Library;
 using DuckSoup.Library.Commands;
+using DuckSoup.Library.Database;
 using DuckSoup.Library.Event;
 using DuckSoup.Library.Party;
 using DuckSoup.Library.Plugins;
@@ -18,12 +18,10 @@ using DuckSoup.Library.Server;
 using DuckSoup.Library.Services;
 using DuckSoup.Library.Settings;
 using DuckSoup.Library.Webserver;
-using log4net;
-using log4net.Config;
+using Serilog;
+using Serilog.Events;
 
 #endregion
-
-[assembly: XmlConfigurator(Watch = true)]
 
 namespace DuckSoup;
 
@@ -31,44 +29,71 @@ public static class Program
 {
     private static void Main()
     {
-        var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
-        XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
+        ThreadPool.SetMinThreads(500, 500);
+
+        Helper.LoggingLevelSwitch.MinimumLevel = LogEventLevel.Debug;
+
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.ControlledBy(Helper.LoggingLevelSwitch)
+            .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}")
+            .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day,
+                outputTemplate: "{Timestamp:HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}")
+            .CreateLogger();
+
+        Log.Debug("Testing: Debug");
+        Log.Information("Testing: Information");
+        Log.Warning("Testing: Warning");
+        Log.Error("Testing: Error");
+        Log.Fatal("Testing: Fatal");
 
         // prints out logo + version
-        Global.Logger.InfoFormat("\n\n" +
-                                 ",--.          .   .---.             \n" +
-                                 "|   \\ . . ,-. | , \\___  ,-. . . ,-. \n" +
-                                 "|   / | | |   |<      \\ | | | | | | \n" +
-                                 "^--'  `-^ `-' ' ` `---' `-' `-^ |-' \n" +
-                                 "                                |   \n" +
-                                 "         Version  {0}         ' \n" +
-                                 "\n",
+        Log.Information("\n\n" +
+                        ",--.          .   .---.             \n" +
+                        "|   \\ . . ,-. | , \\___  ,-. . . ,-. \n" +
+                        "|   / | | |   |<      \\ | | | | | | \n" +
+                        "^--'  `-^ `-' ' ` `---' `-' `-^ |-' \n" +
+                        "                                |   \n" +
+                        "         Version  {0}         ' \n" +
+                        "\n",
             FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location)
                 .ProductVersion);
         Console.Title = "Starting up...";
 
-        var settingsManager = new SettingsManager();
-        var databaseManager = new DatabaseManager();
-        if (!databaseManager.CheckConnection())
-            return;
+        try
+        {
+            SettingsManager settingsManager = new SettingsManager();
+            DatabaseManager databaseManager = new DatabaseManager();
 
-        var sharedObjects = new SharedObjects();
-        var userService = new UserService();
-        var authService = new AuthService();
-        var partyManager = new PartyManager();
-        var serverManager = new ServerManager();
-        var webserverManager = new WebserverManager();
-        var commandManager = new CommandManager();
-        var pluginManager = new PluginManager();
-        var eventManager = new EventManager();
+            SharedObjects sharedObjects = new SharedObjects();
+            UserService userService = new UserService();
+            AuthService authService = new AuthService();
+            PartyManager partyManager = new PartyManager();
+            ServerManager serverManager = new ServerManager();
+            WebserverManager webserverManager = new WebserverManager();
+            CommandManager commandManager = new CommandManager();
+            PluginManager pluginManager = new PluginManager();
+            EventManager eventManager = new EventManager();
 
-        // Make sure we start the command loop in order to not exit the application
-        ServiceFactory.Load<ICommandManager>(typeof(ICommandManager)).StartCommandLoop();
+            // Make sure we start the command loop in order to not exit the application
+            ServiceFactory.Load<ICommandManager>(typeof(ICommandManager)).StartCommandLoop();
+        }
+        catch (Exception exception)
+        {
+            Log.Error("Program.cs Main| {0}", exception.Message);
+            Log.Error("Program.cs Main| {0}", exception.StackTrace);
+        }
     }
 
     public static void Stop()
     {
-        ServiceFactory.Load<IServerManager>(typeof(IServerManager)).Dispose();
-        ServiceFactory.Load<ICommandManager>(typeof(ICommandManager)).Dispose();
+        try
+        {
+            ServiceFactory.Load<IServerManager>(typeof(IServerManager)).Dispose();
+            ServiceFactory.Load<ICommandManager>(typeof(ICommandManager)).Dispose();
+        }
+        catch (Exception exception)
+        {
+            Log.Error("Program.cs Stop| {0}", exception.Message);
+        }
     }
 }

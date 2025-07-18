@@ -10,5 +10,9 @@ public interface ISettings : IDisposable
     string LogDb { get; set; }
     string AccountDb { get; set; }
     string ProxyDb { get; set; }
+    int MaximumPool { get; set; }
+    int MinimumPool { get; set; }
+    int ConnectionLifetime { get; set; }
+
     ISettings Init();
 }

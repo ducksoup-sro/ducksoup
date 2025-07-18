@@ -1,21 +1,11 @@
 ﻿using API.Database.DuckSoup;
+using Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Database.Context;
 
-public partial class DuckSoup : DbContext
+public partial class DuckSoup : DuckContext
 {
-    public DuckSoup()
-    {
-    }
-
-    public DuckSoup(DbContextOptions<DuckSoup> options)
-        : base(options)
-    {
-    }
-
-    public virtual DbSet<Blacklist> Blacklists { get; set; }
-
     public virtual DbSet<Database.DuckSoup.Event> Events { get; set; }
 
     public virtual DbSet<GlobalSetting> GlobalSettings { get; set; }
@@ -23,23 +13,11 @@ public partial class DuckSoup : DbContext
     public virtual DbSet<Machine> Machines { get; set; }
 
     public virtual DbSet<Service> Services { get; set; }
-    
+
     public virtual DbSet<User> Users { get; set; }
-
-    public virtual DbSet<Whitelist> Whitelists { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer(DatabaseManager.DuckSoupConnectionString);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Blacklist>(entity =>
-        {
-            entity.HasKey(e => e.BlacklistId).HasName("PK_dbo.Blacklist");
-
-            entity.ToTable("Blacklist");
-        });
-
         modelBuilder.Entity<Database.DuckSoup.Event>(entity =>
         {
             entity.HasKey(e => e.EventId).HasName("PK_dbo.Event");
@@ -89,19 +67,12 @@ public partial class DuckSoup : DbContext
                 .HasForeignKey(d => d.SpoofMachine_MachineId)
                 .HasConstraintName("FK_dbo.Service_dbo.Machine_SpoofMachine_MachineId");
         });
-        
+
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.userId).HasName("PK_dbo.User");
-            
+
             entity.ToTable("User");
-        });
-
-        modelBuilder.Entity<Whitelist>(entity =>
-        {
-            entity.HasKey(e => e.WhitelistId).HasName("PK_dbo.Whitelist");
-
-            entity.ToTable("Whitelist");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -5,5 +5,5 @@
 public enum ServerUpdateFlag : byte
 {
     ServerBody = 1,
-    ServerCord = 2,
+    ServerCord = 2
 }

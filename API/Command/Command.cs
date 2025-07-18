@@ -1,23 +1,41 @@
 ﻿using API.Exceptions;
+using LanguageExt.Common;
+using Void = LanguageExt.Pipes.Void;
 
 namespace API.Command;
 
 public abstract class Command : IDisposable
 {
+    protected Command(string? name, string? syntax, string? description, IEnumerable<string>? aliases = null)
+    {
+        SubCommands = new List<Command>();
+        Name = name;
+        Syntax = syntax;
+        Description = description;
+        Aliases = new List<string>();
+        if (aliases != null) Aliases.AddRange(aliases);
+    }
+
     protected List<Command>? SubCommands { get; set; }
     private string? Name { get; set; }
     private string? Syntax { get; set; }
     private string? Description { get; set; }
     private List<string>? Aliases { get; set; }
 
-    protected Command(string? name, string? syntax, string? description, IEnumerable<string>? aliases = null)
+    public void Dispose()
     {
-        SubCommands = new List<Command>(); 
-        Name = name;
-        Syntax = syntax;
-        Description = description;
-        Aliases = new List<string>();
-        if (aliases != null) Aliases.AddRange(aliases);
+        if (SubCommands == null) throw new DisposedException(nameof(Command));
+
+        foreach (Command subCommand in SubCommands)
+        {
+            subCommand.Dispose();
+        }
+
+        SubCommands = null;
+        Name = null;
+        Syntax = null;
+        Description = null;
+        Aliases = null;
     }
 
     public abstract void Execute(string[]? args);
@@ -27,12 +45,9 @@ public abstract class Command : IDisposable
         return SubCommands;
     }
 
-    public bool HasSubCommands()
+    public Result<bool> HasSubCommands()
     {
-        if (SubCommands == null)
-        {
-            throw new DisposedException(nameof(Command));
-        }
+        if (SubCommands == null) return new Result<bool>(new DisposedException(nameof(Command)));
 
         return SubCommands.Count != 0;
     }
@@ -57,35 +72,15 @@ public abstract class Command : IDisposable
         return Description;
     }
 
-    protected void ExecuteHelpCommand()
+    protected Result<Void> ExecuteHelpCommand()
     {
-        if (SubCommands == null)
-        {
-            throw new DisposedException(nameof(Command));
-        }
-        
-        foreach (var subCommand in SubCommands.Where(subCommand => subCommand.GetName()!.ToLower().Equals("help")))
+        if (SubCommands == null) return new Result<Void>(new DisposedException(nameof(Command)));
+
+        foreach (Command subCommand in SubCommands.Where(subCommand => subCommand.GetName()!.ToLower().Equals("help")))
         {
             subCommand.Execute(null);
         }
-    }
 
-    public void Dispose()
-    {
-        if (SubCommands == null)
-        {
-            throw new DisposedException(nameof(Command));
-        }
-
-        foreach (var subCommand in SubCommands)
-        {
-            subCommand.Dispose();
-        }
-
-        SubCommands = null;
-        Name = null;
-        Syntax = null;
-        Description = null;
-        Aliases = null;
+        return new Result<Void>();
     }
 }

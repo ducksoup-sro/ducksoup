@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>API</RootNamespace>
@@ -9,41 +9,49 @@
         <Title>DuckSoup API</Title>
         <Authors>b0ykoe</Authors>
         <Description>DuckSoup API</Description>
-        <Copyright>DON'T BE A DICK PUBLIC LICENSE </Copyright>
+        <Copyright>DON'T BE A DICK PUBLIC LICENSE</Copyright>
         <PackageProjectUrl>https://github.com/b0ykoe/ducksoup</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/b0ykoe/ducksoup/blob/main/LICENSE.txt</PackageLicenseUrl>
         <PackageIcon>DuckSoup.png</PackageIcon>
         <RepositoryUrl>https://github.com/b0ykoe/ducksoup</RepositoryUrl>
-        <LangVersion>11</LangVersion>
-        <Version>1.8.7</Version>
+        <LangVersion>latestmajor</LangVersion>
+        <Version>2.2.0-RELEASE</Version>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="log4net" Version="2.0.15" />
-        <PackageReference Include="McMaster.NETCore.Plugins" Version="2.0.0-beta.130" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.2">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PackageReference Include="ConcurrentHashSet" Version="1.3.0"/>
+        <PackageReference Include="LanguageExt.Core" Version="4.4.9"/>
+        <PackageReference Include="McMaster.NETCore.Plugins" Version="2.0.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0-preview.6.25358.103"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0-preview.6.25358.103">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.2" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.2">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0-preview.6.25358.103"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0-preview.6.25358.103">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Watson" Version="4.3.5" />
+        <PackageReference Include="Serilog" Version="4.3.1-dev-02373"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.1-dev-00953"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
+        <PackageReference Include="Watson" Version="6.3.10"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SilkroadSecurityAPI\SilkroadSecurityAPI.csproj" />
+        <ProjectReference Include="..\Database\Database.csproj"/>
+        <ProjectReference Include="..\PacketLibrary\PacketLibrary.csproj"/>
+        <ProjectReference Include="..\SilkroadSecurityAPI\SilkroadSecurityAPI.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="DuckSoup.png">
-        <Pack>True</Pack>
-        <PackagePath></PackagePath>
-      </None>
+        <None Update="DuckSoup.png">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
     </ItemGroup>
+
 
 </Project>

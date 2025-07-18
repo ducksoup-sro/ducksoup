@@ -5,12 +5,15 @@ namespace DuckSoup.Library.Commands.Event;
 
 public class EventCommand : Command
 {
-    public EventCommand() : base("event", "event <subcommand>", "none", new[] {"ec"})
+    public EventCommand() : base("event", "event <subcommand>", "none", new[]
     {
-            var helpCommand = new HelpCommand(SubCommands);
-            SubCommands.Add(new EventListCommand());
-            SubCommands.Add(new EventLoadCommand());
-            SubCommands.Add(new EventUnloadCommand());
+        "ec"
+    })
+    {
+        HelpCommand helpCommand = new HelpCommand(SubCommands);
+        SubCommands.Add(new EventListCommand());
+        SubCommands.Add(new EventLoadCommand());
+        SubCommands.Add(new EventUnloadCommand());
     }
 
     public override void Execute(string[]? args)
@@ -21,7 +24,7 @@ public class EventCommand : Command
             return;
         }
 
-        foreach (var command in SubCommands.Where(command =>
+        foreach (Command command in SubCommands.Where(command =>
                      command.GetName().ToLower().Equals(args[0].ToLower()) ||
                      command.GetAliases().Contains(args[0].ToLower())))
         {

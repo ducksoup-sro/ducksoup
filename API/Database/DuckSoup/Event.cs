@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace API.Database.DuckSoup;
 
-namespace API.Database.DuckSoup;
-
-public partial class Event
+public class Event
 {
     public int EventId { get; set; }
 

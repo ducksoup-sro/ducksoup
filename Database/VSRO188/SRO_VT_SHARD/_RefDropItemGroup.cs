@@ -1,0 +1,16 @@
+﻿namespace Database.VSRO188.SRO_VT_SHARD;
+
+public class _RefDropItemGroup
+{
+    public byte Service { get; set; }
+
+    public int RefItemGroupID { get; set; }
+
+    public string CodeName128 { get; set; } = null!;
+
+    public int RefItemID { get; set; }
+
+    public float SelectRatio { get; set; }
+
+    public int RefMagicGroupID { get; set; }
+}

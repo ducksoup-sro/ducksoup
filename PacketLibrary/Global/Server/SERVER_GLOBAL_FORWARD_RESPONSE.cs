@@ -1,25 +1,29 @@
-using PacketLibrary.Enums;
-using SilkroadSecurityAPI;
+using SilkroadSecurityAPI.Message;
 
-namespace PacketLibrary.Global.Client;
+namespace PacketLibrary.Global.Server;
 
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/blob/master/Packets/GLOBAL/0xA008%20-%20SERVER_GLOBAL_FORWARD_RESPONSE.cs
-public class SERVER_GLOBAL_FORWARD_RESPONSE : IPacketStructure
+public class SERVER_GLOBAL_FORWARD_RESPONSE : Packet
 {
-    public static ushort MsgId => 0xA008;
-    public static bool Encrypted => false;
-    public static bool Massive => false;
-    public PacketDirection FromDirection => PacketDirection.Server;
-    public PacketDirection ToDirection => PacketDirection.Client;
-
-    public Task Read(Packet packet)
+    public SERVER_GLOBAL_FORWARD_RESPONSE() : base(0xA008)
     {
-        throw new NotImplementedException();
     }
 
-    public Packet Build()
+    public override PacketDirection FromDirection => PacketDirection.Server;
+    public override PacketDirection ToDirection => PacketDirection.Client;
+
+    public override async Task Read()
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
+    }
+
+    public override async Task<Packet> Build()
+    {
+        //throw new NotImplementedException();
+
+        //Reset();
+
+        return this;
     }
 
     public static Packet of()
@@ -27,4 +31,3 @@ public class SERVER_GLOBAL_FORWARD_RESPONSE : IPacketStructure
         throw new NotImplementedException();
     }
 }
-

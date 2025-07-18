@@ -1,24 +1,28 @@
-using PacketLibrary.Enums;
-using SilkroadSecurityAPI;
+using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.Global.Client;
 
-public class CLIENT_GLOBAL_HANDSHAKE_RESPONSE : IPacketStructure
+public class CLIENT_GLOBAL_HANDSHAKE_RESPONSE : Packet
 {
-    public static ushort MsgId => 0x5000;
-    public static bool Encrypted => false;
-    public static bool Massive => false;
-    public PacketDirection FromDirection => PacketDirection.Client;
-    public PacketDirection ToDirection => PacketDirection.Server;
-
-    public Task Read(Packet packet)
+    public CLIENT_GLOBAL_HANDSHAKE_RESPONSE() : base(0x5000)
     {
-        throw new NotImplementedException();
     }
 
-    public Packet Build()
+    public override PacketDirection FromDirection => PacketDirection.Client;
+    public override PacketDirection ToDirection => PacketDirection.Server;
+
+    public override async Task Read()
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
+    }
+
+    public override async Task<Packet> Build()
+    {
+        //throw new NotImplementedException();
+
+        //Reset();
+
+        return this;
     }
 
     public static Packet of()
@@ -26,4 +30,3 @@ public class CLIENT_GLOBAL_HANDSHAKE_RESPONSE : IPacketStructure
         throw new NotImplementedException();
     }
 }
-

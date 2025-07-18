@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Text;
-using API;
 using API.Database;
 using API.Database.DuckSoup;
+using API.Extensions;
 using API.Services;
 using JWT.Algorithms;
 using JWT.Builder;
@@ -12,13 +11,7 @@ namespace DuckSoup.Library.Services;
 
 public class AuthService : Service<IAuthService>, IAuthService
 {
-    private string RefreshSecret { get; }
-    private string AccessSecret { get; }
-    private long RefreshTokenExpiry { get; }
-    private long AccessTokenExpiry { get; }
-    private string Issuer { get; }
-
-    public AuthService() : base()
+    public AuthService()
     {
         RefreshSecret = DatabaseHelper.GetSettingOrDefault("AuthRefreshSecret", Guid.NewGuid().ToString());
         AccessSecret = DatabaseHelper.GetSettingOrDefault("AuthAccessSecret", Guid.NewGuid().ToString());
@@ -29,12 +22,18 @@ public class AuthService : Service<IAuthService>, IAuthService
         Issuer = DatabaseHelper.GetSettingOrDefault("AuthIssuer", "https://ducksoup.cc");
     }
 
+    private string RefreshSecret { get; }
+    private string AccessSecret { get; }
+    private long RefreshTokenExpiry { get; }
+    private long AccessTokenExpiry { get; }
+    private string Issuer { get; }
+
     public string GenerateRefreshToken(User user)
     {
         return JwtBuilder.Create()
             .WithSecret(RefreshSecret)
             .WithAlgorithm(new HMACSHA512Algorithm())
-            .AddClaim("iat", Helper.GetCurrentTimeSeconds())
+            .AddClaim("iat", DateTime.UtcNow.ToUnixTimeSeconds())
             .AddClaim("exp", DateTimeOffset.UtcNow.AddHours(RefreshTokenExpiry).ToUnixTimeSeconds())
             .AddClaim("iss", Issuer)
             .AddClaim("version", user.tokenVersion)
@@ -47,7 +46,7 @@ public class AuthService : Service<IAuthService>, IAuthService
         return JwtBuilder.Create()
             .WithSecret(AccessSecret)
             .WithAlgorithm(new HMACSHA512Algorithm())
-            .AddClaim("iat", Helper.GetCurrentTimeSeconds())
+            .AddClaim("iat", DateTime.UtcNow.ToUnixTimeSeconds())
             .AddClaim("exp", DateTimeOffset.UtcNow.AddMinutes(AccessTokenExpiry).ToUnixTimeSeconds())
             .AddClaim("iss", Issuer)
             .AddClaim("version", user.tokenVersion)

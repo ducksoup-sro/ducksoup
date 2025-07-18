@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using API;
 using API.Command;
 using API.EventFactory;
 using API.Exceptions;
@@ -10,6 +9,10 @@ using DuckSoup.Library.Commands.Auth;
 using DuckSoup.Library.Commands.Event;
 using DuckSoup.Library.Commands.Plugin;
 using DuckSoup.Library.Commands.Server;
+using DuckSoup.Library.Commands.Utils;
+using LanguageExt.Common;
+using Serilog;
+using Void = LanguageExt.Pipes.Void;
 
 namespace DuckSoup.Library.Commands;
 
@@ -23,6 +26,7 @@ public class CommandManager : ICommandManager
 
         _commands = new List<Command>();
         _helpCommand = new HelpCommand(_commands);
+        _commands.Add(new LogLevelCommand());
         _commands.Add(new AuthCommand());
         _commands.Add(new ServerCommand());
         _commands.Add(new PluginCommand());
@@ -30,38 +34,37 @@ public class CommandManager : ICommandManager
         _commands.Add(new StopCommand());
     }
 
-    public List<Command> _commands { get; private set; }
+    public List<Command>? _commands { get; private set; }
     public Command _helpCommand { get; private set; }
 
-    public void StartCommandLoop()
+    public Result<Void> StartCommandLoop()
     {
-        Global.Logger.Info("Enter `help` to see all commands!");
+        Log.Information("Enter `help` to see all commands!");
         while (!_stopped)
         {
-            if (_commands == null)
-            {
-                throw new DisposedException(nameof(CommandManager));
-            }
-            
-            var consoleInput = Console.ReadLine();
+            if (_commands == null) return new Result<Void>(new DisposedException(nameof(CommandManager)));
+
+            string? consoleInput = Console.ReadLine();
             ExecuteCommand(consoleInput);
         }
+
+        return new Result<Void>();
     }
 
-    public void ExecuteCommand(string input)
+    public void ExecuteCommand(string? input)
     {
-        var removeList = new List<Command>();
+        List<Command> removeList = new List<Command>();
 
-        var split = input?.Split(" ");
+        string[]? split = input?.Split(" ");
 
-        if (split == null || split.Length == 0 || split[0] == "")
+        if (split == null || _commands == null || split.Length == 0 || split[0] == "")
         {
             _helpCommand.Execute(null);
             return;
         }
-            
-        var commandFound = false;
-        foreach (var command in _commands)
+
+        bool commandFound = false;
+        foreach (Command command in _commands)
         {
             if (command.GetName() == null || command.GetAliases() == null)
             {
@@ -71,21 +74,19 @@ public class CommandManager : ICommandManager
 
             if (!command.GetName()!.ToLower().Equals(split[0].ToLower()) &&
                 !command.GetAliases()!.Contains(split[0].ToLower()))
-            {
                 continue;
-            }
-                
+
             command.Execute(split.Skip(1).ToArray());
             commandFound = true;
             EventFactory.Publish(EventFactoryNames.OnCommandExecution, input, command);
             break;
         }
 
-        foreach (var command in removeList)
+        foreach (Command command in removeList)
         {
             _commands.Remove(command);
         }
-            
+
         removeList.Clear();
 
         if (!commandFound)

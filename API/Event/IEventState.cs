@@ -7,5 +7,6 @@ public abstract class IEventState
     }
 
     public abstract Task Start();
+
     public abstract Task Stop();
 }

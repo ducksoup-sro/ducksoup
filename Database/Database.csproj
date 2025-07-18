@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Version>2.2.0-RELEASE</Version>
+        <LangVersion>latestmajor</LangVersion>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>DuckSoup.Database</PackageId>
+        <Title>DuckSoup Database</Title>
+        <Authors>b0ykoe</Authors>
+        <Description>DuckSoup Database</Description>
+        <Copyright>DON'T BE A DICK PUBLIC LICENSE</Copyright>
+        <PackageProjectUrl>https://github.com/b0ykoe/ducksoup</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/b0ykoe/ducksoup/blob/main/LICENSE.txt</PackageLicenseUrl>
+        <PackageIcon>DuckSoup.png</PackageIcon>
+        <RepositoryUrl>https://github.com/b0ykoe/ducksoup</RepositoryUrl>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0-preview.6.25358.103"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0-preview.6.25358.103">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0-preview.6.25358.103"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0-preview.6.25358.103">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Serilog" Version="4.3.1-dev-02373"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.1-dev-00953"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="DuckSoup.png">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
+    </ItemGroup>
+
+</Project>

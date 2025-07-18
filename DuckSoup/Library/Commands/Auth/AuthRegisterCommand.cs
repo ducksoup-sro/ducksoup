@@ -1,8 +1,8 @@
-﻿using API;
-using API.Command;
+﻿using API.Command;
 using API.Database.DuckSoup;
 using API.ServiceFactory;
 using API.Services;
+using Serilog;
 
 namespace DuckSoup.Library.Commands.Auth;
 
@@ -10,7 +10,11 @@ public class AuthRegisterCommand : Command
 {
     private IUserService _service;
 
-    public AuthRegisterCommand() : base("register", "auth register <username> <password>", "Registers a new user.", new []{"reg"})
+    public AuthRegisterCommand() : base("register", "auth register <username> <password>", "Registers a new user.",
+        new[]
+        {
+            "reg"
+        })
     {
     }
 
@@ -20,20 +24,20 @@ public class AuthRegisterCommand : Command
 
         if (args == null || args.Length < 2 || args[0].Replace(" ", "") == "")
         {
-            Global.Logger.InfoFormat("The Syntax for the following command is: {0}", GetSyntax());
+            Log.Information("The Syntax for the following command is: {0}", GetSyntax());
             return;
         }
 
-        var username = args[0];
-        _service.CreatePassword(args[1], out var passwordHash, out var passwordSalt);
+        string username = args[0];
+        _service.CreatePassword(args[1], out byte[] passwordHash, out byte[] passwordSalt);
 
         if (_service.GetUser(username) != null)
         {
-            Global.Logger.InfoFormat("Username {0} already exists", username);
+            Log.Information("Username {0} already exists", username);
             return;
         }
 
-        var user = new User
+        User? user = new User
         {
             username = username,
             passwordHash = passwordHash,
@@ -42,13 +46,13 @@ public class AuthRegisterCommand : Command
         };
         _service.AddUser(user);
         user = _service.GetUser(username);
-        
+
         if (user != null)
         {
-            Global.Logger.InfoFormat("User {0}[{1}] was successfully created", user.username, user.userId);
+            Log.Information("User {0}[{1}] was successfully created", user.username, user.userId);
             return;
         }
 
-        Global.Logger.ErrorFormat("There was a error creating the user {0}", username);
+        Log.Error("There was a error creating the user {0}", username);
     }
 }

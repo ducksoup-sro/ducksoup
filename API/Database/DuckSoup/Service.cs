@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SilkroadSecurityAPI;
 
 namespace API.Database.DuckSoup;
 
-public partial class Service
+public class Service
 {
     public int ServiceId { get; set; }
 
     public string Name { get; set; } = null!;
 
     public ServerType ServerType { get; set; }
+    public SecurityType SecurityType { get; set; } = SecurityType.VSRO188;
 
     public int RemotePort { get; set; }
 

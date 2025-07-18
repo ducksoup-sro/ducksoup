@@ -1,101 +1,136 @@
-﻿using API;
-using API.ServiceFactory;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using API.Session;
-using SilkroadSecurityAPI;
+using Database.VSRO188;
+using Database.VSRO188.SRO_VT_SHARD;
+using PacketLibrary.VSRO188.Agent.Objects;
+using Serilog;
+using SilkroadSecurityAPI.Message;
 
 namespace DuckSoup.Library.Session;
 
+// ReSharper disable UnusedVariable
 public class CharInfo : ICharInfo
 {
-    private Packet? _packet;
-    
-    private readonly Session _session;
-    private readonly ISharedObjects _sharedObjects;
+    private readonly bool _debug = false;
+    private Packet? _packet = new Packet(0x3013);
 
-    public CharInfo(Session session)
+    public void Initialize()
     {
-        _session = session;
-        _sharedObjects = ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
-
+        _packet = new Packet(0x3013, false, true);
+        TargetPosition = new Position(0, 0);
     }
 
-    public void Read(Packet packet)
+    public void Append(Packet packet)
     {
-        if(_packet == null)
+        if (_packet == null)
         {
-            _packet = new Packet(0x0000);
+            return;
         }
-        
-        for (var i = 0; i < packet.GetBytes().Length; i++)
+
+        Stopwatch watch = null;
+        if (_debug)
         {
-            _packet.WriteUInt8(packet.ReadUInt8());
+            watch = Stopwatch.StartNew();
+        }
+
+        for (int i = 0; i < packet.GetBytes().Length; i++)
+        {
+            packet.TryRead(out byte b);
+            _packet.TryWrite(b);
+        }
+
+        if (_debug)
+        {
+            watch.Stop();
+            double ticks = watch.ElapsedTicks;
+            double seconds = ticks / Stopwatch.Frequency;
+            double milliseconds = ticks / Stopwatch.Frequency * 1000;
+            double nanoseconds = ticks / Stopwatch.Frequency * 1000000000;
+            Log.Information("CharInfo Append: {0}ms", milliseconds);
         }
     }
 
-    public void Process()
+    public async Task Read()
     {
-        var serverTime = _packet.ReadUInt32(); // * 4   uint    ServerTime               //SROTimeStamp
-        var refObjId = _packet.ReadUInt32(); // 4   uint    RefObjID
-        var scale = _packet.ReadUInt8(); // 1   byte    Scale
-        var curLevel = _packet.ReadUInt8(); // 1   byte    CurLevel
-        var maxLevel = _packet.ReadUInt8(); // 1   byte    MaxLevel
-        var expOffset = _packet.ReadUInt64(); // 8   ulong   ExpOffset
-        var sExpOffset = _packet.ReadUInt32(); // 4   uint    SExpOffset
-        var remainGold = _packet.ReadUInt64(); // 8   ulong   RemainGold
-        var remainSkillPoint = _packet.ReadUInt32(); // 4   uint    RemainSkillPoint
-        var remainStatPoint = _packet.ReadUInt16(); // 2   ushort  RemainStatPoint
-        var remainHwanCount = _packet.ReadUInt8(); // 1   byte    RemainHwanCount
-        var gatheredExpPoint = _packet.ReadUInt32(); // 4   uint    GatheredExpPoint
-        var hp = _packet.ReadUInt32(); // 4   uint    HP
-        var mp = _packet.ReadUInt32(); // 4   uint    MP
-        var autoInverstExp = _packet.ReadUInt8(); // 1   byte    AutoInverstExp
-        var dailyPk = _packet.ReadUInt8(); // 1   byte    DailyPK
-        var totalPk = _packet.ReadUInt16(); // 2   ushort  TotalPK
-        var pkPenaltyPoint = _packet.ReadUInt32(); // 4   uint    PKPenaltyPoint
-        var hwanLevel = _packet.ReadUInt8(); // 1   byte    HwanLevel
-        _session.SessionData.State.PvpCape =
-            (PVPCape)_packet
-                .ReadUInt8(); // 1   byte    FreePVP           //0 = None, 1 = Red, 2 = Gray, 3 = Blue, 4 = White, 5 = Gold
-
-        // //Inventory
-        var inventorySize = _packet.ReadUInt8(); // 1   byte    Inventory.Size
-        var inventoryItemCount = _packet.ReadUInt8(); // 1   byte    Inventory.ItemCount
-        for (var i = 0; i < inventoryItemCount; i++) // for (int i = 0; i < Inventory.ItemCount; i++)
+        if (_packet == null)
         {
-            var itemSlot = _packet.ReadUInt8(); //     1   byte    item.Slot
-            var itemRentType = _packet.ReadUInt32(); //     4   uint    item.RentType
+            return;
+        }
+
+        Stopwatch watch = null;
+        if (_debug)
+        {
+            watch = Stopwatch.StartNew();
+        }
+
+        _packet.ToReadOnly();
+
+        # region general
+
+        _packet.TryRead(out ServerTime); // * 4   uint    ServerTime               //SROTimeStamp
+        _packet.TryRead(out RefObjId); // 4   uint    RefObjID
+        _packet.TryRead(out Scale); // 1   byte    Scale
+        _packet.TryRead(out CurLevel); // 1   byte    CurLevel
+        _packet.TryRead(out MaxLevel); // 1   byte    MaxLevel
+        _packet.TryRead(out ExpOffset); // 8   ulong   ExpOffset
+        _packet.TryRead(out SExpOffset); // 4   uint    SExpOffset
+        _packet.TryRead(out RemainGold); // 8   ulong   RemainGold
+        _packet.TryRead(out RemainSkillPoint); // 4   uint    RemainSkillPoint
+        _packet.TryRead(out RemainStatPoint); // 2   ushort  RemainStatPoint
+        _packet.TryRead(out RemainHwanCount); // 1   byte    RemainHwanCount
+        _packet.TryRead(out GatheredExpPoint); // 4   uint    GatheredExpPoint
+        _packet.TryRead(out Hp); // 4   uint    HP
+        _packet.TryRead(out Mp); // 4   uint    MP
+        _packet.TryRead(out AutoInverstExp); // 1   byte    AutoInverstExp
+        _packet.TryRead(out DailyPk); // 1   byte    DailyPK
+        _packet.TryRead(out TotalPk); // 2   ushort  TotalPK
+        _packet.TryRead(out PkPenaltyPoint); // 4   uint    PKPenaltyPoint
+        _packet.TryRead(out HwanLevel); // 1   byte    HwanLevel
+        _packet.TryRead(
+            out PvpCape); // 1   byte    FreePVP           //0 = None, 1 = Red, 2 = Gray, 3 = Blue, 4 = White, 5 = Gold
+
+        #endregion
+
+        #region Inventory
+
+        _packet.TryRead(out byte inventorySize); // 1   byte    Inventory.Size
+        _packet.TryRead(out byte inventoryItemCount); // 1   byte    Inventory.ItemCount
+        for (int i = 0; i < inventoryItemCount; i++) // for (int i = 0; i < Inventory.ItemCount; i++)
+        {
+            _packet.TryRead(out byte itemSlot); //     1   byte    item.Slot
+            _packet.TryRead(out uint itemRentType); //     4   uint    item.RentType
             if (itemRentType == 1)
             {
-                var itemRentInfoCanDelete = _packet.ReadUInt16(); //         2   ushort  item.RentInfo.CanDelete
-                var itemRentInfoPeriodBeginTime =
-                    _packet.ReadUInt32(); //         4   uint    item.RentInfo.PeriodBeginTime
-                var itemRentInfoPeriodEndTime =
-                    _packet.ReadUInt32(); //         4   uint    item.RentInfo.PeriodEndTime        
+                _packet.TryRead(out ushort itemRentInfoCanDelete); //         2   ushort  item.RentInfo.CanDelete
+                _packet.TryRead(
+                    out uint itemRentInfoPeriodBeginTime); //         4   uint    item.RentInfo.PeriodBeginTime
+                _packet.TryRead(
+                    out uint itemRentInfoPeriodEndTime); //         4   uint    item.RentInfo.PeriodEndTime        
             }
             else if (itemRentType == 2)
             {
-                var itemRentInfoCanDelete = _packet.ReadUInt16(); //         2   ushort  item.RentInfo.CanDelete
-                var itemRentInfoCanRecharge = _packet.ReadUInt16(); //         2   ushort  item.RentInfo.CanRecharge
-                var itemRentInfoMeterRateTime =
-                    _packet.ReadUInt32(); //         4   uint    item.RentInfo.MeterRateTime        
+                _packet.TryRead(out ushort itemRentInfoCanDelete); //         2   ushort  item.RentInfo.CanDelete
+                _packet.TryRead(out ushort itemRentInfoCanRecharge); //         2   ushort  item.RentInfo.CanRecharge
+                _packet.TryRead(
+                    out uint itemRentInfoMeterRateTime); //         4   uint    item.RentInfo.MeterRateTime        
             }
             else if (itemRentType == 3)
             {
-                var itemRentInfoCanDelete = _packet.ReadUInt16(); //         2   ushort  item.RentInfo.CanDelete
-                var itemRentInfoCanRecharge = _packet.ReadUInt16(); //         2   ushort  item.RentInfo.CanRecharge
-                var itemRentInfoPeriodBeginTime =
-                    _packet.ReadUInt32(); //         4   uint    item.RentInfo.PeriodBeginTime
-                var itemRentInfoPeriodEndTime =
-                    _packet.ReadUInt32(); //         4   uint    item.RentInfo.PeriodEndTime   
-                var itemRentInfoPackingTime =
-                    _packet.ReadUInt32(); //         4   uint    item.RentInfo.PackingTime        
+                _packet.TryRead(out ushort itemRentInfoCanDelete); //         2   ushort  item.RentInfo.CanDelete
+                _packet.TryRead(out ushort itemRentInfoCanRecharge); //         2   ushort  item.RentInfo.CanRecharge
+                _packet.TryRead(
+                    out uint itemRentInfoPeriodBeginTime); //         4   uint    item.RentInfo.PeriodBeginTime
+                _packet.TryRead(
+                    out uint itemRentInfoPeriodEndTime); //         4   uint    item.RentInfo.PeriodEndTime   
+                _packet.TryRead(
+                    out uint itemRentInfoPackingTime); //         4   uint    item.RentInfo.PackingTime        
             }
 
-            var itemRefItemId = _packet.ReadUInt32(); //     4   uint    item.RefItemID
-            var itemFound = _sharedObjects.RefObjCommon.TryGetValue((int)itemRefItemId, out var item);
+            _packet.TryRead(out uint itemRefItemId); //     4   uint    item.RefItemID
+            _RefObjCommon? item = await Cache.GetRefObjCommonAsync((int)itemRefItemId);
+            if (item == null) continue;
 
-            if (!itemFound) continue;
-            
             if (item.TypeID1 == 3)
             {
                 //ITEM_        
@@ -104,33 +139,33 @@ public class CharInfo : ICharInfo
                     //ITEM_CH
                     //ITEM_EU
                     //AVATAR_
-                    var itemOptLevel = _packet.ReadUInt8(); // 1   byte    item.OptLevel
-                    var itemVariance = _packet.ReadUInt64(); // 8   ulong   item.Variance
-                    var itemData = _packet.ReadUInt32(); // 4   uint    item.Data       //Durability
-                    var itemMagParamNum = _packet.ReadUInt8(); // 1   byte    item.MagParamNum
-                    for (var paramIndex = 0; paramIndex < itemMagParamNum; paramIndex++)
+                    _packet.TryRead(out byte itemOptLevel); // 1   byte    item.OptLevel
+                    _packet.TryRead(out ulong itemVariance); // 8   ulong   item.Variance
+                    _packet.TryRead(out uint itemData); // 4   uint    item.Data       //Durability
+                    _packet.TryRead(out byte itemMagParamNum); // 1   byte    item.MagParamNum
+                    for (int paramIndex = 0; paramIndex < itemMagParamNum; paramIndex++)
                     {
-                        var magParamType = _packet.ReadUInt32(); // 4   uint    magParam.Type
-                        var magParamValue = _packet.ReadUInt32(); // 4   uint    magParam.Value                
+                        _packet.TryRead(out uint magParamType); // 4   uint    magParam.Type
+                        _packet.TryRead(out uint magParamValue); // 4   uint    magParam.Value                
                     }
 
-                    var bindingOptionType = _packet.ReadUInt8(); // 1   byte    bindingOptionType   //1 = Socket
-                    var bindingOptionCount = _packet.ReadUInt8(); // 1   byte    bindingOptionCount
-                    for (var bindingOptionIndex = 0; bindingOptionIndex < bindingOptionCount; bindingOptionIndex++)
+                    _packet.TryRead(out byte bindingOptionType); // 1   byte    bindingOptionType   //1 = Socket
+                    _packet.TryRead(out byte bindingOptionCount); // 1   byte    bindingOptionCount
+                    for (int bindingOptionIndex = 0; bindingOptionIndex < bindingOptionCount; bindingOptionIndex++)
                     {
-                        var bindingOptionSlot = _packet.ReadUInt8(); // 1   byte bindingOption.Slot
-                        var bindingOptionId = _packet.ReadUInt32(); // 4   uint bindingOption.ID
-                        var bindingOptionParam1 = _packet.ReadUInt32(); // 4   uint bindingOption.nParam1
+                        _packet.TryRead(out byte bindingOptionSlot); // 1   byte bindingOption.Slot
+                        _packet.TryRead(out uint bindingOptionId); // 4   uint bindingOption.ID
+                        _packet.TryRead(out uint bindingOptionParam1); // 4   uint bindingOption.nParam1
                     }
 
-                    var bindingOptionType2 =
-                        _packet.ReadUInt8(); // 1   byte    bindingOptionType   //2 = Advanced elixir
-                    var bindingOptionCount2 = _packet.ReadUInt8(); // 1   byte    bindingOptionCount2
-                    for (var bindingOptionIndex = 0; bindingOptionIndex < bindingOptionCount2; bindingOptionIndex++)
+                    _packet.TryRead(
+                        out byte bindingOptionType2); // 1   byte    bindingOptionType   //2 = Advanced elixir
+                    _packet.TryRead(out byte bindingOptionCount2); // 1   byte    bindingOptionCount2
+                    for (int bindingOptionIndex = 0; bindingOptionIndex < bindingOptionCount2; bindingOptionIndex++)
                     {
-                        var bindingOptionSlot = _packet.ReadUInt8(); // 1   byte bindingOption.Slot
-                        var bindingOptionId = _packet.ReadUInt32(); // 4   uint bindingOption.ID
-                        var bindingOptionOptValue = _packet.ReadUInt32(); // 4   uint bindingOption.OptValue
+                        _packet.TryRead(out byte bindingOptionSlot); // 1   byte bindingOption.Slot
+                        _packet.TryRead(out uint bindingOptionId); // 4   uint bindingOption.ID
+                        _packet.TryRead(out uint bindingOptionOptValue); // 4   uint bindingOption.OptValue
                     }
                 }
                 else if (item.TypeID2 == 2)
@@ -138,115 +173,135 @@ public class CharInfo : ICharInfo
                     if (item.TypeID3 == 1)
                     {
                         //ITEM_COS_P
-                        var cosState = _packet.ReadUInt8(); //1   byte    State
+                        _packet.TryRead(out byte cosState); //1   byte    State
                         if (cosState == 2 || cosState == 3 || cosState == 4)
                         {
-                            var cosRefObjId = _packet.ReadUInt32(); // 4 uint RefObjID
-                            var cosName = _packet.ReadAscii(); // 2 ushort Name.Length //     * string Name
+                            _packet.TryRead(out uint cosRefObjId); // 4 uint RefObjID
+                            _packet.TryRead(out string cosName); // 2 ushort Name.Length //     * string Name
                             if (item.TypeID4 == 2)
-                            {
                                 //ITEM_COS_P (Ability)
-                                var cosSecondsToRentEndTime = _packet.ReadUInt32(); // 4 uint SecondsToRentEndTime
-                            }
+                                _packet.TryRead(out uint cosSecondsToRentEndTime); // 4 uint SecondsToRentEndTime
 
                             // Maybe?!
                             // might be service thing
-                            var hasInventoryTime = _packet.ReadUInt8(); // 1 byte unkByte0
-
-                            if (hasInventoryTime == 0x1)
+                            _packet.TryRead(out byte hasInventoryTimeAmount); // 1 byte unkByte0
+                            // According to my research this increases by one for every _TimedJobForPet line u have. You should have one for every pet page to prevent gs crashed
+                            // this is also explained in BimBums screenshot
+                            // 2383	32206	5	22926	1806184800	1111708465	1	28	0	0	0	0	0	0	0
+                            for (int h = 0; h < hasInventoryTimeAmount; h++)
                             {
                                 // Perhaps inventory span
-                                var unk1222 = _packet.ReadUInt8(); // NANI
-                                var unk1223 = _packet.ReadUInt32(); // THE
-                                var unk1224 = _packet.ReadUInt32(); // FUCK
-                                if(unk1224 == 5) {
+                                _packet.TryRead(out byte unk1222); // NANI
+                                _packet.TryRead(out uint unk1223); // THE
+                                _packet.TryRead(out uint unk1224); // FUCK
+
+                                if (unk1222 == 5)
+                                {
                                     // Special Thanks to BimBum1337
                                     // https://i.rapture.pw/BAKE5/ZEqISAFo33.png/raw
-                                    var unk1225 = _packet.ReadUInt32(); // ?!
-                                    var unk1226 = _packet.ReadUInt8();
+                                    _packet.TryRead(out uint unk1225); // ?!
+                                    _packet.TryRead(out byte unk1226);
                                 }
-                                //Global.Logger.InfoFormat("{0}, {1}, {2}, {3}, {4}", unk1222, unk1223, unk1224,
-                                //    unk1225, unk1226);
                             }
+                            // _packet.TryRead(out byte hasInventoryTime); // 1 byte unkByte0
+                            // if (hasInventoryTime == 0x1)
+                            // {
+                            //     // Perhaps inventory span
+                            //     _packet.TryRead(out byte unk1222); // NANI
+                            //     _packet.TryRead(out uint unk1223); // THE
+                            //     _packet.TryRead(out uint unk1224); // FUCK
+                            //     Log.Information("1 {0}", unk1222);
+                            //     Log.Information("1 {0}", unk1223);
+                            //     Log.Information("1 {0}", unk1224);
+                            //
+                            //     if (unk1222 == 5)
+                            //     {
+                            //         // Special Thanks to BimBum1337
+                            //         // https://i.rapture.pw/BAKE5/ZEqISAFo33.png/raw
+                            //         _packet.TryRead(out uint unk1225); // ?!
+                            //         _packet.TryRead(out byte unk1226);
+                            //         
+                            //         Log.Information("1 {0}", unk1225);
+                            //         Log.Information("1 {0}", unk1226);
+                            //
+                            //     }
+                            // }
                         }
                     }
                     else if (item.TypeID3 == 2)
                     {
                         //ITEM_ETC_TRANS_MONSTER
-                        var etcRefObjId = _packet.ReadUInt32(); // 4   uint    RefObjID
+                        _packet.TryRead(out uint etcRefObjId); // 4   uint    RefObjID
                     }
                     else if (item.TypeID3 == 3)
                     {
                         //MAGIC_CUBE
-                        var quantity =
-                            _packet
-                                .ReadUInt32(); // 4   uint    Quantity        //Do not confuse with StackCount, this indicates the amount of elixirs in the cube
+                        _packet.TryRead(
+                            out uint quantity); // 4   uint    Quantity        //Do not confuse with StackCount, this indicates the amount of elixirs in the cube
                     }
                 }
                 else if (item.TypeID2 == 3)
                 {
                     //ITEM_ETC
-                    var itemStackCount = _packet.ReadUInt16(); // 2   ushort  item.StackCount
+                    _packet.TryRead(out ushort itemStackCount); // 2   ushort  item.StackCount
 
                     if (item.TypeID3 == 11)
                     {
                         if (item.TypeID4 == 1 || item.TypeID4 == 2)
-                        {
                             //MAGICSTONE, ATTRSTONE
-                            var attributeAssimilationProbability =
-                                _packet.ReadUInt8(); // 1   byte    AttributeAssimilationProbability
-                        }
+                            _packet.TryRead(
+                                out byte attributeAssimilationProbability); // 1   byte    AttributeAssimilationProbability
                     }
                     else if (item.TypeID3 == 14 && item.TypeID4 == 2)
                     {
                         //ITEM_MALL_GACHA_CARD_WIN
                         //ITEM_MALL_GACHA_CARD_LOSE
-                        var magParamNum = _packet.ReadUInt8(); // 1   byte    item.MagParamCount
-                        for (var paramIndex = 0; paramIndex < magParamNum; paramIndex++)
+                        _packet.TryRead(out byte magParamNum); // 1   byte    item.MagParamCount
+                        for (int paramIndex = 0; paramIndex < magParamNum; paramIndex++)
                         {
-                            var magParamType = _packet.ReadUInt32(); //4   uint magParam.Type
-                            var magParamValue = _packet.ReadUInt32(); //4   uint magParam.Value
+                            _packet.TryRead(out uint magParamType); //4   uint magParam.Type
+                            _packet.TryRead(out uint magParamValue); //4   uint magParam.Value
                         }
                     }
                 }
             }
         }
 
-        //AvatarInventory
-        var avatarInventorySize = _packet.ReadUInt8(); // 1 byte AvatarInventory.Size
-        var avatarInventoryItemCount = _packet.ReadUInt8(); // 1 byte AvatarInventory.ItemCount
-        for (var i = 0; i < avatarInventoryItemCount; i++)
+        #endregion
+
+        #region AvatarInventory
+
+        _packet.TryRead(out byte avatarInventorySize); // 1 byte AvatarInventory.Size
+        _packet.TryRead(out byte avatarInventoryItemCount); // 1 byte AvatarInventory.ItemCount
+        for (int i = 0; i < avatarInventoryItemCount; i++)
         {
-            _packet.ReadUInt8(); // 1 byte item.Slot
-            var itemRentType = _packet.ReadUInt32(); // 4 uint item.RentType
+            _packet.TryRead(out byte itemSlot); // 1 byte item.Slot
+            _packet.TryRead(out uint itemRentType); // 4 uint item.RentType
             if (itemRentType == 1)
             {
-                _packet.ReadUInt16(); // 2 ushort item.RentInfo.CanDelete
-                _packet.ReadUInt32(); // 4 uint item.RentInfo.PeriodBeginTime
-                _packet.ReadUInt32(); // 4 uint item.RentInfo.PeriodEndTime
+                _packet.TryRead(out ushort itemRentInfoCanDelete); // 2 ushort item.RentInfo.CanDelete
+                _packet.TryRead(out uint itemRentInfoPeriodBeginTime); // 4 uint item.RentInfo.PeriodBeginTime
+                _packet.TryRead(out uint itemRentInfoPeriodEndTime); // 4 uint item.RentInfo.PeriodEndTime
             }
             else if (itemRentType == 2)
             {
-                _packet.ReadUInt16(); // 2 ushort item.RentInfo.CanDelete
-                _packet.ReadUInt16(); // 2 ushort item.RentInfo.CanRecharge
-                _packet.ReadUInt32(); // 4 uint item.RentInfo.MeterRateTime
+                _packet.TryRead(out ushort itemRentInfoCanDelete); // 2 ushort item.RentInfo.CanDelete
+                _packet.TryRead(out ushort itemRentInfoCanRecharge); // 2 ushort item.RentInfo.CanRecharge
+                _packet.TryRead(out uint itemRentInfoMeterRateTime); // 4 uint item.RentInfo.MeterRateTime
             }
             else if (itemRentType == 3)
             {
-                _packet.ReadUInt16(); // 2 ushort item.RentInfo.CanDelete
-                _packet.ReadUInt16(); // 2 ushort item.RentInfo.CanRecharge
-                _packet.ReadUInt32(); // 4 uint item.RentInfo.PeriodBeginTime
-                _packet.ReadUInt32(); // 4 uint item.RentInfo.PeriodEndTime
-                _packet.ReadUInt32(); // 4 uint item.RentInfo.PackingTime
+                _packet.TryRead(out ushort itemRentInfoCanDelete); // 2 ushort item.RentInfo.CanDelete
+                _packet.TryRead(out ushort itemRentInfoCanRecharge); // 2 ushort item.RentInfo.CanRecharge
+                _packet.TryRead(out uint itemRentInfoPeriodBeginTime); // 4 uint item.RentInfo.PeriodBeginTime
+                _packet.TryRead(out uint itemRentInfoPeriodEndTime); // 4 uint item.RentInfo.PeriodEndTime
+                _packet.TryRead(out uint itemRentInfoPackingTime); // 4 uint item.RentInfo.PackingTime
             }
 
-            var itemRefItemId = _packet.ReadUInt32(); // 4 uint item.RefItemID
-            var itemFound = _sharedObjects.RefObjCommon.TryGetValue((int)itemRefItemId, out var item);
-            if (!itemFound)
-            {
-                continue;
-            }
-            
+            _packet.TryRead(out uint itemRefItemId); // 4 uint item.RefItemID
+            _RefObjCommon? item = await Cache.GetRefObjCommonAsync((int)itemRefItemId);
+            if (item == null) continue;
+
             if (item.TypeID1 == 3)
                 //ITEM_        
                 if (item.TypeID2 == 1)
@@ -254,231 +309,270 @@ public class CharInfo : ICharInfo
                     //ITEM_CH
                     //ITEM_EU
                     //AVATAR_
-                    _packet.ReadUInt8(); // 1 byte item.OptLevel
-                    _packet.ReadUInt64(); // 8 ulong item.Variance
-                    _packet.ReadUInt32(); // 4 uint item.Data //Durability
-                    var itemMagParamNum = _packet.ReadUInt8(); // 1 byte item.MagParamNum
-                    for (var paramIndex = 0; paramIndex < itemMagParamNum; paramIndex++)
+                    _packet.TryRead(out byte itemOptLevel); // 1 byte item.OptLevel
+                    _packet.TryRead(out ulong itemVariance); // 8 ulong item.Variance
+                    _packet.TryRead(out uint itemData); // 4 uint item.Data //Durability
+                    _packet.TryRead(out byte itemMagParamNum); // 1 byte item.MagParamNum
+                    for (int paramIndex = 0; paramIndex < itemMagParamNum; paramIndex++)
                     {
-                        _packet.ReadUInt32(); // 4 uint magParam.Type
-                        _packet.ReadUInt32(); // 4 uint magParam.Value
+                        _packet.TryRead(out uint magParamType); // 4 uint magParam.Type
+                        _packet.TryRead(out uint magParamValue); // 4 uint magParam.Value
                     }
 
-                    _packet.ReadUInt8(); // 1 byte bindingOptionType //1 = Socket
-                    var bindingOptionCount = _packet.ReadUInt8(); // 1 byte bindingOptionCount
-                    for (var bindingOptionIndex = 0;
+                    _packet.TryRead(out byte bindingOptionType); // 1 byte bindingOptionType //1 = Socket
+                    _packet.TryRead(out byte bindingOptionCount); // 1 byte bindingOptionCount
+                    for (int bindingOptionIndex = 0;
                          bindingOptionIndex < bindingOptionCount;
                          bindingOptionIndex++)
                     {
-                        _packet.ReadUInt8(); // 1 byte bindingOption.Slot
-                        _packet.ReadUInt32(); // 4 uint bindingOption.ID
-                        _packet.ReadUInt32(); // 4 uint bindingOption.nParam1
+                        _packet.TryRead(out byte bindingOptionSlot); // 1 byte bindingOption.Slot
+                        _packet.TryRead(out uint bindingOptionID); // 4 uint bindingOption.ID
+                        _packet.TryRead(out uint bindingOptionOptValue); // 4 uint bindingOption.nParam1
                     }
 
-                    _packet.ReadUInt8(); // 1 byte bindingOptionType //2 = Advanced elixir
-                    var bindingOptionCount2 = _packet.ReadUInt8(); // 1 byte bindingOptionCount
-                    for (var bindingOptionIndex = 0;
+                    _packet.TryRead(out byte bindingOptionType2); // 1 byte bindingOptionType //2 = Advanced elixir
+                    _packet.TryRead(out byte bindingOptionCount2); // 1 byte bindingOptionCount
+                    for (int bindingOptionIndex = 0;
                          bindingOptionIndex < bindingOptionCount2;
                          bindingOptionIndex++)
                     {
-                        _packet.ReadUInt8(); // 1 byte bindingOption.Slot
-                        _packet.ReadUInt32(); // 4 uint bindingOption.ID
-                        _packet.ReadUInt32(); // 4 uint bindingOption.OptValue
+                        _packet.TryRead(out byte bindingOptionSlot); // 1 byte bindingOption.Slot
+                        _packet.TryRead(out uint bindingOptionID); // 4 uint bindingOption.ID
+                        _packet.TryRead(out uint bindingOptionOptValue); // 4 uint bindingOption.OptValue
                     }
                 }
         }
 
-        _packet.ReadUInt8(); //1 byte unkByte1 //not a counter
+        #endregion
 
-        //Masteries
-        var nextMastery = _packet.ReadUInt8(); // 1   byte    nextMastery
+        _packet.TryRead(out byte unkByte1); //1 byte unkByte1 //not a counter
+
+        #region Masteries
+
+        _packet.TryRead(out byte nextMastery); // 1   byte    nextMastery
         while (nextMastery == 1)
         {
-            var masteryId = _packet.ReadUInt32(); // 4   uint    mastery.ID
-            var masteryLevel = _packet.ReadUInt8(); // 1   byte    mastery.Level   
-            nextMastery = _packet.ReadUInt8(); // 1   byte    nextMastery
+            Log.Debug("CharInfo:352");
+            _packet.TryRead(out uint masteryId); // 4   uint    mastery.ID
+            _packet.TryRead(out byte masteryLevel); // 1   byte    mastery.Level   
+            _packet.TryRead(out nextMastery); // 1   byte    nextMastery
         }
 
-        _packet.ReadUInt8(); // 1   byte    unkByte2    //not a counter
+        #endregion
 
-        //Skills
-        var nextSkill = _packet.ReadUInt8(); // 1   byte    nextSkill
+        _packet.TryRead(out byte unkByte2); // 1   byte    unkByte2    //not a counter
+
+        #region Skills
+
+        _packet.TryRead(out byte nextSkill); // 1   byte    nextSkill
         while (nextSkill == 1)
         {
-            var skillId = _packet.ReadUInt32(); // 4   uint    skill.ID
-            var skillEnabled = _packet.ReadUInt8(); // 1   byte    skill.Enabled   
+            Log.Debug("CharInfo:369");
+            _packet.TryRead(out uint skillId); // 4   uint    skill.ID
+            _packet.TryRead(out byte skillEnabled); // 1   byte    skill.Enabled   
 
-            nextSkill = _packet.ReadUInt8(); // 1   byte    nextSkill
+            _packet.TryRead(out nextSkill); // 1   byte    nextSkill
         }
 
-        //Quests
-        var completedQuestCount = _packet.ReadUInt16(); // 2   ushort  CompletedQuestCount
-        var completedQuests = _packet.ReadUInt32Array(completedQuestCount); // *   uint[]  CompletedQuests
+        #endregion
 
-        var activeQuestCount = _packet.ReadUInt8(); // 1   byte    ActiveQuestCount
-        for (var activeQuestIndex = 0; activeQuestIndex < activeQuestCount; activeQuestIndex++)
+        #region Quests
+
+        _packet.TryRead(out ushort completedQuestCount); // 2   ushort  CompletedQuestCount
+        uint[] completedQuests = new uint[completedQuestCount];
+        for (ushort i = 0; i < completedQuestCount; i++) // *   uint[]  CompletedQuests
         {
-            var questRefQuestId = _packet.ReadUInt32(); // 4   uint    quest.RefQuestID
-            var questAchievementCount = _packet.ReadUInt8(); // 1   byte    quest.AchievementCount
-            var questRequiresAutoShareParty = _packet.ReadUInt8(); // 1   byte    quest.RequiresAutoShareParty
-            var questType = _packet.ReadUInt8(); // 1   byte    quest.Type
-            if (questType == 28)
-            {
-                var questRemainingTime = _packet.ReadUInt32(); // 4   uint    remainingTime
-            }
+            _packet.TryRead(out uint quest);
+            completedQuests[i] = quest;
+        }
 
-            var questStatus = _packet.ReadUInt8(); // 1   byte    quest.Status
+        _packet.TryRead(out byte activeQuestCount); // 1   byte    ActiveQuestCount
+        for (int activeQuestIndex = 0; activeQuestIndex < activeQuestCount; activeQuestIndex++)
+        {
+            _packet.TryRead(out uint questRefQuestId); // 4   uint    quest.RefQuestID
+            _packet.TryRead(out byte questAchievementCount); // 1   byte    quest.AchievementCount
+            _packet.TryRead(out byte questRequiresAutoShareParty); // 1   byte    quest.RequiresAutoShareParty
+            _packet.TryRead(out byte questType); // 1   byte    quest.Type
+            if (questType == 28) _packet.TryRead(out uint questRemainingTime); // 4   uint    remainingTime
+
+            _packet.TryRead(out byte questStatus); // 1   byte    quest.Status
 
             if (questType != 8)
             {
-                var questObjectiveCount = _packet.ReadUInt8(); // 1   byte    quest.ObjectiveCount
-                for (var objectiveIndex = 0; objectiveIndex < questObjectiveCount; objectiveIndex++)
+                _packet.TryRead(out byte questObjectiveCount); // 1   byte    quest.ObjectiveCount
+                for (int objectiveIndex = 0; objectiveIndex < questObjectiveCount; objectiveIndex++)
                 {
-                    var questObjectiveId = _packet.ReadUInt8(); // 1   byte    objective.ID
-                    var questObjectiveStatus =
-                        _packet.ReadUInt8(); // 1   byte    objective.Status        //0 = Done, 1  = On
-                    var questObjectiveName =
-                        _packet.ReadAscii(); // 2   ushort  objective.Name.Length // *   string  objective.Name
-                    var objectiveTaskCount = _packet.ReadUInt8(); // 1   byte    objective.TaskCount
-                    for (var taskIndex = 0; taskIndex < objectiveTaskCount; taskIndex++)
+                    _packet.TryRead(out byte questObjectiveId); // 1   byte    objective.ID
+                    _packet.TryRead(
+                        out byte questObjectiveStatus); // 1   byte    objective.Status        //0 = Done, 1  = On
+                    _packet.TryRead(
+                        out string questObjectiveName); // 2   ushort  objective.Name.Length // *   string  objective.Name
+                    _packet.TryRead(out byte objectiveTaskCount); // 1   byte    objective.TaskCount
+                    for (int taskIndex = 0; taskIndex < objectiveTaskCount; taskIndex++)
                     {
-                        var questTaskValue = _packet.ReadUInt32(); // 4   uint    task.Value
+                        _packet.TryRead(out uint questTaskValue); // 4   uint    task.Value
                     }
                 }
             }
 
             if (questType == 88)
             {
-                var refObjCount = _packet.ReadUInt8(); // 1   byte    RefObjCount
-                for (var refObjIndex = 0; refObjIndex < refObjCount; refObjIndex++)
-                    _packet.ReadUInt32(); // 4   uint    RefObjID    //NPCs
+                _packet.TryRead(out byte refObjCount); // 1   byte    RefObjCount
+                for (int refObjIndex = 0; refObjIndex < refObjCount; refObjIndex++)
+                {
+                    _packet.TryRead(out uint questRefObjId); // 4   uint    RefObjID    //NPCs
+                }
             }
         }
 
-        _packet.ReadUInt8(); // 1   byte    unkByte3        //Structure changes!!!
+        #endregion
 
-        //CollectionBook
-        var startedCollectionCount = _packet.ReadUInt32(); // 4   uint    CollectionBookStartedThemeCount
-        for (var i = 0; i < startedCollectionCount; i++)
+        _packet.TryRead(out byte unkByte3); // 1   byte    unkByte3        //Structure changes!!!
+
+        #region CollectionBook
+
+        _packet.TryRead(out uint startedCollectionCount); // 4   uint    CollectionBookStartedThemeCount
+        for (int i = 0; i < startedCollectionCount; i++)
         {
-            var themeIndex = _packet.ReadUInt32(); // 4   uint    theme.Index
-            var themeStartedDateTime = _packet.ReadUInt32(); // 4   uint    theme.StartedDateTime   //SROTimeStamp
-            var themePages = _packet.ReadUInt32(); // 4   uint    theme.Pages
+            _packet.TryRead(out uint themeIndex); // 4   uint    theme.Index
+            _packet.TryRead(out uint themeStartedDateTime); // 4   uint    theme.StartedDateTime   //SROTimeStamp
+            _packet.TryRead(out uint themePages); // 4   uint    theme.Pages
         }
 
-        _session.SessionData.UniqueCharId = _packet.ReadUInt32(); // 4   uint    UniqueID
+        #endregion
+
+        #region EntityData
+
+        _packet.TryRead(out UniqueCharId); // 4   uint    UniqueID
+
 
         //Position
-        _session.SessionData.LatestRegionId = _packet.ReadUInt16(); // 2   ushort  Position.RegionID
-        _session.SessionData.PositionX = _packet.ReadFloat(); // 4   float   Position.X
-        _session.SessionData.PositionY = _packet.ReadFloat(); // 4   float   Position.Y
-        _session.SessionData.PositionZ = _packet.ReadFloat(); // 4   float   Position.Z
-        var positionAngle = _packet.ReadUInt16(); // 2   ushort  Position.Angle
+        // _packet.TryRead(out ushort latestRegionId); // 2   ushort  Position.RegionID
+        // _packet.TryRead(out float positionX); // 4   float   Position.X
+        // _packet.TryRead(out float positionY); // 4   float   Position.Y
+        // _packet.TryRead(out float positionZ); // 4   float   Position.Z
+        // _packet.TryRead(out ushort positionAngle); // 2   ushort  Position.Angle
+        CurPosition = Position.FromPacket(_packet);
 
         //Movement
-        var movementHasDestination = _packet.ReadUInt8(); // 1   byte    Movement.HasDestination
-        var movementType = _packet.ReadUInt8(); // 1   byte    Movement.Type
+        _packet.TryRead(out byte movementHasDestination); // 1   byte    Movement.HasDestination
+        _packet.TryRead(out byte movementType); // 1   byte    Movement.Type
         if (movementHasDestination == 1)
         {
-            var movementDestionationRegion = _packet.ReadUInt16(); // 2   ushort  Movement.DestinationRegion        
-            if (_session.SessionData.LatestRegionId < short.MaxValue)
+            _packet.TryRead(out ushort movementDestionationRegion); // 2   ushort  Movement.DestinationRegion        
+            if (movementDestionationRegion < short.MaxValue)
             {
                 //World
-                var movementDestinationOffsetX = _packet.ReadUInt16(); // 2   ushort  Movement.DestinationOffsetX
-                var movementDestinationOffsetY = _packet.ReadUInt16(); // 2   ushort  Movement.DestinationOffsetY
-                var movementDestinationOffsetZ = _packet.ReadUInt16(); // 2   ushort  Movement.DestinationOffsetZ
+                _packet.TryRead(out ushort movementDestinationOffsetX); // 2   ushort  Movement.DestinationOffsetX
+                _packet.TryRead(out ushort movementDestinationOffsetY); // 2   ushort  Movement.DestinationOffsetY
+                _packet.TryRead(out ushort movementDestinationOffsetZ); // 2   ushort  Movement.DestinationOffsetZ
             }
             else
             {
                 //Dungeon
-                var movementDestinationOffsetX = _packet.ReadUInt32(); // 4   uint  Movement.DestinationOffsetX
-                var movementDestinationOffsetY = _packet.ReadUInt32(); // 4   uint  Movement.DestinationOffsetY
-                var movementDestinationOffsetZ = _packet.ReadUInt32(); // 4   uint  Movement.DestinationOffsetZ
+                _packet.TryRead(out uint movementDestinationOffsetX); // 4   uint  Movement.DestinationOffsetX
+                _packet.TryRead(out uint movementDestinationOffsetY); // 4   uint  Movement.DestinationOffsetY
+                _packet.TryRead(out uint movementDestinationOffsetZ); // 4   uint  Movement.DestinationOffsetZ
             }
         }
         else
         {
-            var movementSource =
-                _packet.ReadUInt8(); // 1   byte    Movement.Source     //0 = Spinning, 1 = Sky-/Key-walking
-            var movementAngle =
-                _packet.ReadUInt16(); // 2   ushort  Movement.Angle      //Represents the new angle, character is looking at
+            _packet.TryRead(
+                out byte movementSource); // 1   byte    Movement.Source     //0 = Spinning, 1 = Sky-/Key-walking
+            _packet.TryRead(
+                out ushort movementAngle); // 2   ushort  Movement.Angle      //Represents the new angle, character is looking at
         }
+        // Movement movement = Movement.MotionFromPacket(_packet);
 
         //State
-        _session.SessionData.State.LifeState =
-            (LifeState)_packet.ReadUInt8(); // 1   byte    State.LifeState         //1 = Alive, 2 = Dead
-        _packet.ReadUInt8(); // 1   byte    State.unkByte0
-        _session.SessionData.State.MotionState =
-            (MotionState)_packet
-                .ReadUInt8(); // 1   byte    State.MotionState       //0 = None, 2 = Walking, 3 = Running, 4 = Sitting
-        _session.SessionData.State.BodyState = (BodyState)_packet
-            .ReadUInt8(); // 1   byte    State.Status            //0 = None, 1 = Hwan, 2 = Untouchable, 3 = GameMasterInvincible, 5 = GameMasterInvisible, 5 = ?, 6 = Stealth, 7 = Invisible
-        var stateWalkSpeed = _packet.ReadFloat(); // 4   float   State.WalkSpeed
-        var stateRunSpeed = _packet.ReadFloat(); // 4   float   State.RunSpeed
-        var stateHwanSpeed = _packet.ReadFloat(); // 4   float   State.HwanSpeed
-        var stateBuffCount = _packet.ReadUInt8(); // 1   byte    State.BuffCount
+        // _packet.TryRead(out LifeState); // 1   byte    State.LifeState         //1 = Alive, 2 = Dead
+        // _packet.TryRead(out Unkbyte0); // 1   byte    State.unkByte0
+        // _packet.TryRead(
+        //     out MotionState); // 1   byte    State.MotionState       //0 = None, 2 = Walking, 3 = Running, 4 = Sitting
+        // _packet.TryRead(
+        //     out BodyState); // 1   byte    State.Status            //0 = None, 1 = Hwan, 2 = Untouchable, 3 = GameMasterInvincible, 5 = GameMasterInvisible, 5 = ?, 6 = Stealth, 7 = Invisible
+        // _packet.TryRead(out WalkSpeed); // 4   float   State.WalkSpeed
+        // _packet.TryRead(out RunSpeed); // 4   float   State.RunSpeed
+        // _packet.TryRead(out HwanSpeed); // 4   float   State.HwanSpeed
+        //
+        // _packet.TryRead(out byte stateBuffCount); // 1   byte    State.BuffCount
+        // for (var i = 0; i < stateBuffCount; i++)
+        // {
+        //     _packet.TryRead(out uint buffRefSkillId); // 4   uint    Buff.RefSkillID
+        //     _packet.TryRead(out uint buffDuration); // 4   uint    Buff.Duration
+        //
+        //     var skill = await Cache.GetRefSkillAsync((int)buffRefSkillId);
+        //     if (skill == null) continue;
+        //
+        //     if (skill.ParamsContains(1701213281))
+        //         //1701213281 -> atfe -> "auto transfer effect" like Recovery Division
+        //         _packet.TryRead(out bool isCreator); // 1   bool    IsCreator
+        // }
+        State = State.FromPacket(_packet);
 
-        for (var i = 0; i < stateBuffCount; i++)
+        _packet.TryRead(out CharName); // 2   ushort  Name.Length // *   string  Name
+        _packet.TryRead(out JobName); // 2   ushort  JobName.Length // *   string  JobName
+        _packet.TryRead(out JobType); // 1   byte    JobType
+        _packet.TryRead(out JobLevel); // 1   byte    JobLevel
+        _packet.TryRead(out JobExp); // 4   uint    JobExp
+        _packet.TryRead(out JobContribution); // 4   uint    JobContribution
+        _packet.TryRead(out JobReward); // 4   uint    JobReward
+        _packet.TryRead(out PvpState); // 1   byte    PVPState                //0 = White, 1 = Purple, 2 = Red
+        _packet.TryRead(out TransportFlag); // 1   byte    TransportFlag
+        _packet.TryRead(out InCombat); // 1   byte    InCombat
+        if (TransportFlag) _packet.TryRead(out TransportUniqueId); // 4   uint    Transport.UniqueID
+
+        _packet.TryRead(out PvpFlag); // 1   byte    PVPFlag                 //0 = Red Side, 1 = Blue Side, 0xFF = None
+        _packet.TryRead(out GuideFlag); // 8   ulong   GuideFlag
+        _packet.TryRead(out Jid); // 4   uint    JID
+        _packet.TryRead(out GmFlag); // 1   byte    GMFlag
+
+        #endregion
+
+        #region Hotkey
+
+        _packet.TryRead(
+            out byte activationFlag); // 1   byte    ActivationFlag          //ConfigType:0 --> (0 = Not activated, 7 = activated)
+        _packet.TryRead(out byte hotkeyCount); // 1   byte    Hotkeys.Count           //ConfigType:1
+        for (int i = 0; i < hotkeyCount; i++)
         {
-            var buffRefSkillId = _packet.ReadUInt32(); // 4   uint    Buff.RefSkillID
-            var buffDuration = _packet.ReadUInt32(); // 4   uint    Buff.Duration
-
-            var skillFound = _sharedObjects.RefSkill.TryGetValue((int)buffRefSkillId, out var skill);
-
-            if (!skillFound) continue;
-            if (skill.ParamsContains(1701213281))
-            {
-                //1701213281 -> atfe -> "auto transfer effect" like Recovery Division
-                var isCreator = _packet.ReadUInt8(); // 1   bool    IsCreator
-            }
+            _packet.TryRead(out byte hotkeySlotSeq); // 1   byte    hotkey.SlotSeq
+            _packet.TryRead(out byte hotkeySlotContentType); // 1   byte    hotkey.SlotContentType
+            _packet.TryRead(out uint hotkeySlotData); // 4   uint    hotkey.SlotData
         }
 
-        var name = _packet.ReadAscii(); // 2   ushort  Name.Length // *   string  Name
-        _session.SessionData.Charname = name;
-        var jobName = _packet.ReadAscii(); // 2   ushort  JobName.Length // *   string  JobName
-        _session.SessionData.JobType = (Job)_packet.ReadUInt8(); // 1   byte    JobType
-        var jobLevel = _packet.ReadUInt8(); // 1   byte    JobLevel
-        var jobExp = _packet.ReadUInt32(); // 4   uint    JobExp
-        var jobContribution = _packet.ReadUInt32(); // 4   uint    JobContribution
-        var jobReward = _packet.ReadUInt32(); // 4   uint    JobReward
-        _session.SessionData.State.PvpState =
-            (PvpState)_packet.ReadUInt8(); // 1   byte    PVPState                //0 = White, 1 = Purple, 2 = Red
-        _session.SessionData.OnTransport = _packet.ReadBool(); // 1   byte    TransportFlag
-        _session.SessionData.State.BattleState = (BattleState)_packet.ReadUInt8(); // 1   byte    InCombat
-        if (_session.SessionData.OnTransport)
+        #endregion
+
+        #region Autopot
+
+        _packet.TryRead(out ushort autoHpConfig); // 2   ushort  AutoHPConfig            //ConfigType:11
+        _packet.TryRead(out ushort autoMpConfig); // 2   ushort  AutoMPConfig            //ConfigType:12
+        _packet.TryRead(out ushort autoUniversalConfig); // 2   ushort  AutoUniversalConfig     //ConfigType:13
+        _packet.TryRead(out byte autoPotionDelay); // 1   byte    AutoPotionDelay         //ConfigType:14
+
+        #endregion
+
+        #region Whisper
+
+        _packet.TryRead(out byte blockedWhisperCount); // 1   byte    blockedWhisperCount
+        for (int i = 0; i < blockedWhisperCount; i++)
         {
-            _session.SessionData.TransportUniqueId = _packet.ReadUInt32(); // 4   uint    Transport.UniqueID
+            _packet.TryRead(out string target); // 2   ushort  Target.Length // *   string  Target
         }
 
-        var pvpFlag =
-            _packet.ReadUInt8(); // 1   byte    PVPFlag                 //0 = Red Side, 1 = Blue Side, 0xFF = None
-        var guideFlag = _packet.ReadUInt64(); // 8   ulong   GuideFlag
-        var jid = _packet.ReadUInt32(); // 4   uint    JID
-        var gmFlag = _packet.ReadUInt8(); // 1   byte    GMFlag
+        #endregion
 
-        var activationFlag =
-            _packet.ReadUInt8(); // 1   byte    ActivationFlag          //ConfigType:0 --> (0 = Not activated, 7 = activated)
-        var hotkeyCount = _packet.ReadUInt8(); // 1   byte    Hotkeys.Count           //ConfigType:1
-        for (var i = 0; i < hotkeyCount; i++)
+        _packet.TryRead(out uint unkUshort0); // 4   uint    unkUShort0      //Structure changes!!!
+        _packet.TryRead(out byte unkByte4); // 1   byte    unkByte4        //Structure changes!!!
+        if (_debug)
         {
-            var hotkeySlotSeq = _packet.ReadUInt8(); // 1   byte    hotkey.SlotSeq
-            var hotkeySlotContentType = _packet.ReadUInt8(); // 1   byte    hotkey.SlotContentType
-            var hotkeySlotData = _packet.ReadUInt32(); // 4   uint    hotkey.SlotData
+            watch.Stop();
+            double ticks = watch.ElapsedTicks;
+            double seconds = ticks / Stopwatch.Frequency;
+            double milliseconds = ticks / Stopwatch.Frequency * 1000;
+            double nanoseconds = ticks / Stopwatch.Frequency * 1000000000;
+            Log.Information("CharInfo Read: {0}ms", milliseconds);
         }
-
-        var autoHpConfig = _packet.ReadUInt16(); // 2   ushort  AutoHPConfig            //ConfigType:11
-        var autoMpConfig = _packet.ReadUInt16(); // 2   ushort  AutoMPConfig            //ConfigType:12
-        var autoUniversalConfig = _packet.ReadUInt16(); // 2   ushort  AutoUniversalConfig     //ConfigType:13
-        var autoPotionDelay = _packet.ReadUInt8(); // 1   byte    AutoPotionDelay         //ConfigType:14
-
-        var blockedWhisperCount = _packet.ReadUInt8(); // 1   byte    blockedWhisperCount
-        for (var i = 0; i < blockedWhisperCount; i++)
-        {
-            var target = _packet.ReadAscii(); // 2   ushort  Target.Length // *   string  Target
-        }
-
-        _packet.ReadUInt32(); // 4   uint    unkUShort0      //Structure changes!!!
-        _packet.ReadUInt8(); // 1   byte    unkByte4        //Structure changes!!!
     }
 
     public void Clear()
@@ -486,7 +580,7 @@ public class CharInfo : ICharInfo
         _packet = null;
     }
 
-    public Packet GetPacket()
+    public Packet? GetPacket()
     {
         return _packet;
     }

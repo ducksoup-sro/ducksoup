@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
-using API;
 using API.Database.DuckSoup;
 using API.Enums;
 using API.ServiceFactory;
 using API.Services;
 using API.Webserver;
-using WatsonWebserver;
+using Newtonsoft.Json;
+using WatsonWebserver.Core;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace DuckSoup.Library.Webserver;
 
@@ -28,15 +27,32 @@ public class AuthRoutes
         webserverManager.addStaticRoute(HttpMethod.GET, "/api/v1/auth/refresh", RefreshRoute);
         webserverManager.addStaticRoute(HttpMethod.GET, "/api/v1/auth/me", UserInfoRoute);
 
-        webserverManager.addProtectedPrefix("/api/v1/auth/login", new[] { UserRole.Anonymous });
-        webserverManager.addProtectedPrefix("/api/v1/auth/logout", new[] { UserRole.Authenticated });
-        webserverManager.addProtectedPrefix("/api/v1/auth/invalidate", new[] { UserRole.Authenticated });
-        webserverManager.addProtectedPrefix("/api/v1/auth/refresh", new[] { UserRole.Anyone });
-        webserverManager.addProtectedPrefix("/api/v1/auth/me", new[] { UserRole.Authenticated });
+        webserverManager.addProtectedPrefix("/api/v1/auth/login", new[]
+        {
+            UserRole.Anonymous
+        });
+        webserverManager.addProtectedPrefix("/api/v1/auth/logout", new[]
+        {
+            UserRole.Authenticated
+        });
+        webserverManager.addProtectedPrefix("/api/v1/auth/invalidate", new[]
+        {
+            UserRole.Authenticated
+        });
+        webserverManager.addProtectedPrefix("/api/v1/auth/refresh", new[]
+        {
+            UserRole.Anyone
+        });
+        webserverManager.addProtectedPrefix("/api/v1/auth/me", new[]
+        {
+            UserRole.Authenticated
+        });
     }
 
-    private async Task UserInfoRoute(HttpContext ctx)
+    private async Task UserInfoRoute(HttpContextBase ctx)
     {
+        ctx.Response.ContentType = "application/json";
+
         if (ctx.Metadata is not User user)
         {
             ctx.Response.StatusCode = 401;
@@ -48,9 +64,11 @@ public class AuthRoutes
         await ctx.Response.Send(JsonSerializer.Serialize(user));
     }
 
-    private async Task RefreshRoute(HttpContext ctx)
+    private async Task RefreshRoute(HttpContextBase ctx)
     {
-        var hasCookie = ctx.Request.HeaderExists("Cookie", true);
+        ctx.Response.ContentType = "application/json";
+
+        bool hasCookie = ctx.Request.HeaderExists("Cookie");
         if (!hasCookie)
         {
             ctx.Response.StatusCode = 401;
@@ -58,20 +76,14 @@ public class AuthRoutes
             return;
         }
 
-        var cookies = ctx.Request.Headers["Cookie"].Split(";");
+        string[] cookies = ctx.Request.Headers["Cookie"].Split(";");
         string refreshToken = null;
-        foreach (var cookie in cookies)
+        foreach (string cookie in cookies)
         {
-            var split = cookie.Split("=");
-            if (split.Length != 2)
-            {
-                continue;
-            }
+            string[] split = cookie.Split("=");
+            if (split.Length != 2) continue;
 
-            if (!split[0].Equals("refresh_token"))
-            {
-                continue;
-            }
+            if (!split[0].Equals("refresh_token")) continue;
 
             refreshToken = split[1];
             break;
@@ -84,7 +96,7 @@ public class AuthRoutes
             return;
         }
 
-        var refreshPayload = _authService.CheckRefreshToken(refreshToken);
+        IAuthPayload? refreshPayload = _authService.CheckRefreshToken(refreshToken);
         if (refreshPayload == null)
         {
             ctx.Response.StatusCode = 401;
@@ -92,7 +104,7 @@ public class AuthRoutes
             return;
         }
 
-        var user = _userService.GetUser(refreshPayload.aud);
+        User? user = _userService.GetUser(refreshPayload.aud);
         if (user == null || user.tokenVersion != refreshPayload.version)
         {
             ctx.Response.StatusCode = 401;
@@ -100,14 +112,16 @@ public class AuthRoutes
             return;
         }
 
-        var accessToken = _authService.GenerateAccessToken(user);
+        string accessToken = _authService.GenerateAccessToken(user);
 
         ctx.Response.StatusCode = 200;
         await ctx.Response.Send("{ \"access_token\": \"" + accessToken + "\"}");
     }
 
-    private async Task InvalidateRoute(HttpContext ctx)
+    private async Task InvalidateRoute(HttpContextBase ctx)
     {
+        ctx.Response.ContentType = "application/json";
+
         if (ctx.Metadata is not User user)
         {
             ctx.Response.StatusCode = 401;
@@ -118,8 +132,8 @@ public class AuthRoutes
         user.tokenVersion += 1;
         _userService.AddUser(user);
 
-        var accessToken = _authService.GenerateAccessToken(user);
-        var refreshToken = _authService.GenerateRefreshToken(user);
+        string accessToken = _authService.GenerateAccessToken(user);
+        string refreshToken = _authService.GenerateRefreshToken(user);
 
         // TODO :: probably should enable secure if https is available
         // ctx.Response.Headers["Set-Cookie"] = $"refresh_token={refreshToken};Secure; HttpOnly";
@@ -128,8 +142,10 @@ public class AuthRoutes
         await ctx.Response.Send("{ \"access_token\": \"" + accessToken + "\"}");
     }
 
-    private async Task LogoutRoute(HttpContext ctx)
+    private async Task LogoutRoute(HttpContextBase ctx)
     {
+        ctx.Response.ContentType = "application/json";
+
         if (ctx.Metadata is not User)
         {
             ctx.Response.StatusCode = 401;
@@ -139,17 +155,19 @@ public class AuthRoutes
 
         // TODO :: probably should enable secure if https is available
         // ctx.Response.Headers["Set-Cookie"] = $"refresh_token=deleted;Secure; HttpOnly; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-        ctx.Response.Headers["Set-Cookie"] = $"refresh_token=deleted; HttpOnly; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        ctx.Response.Headers["Set-Cookie"] = "refresh_token=deleted; HttpOnly; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         ctx.Response.StatusCode = 200;
         await ctx.Response.Send("{ \"status\": \"ok\"}");
     }
 
-    private async Task LoginRoute(HttpContext ctx)
+    private async Task LoginRoute(HttpContextBase ctx)
     {
-        LoginRequest req;
+        ctx.Response.ContentType = "application/json";
+
+        LoginRequest? req;
         try
         {
-            req = ctx.Request.DataAsJsonObject<LoginRequest>();
+            req = JsonConvert.DeserializeObject<LoginRequest>(ctx.Request.DataAsString);
 
             if (req == null || req.Username == null || req.Password == null ||
                 req.Username.Replace(" ", "").Length == 0 ||
@@ -167,7 +185,7 @@ public class AuthRoutes
             return;
         }
 
-        var user = _userService.GetUser(req.Username);
+        User? user = _userService.GetUser(req.Username);
         if (user == null)
         {
             ctx.Response.StatusCode = 400;
@@ -182,8 +200,8 @@ public class AuthRoutes
             return;
         }
 
-        var accessToken = _authService.GenerateAccessToken(user);
-        var refreshToken = _authService.GenerateRefreshToken(user);
+        string accessToken = _authService.GenerateAccessToken(user);
+        string refreshToken = _authService.GenerateRefreshToken(user);
 
         // TODO :: probably should enable secure if https is available
         // ctx.Response.Headers["Set-Cookie"] = $"refresh_token={refreshToken};Secure; HttpOnly";
@@ -196,12 +214,12 @@ public class AuthRoutes
 // do not make an abstract class - it will crash the serialization
 internal class LoginRequest
 {
-    public string Username { get; }
-    public string Password { get; }
-
     public LoginRequest(string username, string password)
     {
         Username = username;
         Password = password;
     }
+
+    public string Username { get; }
+    public string Password { get; }
 }

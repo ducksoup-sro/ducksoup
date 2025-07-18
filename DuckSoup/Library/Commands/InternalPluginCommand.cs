@@ -6,16 +6,17 @@ namespace DuckSoup.Library.Commands;
 
 public class InternalPluginCommand : Command
 {
-    public InternalPluginCommand(string? name, string? syntax, string? description, IEnumerable<string>? aliases = null) : base(name, syntax, description, aliases)
+    public InternalPluginCommand(string? name, string? syntax, string? description, IEnumerable<string>? aliases = null)
+        : base(name, syntax, description, aliases)
     {
-        var helpCommand = new HelpCommand(SubCommands);
+        HelpCommand helpCommand = new HelpCommand(SubCommands);
     }
 
     public void AddCommands(List<Command> commands)
     {
         SubCommands?.AddRange(commands);
     }
-    
+
     public override void Execute(string[]? args)
     {
         if (args == null || args.Length == 0 || args[0] == "")
@@ -24,7 +25,7 @@ public class InternalPluginCommand : Command
             return;
         }
 
-        foreach (var command in SubCommands.Where(command =>
+        foreach (Command command in SubCommands.Where(command =>
                      command.GetName().ToLower().Equals(args[0].ToLower()) ||
                      command.GetAliases().Contains(args[0].ToLower())))
         {
@@ -33,6 +34,5 @@ public class InternalPluginCommand : Command
         }
 
         ExecuteHelpCommand();
-        
     }
 }

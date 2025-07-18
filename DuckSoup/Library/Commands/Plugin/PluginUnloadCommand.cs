@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using API;
-using API.Command;
+﻿using API.Command;
 using API.Plugin;
 using API.ServiceFactory;
-using McMaster.NETCore.Plugins;
+using Serilog;
 
 namespace DuckSoup.Library.Commands.Plugin;
 
@@ -11,7 +9,10 @@ public class PluginUnloadCommand : Command
 {
     private IPluginManager _pluginManager;
 
-    public PluginUnloadCommand() : base("unload", "plugin unload <name>", "Unloads a given plugin", new []{"ul"})
+    public PluginUnloadCommand() : base("unload", "plugin unload <name>", "Unloads a given plugin", new[]
+    {
+        "ul"
+    })
     {
     }
 
@@ -19,12 +20,9 @@ public class PluginUnloadCommand : Command
     {
         _pluginManager ??= ServiceFactory.Load<IPluginManager>(typeof(IPluginManager));
 
-        if (args.Length == 0 || args[0].Replace(" ", "") == "" || !_pluginManager.IsLoaded(args[0]))
-        {
-            return;
-        }
+        if (args.Length == 0 || args[0].Replace(" ", "") == "" || !_pluginManager.IsLoaded(args[0])) return;
 
-        Global.Logger.InfoFormat(
+        Log.Information(
             _pluginManager.UnloadPlugin(args[0]) ? "Plugin: {0} unloaded" : "Error while unloading plugin {0}.",
             args[0]);
     }
