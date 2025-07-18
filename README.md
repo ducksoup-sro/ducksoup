@@ -8,7 +8,7 @@ DuckSoup is a C# packet filter for v188 Silkroad Online. The main focus is on qu
 The base is fully written by myself with some help of friends and google. The only part I got inspired from was the
 PacketHandler part which has some links to Chernobyls PacketHandler.
 
-Why is DuckSoup so special? It uses `.NET 6.0` which is by far more porefull, advanced and it can be used on Linux for
+Why is DuckSoup so special? It uses `.NET 10.0 (C#14)` which is by far more porefull, advanced and it can be used on Linux for
 some extra performance and security! Also DuckSoup is developed under the concept "quality over quantity".
 
 ## Motivation
