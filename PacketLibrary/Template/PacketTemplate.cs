@@ -29,8 +29,8 @@ public class PacketTemplate : Packet
         // 2. throw new NotImplementedException();
         // 3. nothing
         // 4. Example 1. - Read it locally 
-        TryRead<byte>(out var test);
-        TryRead(out var ThisIsAString);
+        TryRead<byte>(out byte test);
+        TryRead(out string ThisIsAString);
 
         // 4. Example 2. - Read it in a way it can be modified and rebuild
         TryRead(out Test123);

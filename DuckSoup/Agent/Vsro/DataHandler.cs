@@ -24,7 +24,7 @@ public class DataHandler
 
     private async Task<Packet> CLIENT_GAME_READY(CLIENT_GAME_READY data, ISession session)
     {
-        session.GetData(Data.CharScreen, out var charScreen, true);
+        session.GetData(Data.CharScreen, out bool charScreen, true);
         session.SetData(Data.CharacterGameReady, true);
         session.SetData(Data.CharacterGameReadyTimestamp, DateTime.Now.ToUnixTimeMilliseconds());
         if (charScreen)
@@ -35,7 +35,7 @@ public class DataHandler
 
         EventFactory.Publish(EventFactoryNames.OnCharacterGameReadyChange, session, true);
 
-        var countdownManager = session.GetCountdownManager();
+        ICountdownManager? countdownManager = session.GetCountdownManager();
         if (countdownManager != null && countdownManager.IsStarted())
         {
             if (!countdownManager.IsStopOnTeleport())
@@ -44,12 +44,12 @@ public class DataHandler
                 countdownManager.Stop();
         }
 
-        var timerManager = session.GetTimerManager();
+        ITimerManager? timerManager = session.GetTimerManager();
         if (timerManager != null && timerManager.IsStarted()) timerManager.Stop();
 
         return data;
     }
-    
+
     private async Task<Packet> SERVER_ENTITY_POSITION_UPDATE(SERVER_ENTITY_POSITION_UPDATE data, ISession session)
     {
         session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
@@ -66,28 +66,31 @@ public class DataHandler
     {
         session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
         session.GetData(Data.Vehicle, out Cos? vehicle, null);
-        
+
         if (charInfo == null || data.TargetId != charInfo.UniqueCharId &&
             (vehicle == null || vehicle.UniqueId != data.TargetId))
         {
             return data;
         }
-        
+
         charInfo.LastPositionUpdate = DateTime.UtcNow.ToUnixTimeMilliseconds();
         if (data.Movement.HasSource) charInfo.CurPosition = data.Movement.Source;
 
-        if (data.Movement.HasDestination) {
+        if (data.Movement.HasDestination)
+        {
             charInfo.TargetPosition = data.Movement.Destination;
-        } else {
+        }
+        else
+        {
             charInfo.TargetPosition = new Position(0, 0);
         }
-        
-        var timerManager = session.GetTimerManager();
+
+        ITimerManager? timerManager = session.GetTimerManager();
         if (timerManager == null)
         {
             return data;
         }
-        
+
         if (timerManager.IsStarted() && timerManager.IsStopOnMove() &&
             data.TargetId == charInfo.UniqueCharId)
         {
@@ -99,23 +102,23 @@ public class DataHandler
         {
             timerManager.Stop();
         }
-        
+
         return data;
     }
-    
+
     private async Task<Packet> SERVER_TELEPORT_USE_RESPONSE(SERVER_TELEPORT_USE_RESPONSE data, ISession session)
     {
         session.SetData(Data.CharacterGameReady, false);
         session.SetData(Data.CharacterGameReadyTimestamp, 0);
         EventFactory.Publish(EventFactoryNames.OnCharacterGameReadyChange, session, false);
-        
-        var countdownManager = session.GetCountdownManager();
+
+        ICountdownManager? countdownManager = session.GetCountdownManager();
         if (countdownManager != null && countdownManager.IsStarted() && countdownManager.IsStopOnTeleport())
         {
             countdownManager.Stop();
         }
 
-        var timerManager = session.GetTimerManager();
+        ITimerManager? timerManager = session.GetTimerManager();
         if (timerManager != null && timerManager.IsStarted())
         {
             timerManager.Stop();

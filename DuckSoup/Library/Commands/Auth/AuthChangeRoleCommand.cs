@@ -1,5 +1,6 @@
 ﻿using System;
 using API.Command;
+using API.Database.DuckSoup;
 using API.Enums;
 using API.ServiceFactory;
 using API.Services;
@@ -12,7 +13,10 @@ public class AuthChangeRoleCommand : Command
     private IUserService _service;
 
     public AuthChangeRoleCommand() : base("changerole", "auth role <username> <role>",
-        "Changes the role of the given user.", new[] { "role" })
+        "Changes the role of the given user.", new[]
+        {
+            "role"
+        })
     {
     }
 
@@ -26,20 +30,20 @@ public class AuthChangeRoleCommand : Command
             return;
         }
 
-        var username = args[0];
-        var role = args[1];
+        string username = args[0];
+        string role = args[1];
 
-        var user = _service.GetUser(username);
+        User? user = _service.GetUser(username);
         if (user == null)
         {
             Log.Information("Username {0} does not exist", username);
             return;
         }
 
-        var oldRole = user.Role;
+        UserRole oldRole = user.Role;
 
         UserRole? userRole = null;
-        foreach (var name in Enum.GetNames(typeof(UserRole)))
+        foreach (string name in Enum.GetNames(typeof(UserRole)))
         {
             if (!role.ToUpper().Equals(name)) continue;
             userRole = (UserRole?)Enum.Parse(typeof(UserRole), name);

@@ -27,7 +27,7 @@ public class ISRO_R_ServerFactory : IServerFactory
 
     public HashSet<ushort> GetWhitelist(ServerType serverType)
     {
-        var defaultList = Utility.GetDefaultList(SecurityType.ISRO_R);
+        IDefaultList defaultList = Utility.GetDefaultList(SecurityType.ISRO_R);
 
         return serverType switch
         {
@@ -45,7 +45,7 @@ public class ISRO_R_ServerFactory : IServerFactory
 
     public HashSet<ushort> GetBlacklist(ServerType serverType)
     {
-        var defaultList = Utility.GetDefaultList(SecurityType.ISRO_R);
+        IDefaultList defaultList = Utility.GetDefaultList(SecurityType.ISRO_R);
 
         return serverType switch
         {

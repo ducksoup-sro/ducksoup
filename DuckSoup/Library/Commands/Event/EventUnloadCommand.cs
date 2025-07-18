@@ -9,7 +9,10 @@ public class EventUnloadCommand : Command
 {
     private IEventManager _eventManager;
 
-    public EventUnloadCommand() : base("unload", "event unload <name>", "Unloads a given event", new[] { "ul" })
+    public EventUnloadCommand() : base("unload", "event unload <name>", "Unloads a given event", new[]
+    {
+        "ul"
+    })
     {
     }
 

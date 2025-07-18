@@ -10,7 +10,7 @@ public class SpawnedNpc : SpawnedBionic
     {
     }
 
-    public NpcTalk Talk { get; } = new();
+    public NpcTalk Talk { get; } = new NpcTalk();
 
     internal virtual void Deserialize(Packet packet)
     {

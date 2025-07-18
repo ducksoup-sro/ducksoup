@@ -27,9 +27,11 @@ public class PluginManager : IPluginManager
 
     public bool IsLoaded(string name)
     {
-        foreach (var (_, value) in Loaders)
+        foreach ((PluginLoader _, IPlugin value) in Loaders)
+        {
             if (value.Name.ToLower().Equals(name.ToLower()))
                 return true;
+        }
 
         return false;
     }
@@ -41,10 +43,10 @@ public class PluginManager : IPluginManager
 
     public IPlugin StartPlugin(PluginLoader pluginLoader)
     {
-        var commandManager = ServiceFactory.Load<ICommandManager>(typeof(ICommandManager));
+        ICommandManager commandManager = ServiceFactory.Load<ICommandManager>(typeof(ICommandManager));
 
         IPlugin plugin = null;
-        foreach (var pluginType in pluginLoader
+        foreach (Type pluginType in pluginLoader
                      .LoadDefaultAssembly()
                      .GetTypes()
                      .Where(t => typeof(IPlugin).IsAssignableFrom(t) && !t.IsAbstract))
@@ -52,7 +54,7 @@ public class PluginManager : IPluginManager
             // This assumes the implementation of IPlugin has a parameterless constructor
             plugin = (IPlugin)Activator.CreateInstance(pluginType)!;
             plugin.OnEnable();
-            var tempPlugin = new InternalPluginCommand(plugin.Name, plugin.Name + " <command>", "");
+            InternalPluginCommand tempPlugin = new InternalPluginCommand(plugin.Name, plugin.Name + " <command>", "");
             tempPlugin.AddCommands(plugin.RegisterCommands());
             commandManager._commands.Add(tempPlugin);
             Loaders.Add(pluginLoader, plugin);
@@ -63,19 +65,24 @@ public class PluginManager : IPluginManager
 
     public bool UnloadPlugin(string name)
     {
-        var commandManager = ServiceFactory.Load<ICommandManager>(typeof(ICommandManager));
-        var removePlugins = new Dictionary<PluginLoader, IPlugin>();
-        var removeCommands = new List<Command>();
+        ICommandManager commandManager = ServiceFactory.Load<ICommandManager>(typeof(ICommandManager));
+        Dictionary<PluginLoader, IPlugin> removePlugins = new Dictionary<PluginLoader, IPlugin>();
+        List<Command> removeCommands = new List<Command>();
 
-        foreach (var (key, value) in Loaders)
+        foreach ((PluginLoader key, IPlugin value) in Loaders)
+        {
             if (value.Name.ToLower().Equals(name.ToLower()))
                 removePlugins.Add(key, value);
+        }
 
-        foreach (var (_, value) in removePlugins)
+        foreach ((PluginLoader _, IPlugin value) in removePlugins)
         {
             removeCommands.AddRange(commandManager._commands.Where(commandManagerCommand =>
                 commandManagerCommand.GetName().Equals(value.Name)));
-            foreach (var removeCommand in removeCommands) commandManager._commands.Remove(removeCommand);
+            foreach (Command removeCommand in removeCommands)
+            {
+                commandManager._commands.Remove(removeCommand);
+            }
             return UnloadPlugin(value);
         }
 
@@ -84,7 +91,7 @@ public class PluginManager : IPluginManager
 
     public bool UnloadPlugin(IPlugin plugin)
     {
-        foreach (var (key, value) in Loaders)
+        foreach ((PluginLoader key, IPlugin value) in Loaders)
         {
             if (!value.Name.ToLower().Equals(plugin.Name.ToLower())) continue;
 
@@ -100,7 +107,7 @@ public class PluginManager : IPluginManager
     {
         pluginLoader.Dispose();
         Loaders.Remove(pluginLoader);
-        var check = !Loaders.ContainsKey(pluginLoader);
+        bool check = !Loaders.ContainsKey(pluginLoader);
         return check;
     }
 
@@ -115,9 +122,9 @@ public class PluginManager : IPluginManager
     {
         if (!Directory.Exists(directory)) return null;
 
-        foreach (var folder in Directory.GetDirectories(directory))
+        foreach (string folder in Directory.GetDirectories(directory))
         {
-            var pluginFolder = $"{directory}{Path.DirectorySeparatorChar}{pluginName}";
+            string pluginFolder = $"{directory}{Path.DirectorySeparatorChar}{pluginName}";
             if (folder.ToLower().Equals(pluginFolder.ToLower())) return folder;
         }
 
@@ -126,22 +133,25 @@ public class PluginManager : IPluginManager
 
     public void Dispose()
     {
-        foreach (var (_, value) in Loaders) value.Dispose();
+        foreach ((PluginLoader _, IPlugin value) in Loaders)
+        {
+            value.Dispose();
+        }
 
         Loaders = null;
     }
 
     public PluginLoader? LoadPlugin(string folder, bool setup)
     {
-        var configFile = Path.Combine(folder, "plugin.json");
+        string configFile = Path.Combine(folder, "plugin.json");
         if (!File.Exists(configFile))
         {
             Log.Warning("No plugin.json found in: {0}", folder);
             return null;
         }
 
-        var configJson = File.ReadAllText(configFile);
-        var config = JsonConvert.DeserializeObject<PluginConfig>(configJson);
+        string configJson = File.ReadAllText(configFile);
+        PluginConfig? config = JsonConvert.DeserializeObject<PluginConfig>(configJson);
 
         if (setup && !config.AutoStart)
         {
@@ -155,7 +165,7 @@ public class PluginManager : IPluginManager
             return null;
         }
 
-        var absoluteMainLibraryPath = Path.Combine(Directory.GetCurrentDirectory(), folder, config.MainLibrary);
+        string absoluteMainLibraryPath = Path.Combine(Directory.GetCurrentDirectory(), folder, config.MainLibrary);
         return PluginLoader.CreateFromAssemblyFile(absoluteMainLibraryPath,
             loaderConfig =>
             {
@@ -175,20 +185,20 @@ public class PluginManager : IPluginManager
             return;
         }
 
-        var pluginFolders = Directory.GetDirectories("plugins");
-        var temp = new List<PluginLoader>();
-        foreach (var folder in pluginFolders)
+        string[] pluginFolders = Directory.GetDirectories("plugins");
+        List<PluginLoader> temp = new List<PluginLoader>();
+        foreach (string folder in pluginFolders)
         {
-            var tempPlugin = LoadPlugin(folder, true);
+            PluginLoader? tempPlugin = LoadPlugin(folder, true);
             if (tempPlugin == null) continue;
             temp.Add(tempPlugin);
             Log.Information("Plugin from folder: {0} loaded.", folder.Replace(Path.DirectorySeparatorChar + "plugins", ""));
         }
 
         Log.Information("Starting plugins..");
-        foreach (var pluginLoader in temp)
+        foreach (PluginLoader pluginLoader in temp)
         {
-            var plugin = StartPlugin(pluginLoader);
+            IPlugin plugin = StartPlugin(pluginLoader);
             Log.Information("Plugin: {0} ({1}) by [{2}] started.", plugin.Name, plugin.Version, plugin.Author);
         }
     }

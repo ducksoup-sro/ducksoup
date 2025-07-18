@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using API;
 using API.Extensions;
+using API.Session;
 using Database.VSRO188;
+using Database.VSRO188.SRO_VT_SHARD;
 using PacketLibrary.Handler;
 using PacketLibrary.VSRO188.Agent.Enums;
-using PacketLibrary.VSRO188.Agent.Objects;
 using Serilog;
 using SilkroadSecurityAPI.Message;
 
@@ -17,13 +17,13 @@ namespace DuckSoup.Library.Session;
 // Credits: Mostly taken from RSBot https://github.com/SDClowen/RSBot/
 public class EntityInfo
 {
-    private ISession _session;
-    private SpawnInfoType? _spawnInfoType;
+    private readonly bool _debug = false;
+    private readonly ISession _session;
     private ushort _amount;
-    private bool _single;
-    private Packet? _packet = null;
     private bool _exit = false;
-    private bool _debug = false;
+    private Packet? _packet = null;
+    private bool _single;
+    private SpawnInfoType? _spawnInfoType;
 
     public EntityInfo(ISession session)
     {
@@ -59,7 +59,7 @@ public class EntityInfo
             watch = Stopwatch.StartNew();
         }
 
-        for (var i = 0; i < packet.GetBytes().Length; i++)
+        for (int i = 0; i < packet.GetBytes().Length; i++)
         {
             packet.TryRead(out byte b);
             _packet.TryWrite(b);
@@ -69,9 +69,9 @@ public class EntityInfo
         {
             watch.Stop();
             double ticks = watch.ElapsedTicks;
-            var seconds = ticks / Stopwatch.Frequency;
-            var milliseconds = ticks / Stopwatch.Frequency * 1000;
-            var nanoseconds = ticks / Stopwatch.Frequency * 1000000000;
+            double seconds = ticks / Stopwatch.Frequency;
+            double milliseconds = ticks / Stopwatch.Frequency * 1000;
+            double nanoseconds = ticks / Stopwatch.Frequency * 1000000000;
             Log.Information("EntityInfo Append: {0}ms - {1} - {2} ", milliseconds, _spawnInfoType, _amount);
         }
     }
@@ -107,7 +107,7 @@ public class EntityInfo
             return;
         }
 
-        var refObjCommon = await Cache.GetRefObjCommonAsync((int)refObjId);
+        _RefObjCommon? refObjCommon = await Cache.GetRefObjCommonAsync((int)refObjId);
         if (refObjCommon == null)
         {
             _exit = true;
@@ -142,13 +142,14 @@ public class EntityInfo
                     for (int i = 0; i < itemCount; i++)
                     {
                         _packet.TryRead(out uint Item_RefItemId);
-                        var item = Cache.GetRefObjCommonAsync((int)Item_RefItemId).Result;
+                        _RefObjCommon? item = Cache.GetRefObjCommonAsync((int)Item_RefItemId).Result;
                         if (item.TypeID1 == 3 && item.TypeID2 == 1)
                         {
                             _packet.TryRead(out byte Item_OptLevel);
                         }
-                        
-                        if (item.TypeID2 == 1 && item.TypeID3 == 7 && item.TypeID4 is not 4 or 5) {
+
+                        if (item.TypeID2 == 1 && item.TypeID3 == 7 && item.TypeID4 is not 4 or 5)
+                        {
                             hasJobItem = true;
                         }
                     }
@@ -159,7 +160,7 @@ public class EntityInfo
                     for (int i = 0; i < itemCount; i++)
                     {
                         _packet.TryRead(out uint AvatarItem_RefItemId);
-                        var item = Cache.GetRefObjCommonAsync((int)AvatarItem_RefItemId).Result;
+                        _RefObjCommon? item = Cache.GetRefObjCommonAsync((int)AvatarItem_RefItemId).Result;
                         if (item.TypeID1 == 3 && item.TypeID2 == 1)
                         {
                             _packet.TryRead(out byte AvatarItem_OptLevel);
@@ -171,7 +172,7 @@ public class EntityInfo
                     if (hasMask)
                     {
                         _packet.TryRead(out uint Mask_RefObjId);
-                        var maskObject = await Cache.GetRefObjCommonAsync((int)Mask_RefObjId);
+                        _RefObjCommon? maskObject = await Cache.GetRefObjCommonAsync((int)Mask_RefObjId);
                         if (maskObject.TypeID1 == refObjCommon.TypeID1 &&
                             maskObject.TypeID2 == refObjCommon.TypeID2)
                         {
@@ -195,7 +196,7 @@ public class EntityInfo
 
                 // Is this base? Entity / Bionic?
                 _packet.TryRead(out uint Base_UniqueId);
-                
+
                 //Position
                 _packet.TryRead(out ushort Base_Position_RegionId)
                     .TryRead(out float Base_Position_X)
@@ -233,7 +234,7 @@ public class EntityInfo
 
                 //State
                 _packet.TryRead(out LifeState Base_State_LifeState); // byte
-                _packet.TryRead(out byte Base_State_unkByte0); 
+                _packet.TryRead(out byte Base_State_unkByte0);
                 _packet.TryRead(out MotionState Base_State_MotionState); // byte
                 _packet.TryRead(out BodyState Base_State_BodyState); // byte
                 _packet.TryRead(out float Bionic_State_WalkSpeed);
@@ -244,7 +245,7 @@ public class EntityInfo
                 {
                     _packet.TryRead(out uint Buff_RefSkillID);
                     _packet.TryRead(out uint Buff_Duration);
-                    var skill = await Cache.GetRefSkillAsync((int)Buff_RefSkillID);
+                    _RefSkill? skill = await Cache.GetRefSkillAsync((int)Buff_RefSkillID);
                     if (skill == null)
                     {
                         Log.Debug("EntityParse Skill Error: SkillId: {0} RefObjCommonId: ", Buff_RefSkillID, refObjId);
@@ -296,10 +297,10 @@ public class EntityInfo
 
                     _packet.TryRead(out byte Character_EquipmentCooldown);
                     _packet.TryRead(out byte Character_PKFlag);
-                    
+
                     // -- DuckSoup start, b0ykoe
-                    var spawnedPlayerSession = await Helper.GetSessionByCharName(Character_Name);
-                    var timerManager = spawnedPlayerSession?.GetTimerManager();
+                    ISession? spawnedPlayerSession = await Helper.GetSessionByCharName(Character_Name);
+                    ITimerManager? timerManager = spawnedPlayerSession?.GetTimerManager();
                     if (timerManager != null &&
                         timerManager.IsStarted() &&
                         timerManager.IsBroadcast())
@@ -344,13 +345,13 @@ public class EntityInfo
                         // CodeName128 = NPC_COS_CAPTURED
                         // CodeName128 = NPC_COS_QUEST
                         // CodeName128 = NPC_COS_QUEST
-                        if (refObjCommon.TypeID4 == 2 || 
-                            refObjCommon.TypeID4 == 3 || 
-                            refObjCommon.TypeID4 == 4 || 
-                            refObjCommon.TypeID4 == 5 || 
-                            refObjCommon.TypeID4 == 6 || 
-                            refObjCommon.TypeID4 == 7 || 
-                            refObjCommon.TypeID4 == 8) 
+                        if (refObjCommon.TypeID4 == 2 ||
+                            refObjCommon.TypeID4 == 3 ||
+                            refObjCommon.TypeID4 == 4 ||
+                            refObjCommon.TypeID4 == 5 ||
+                            refObjCommon.TypeID4 == 6 ||
+                            refObjCommon.TypeID4 == 7 ||
+                            refObjCommon.TypeID4 == 8)
                         {
                             if (refObjCommon.TypeID4 == 3 ||
                                 refObjCommon.TypeID4 == 4)
@@ -386,7 +387,7 @@ public class EntityInfo
                                         refObjCommon.TypeID4 == 5)
                                     {
                                         _packet.TryRead(out byte COS_Owner_PVPState);
-                                        if (refObjCommon.TypeID4 == 5) 
+                                        if (refObjCommon.TypeID4 == 5)
                                         {
                                             //NPC_COS_GUILD
                                             _packet.TryRead(out uint COS_Owner_RefObjID);
@@ -534,7 +535,7 @@ public class EntityInfo
 
         _packet.ToReadOnly();
 
-        for (var i = 0; i < _amount; i++)
+        for (int i = 0; i < _amount; i++)
         {
             if (_exit)
             {
@@ -559,9 +560,9 @@ public class EntityInfo
         {
             watch.Stop();
             double ticks = watch.ElapsedTicks;
-            var seconds = ticks / Stopwatch.Frequency;
-            var milliseconds = ticks / Stopwatch.Frequency * 1000;
-            var nanoseconds = ticks / Stopwatch.Frequency * 1000000000;
+            double seconds = ticks / Stopwatch.Frequency;
+            double milliseconds = ticks / Stopwatch.Frequency * 1000;
+            double nanoseconds = ticks / Stopwatch.Frequency * 1000000000;
             Log.Information("EntityInfo Read: {0}ms - Early Exit: {1} - Amount: {2} - Type: {3}", milliseconds, _exit,
                 _amount, _spawnInfoType);
         }

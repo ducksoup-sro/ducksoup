@@ -18,8 +18,8 @@ public class Movement
 
     public static Movement MotionFromPacket(Packet packet)
     {
-        packet.TryRead<bool>(out var hasDestination);
-        var result = new Movement
+        packet.TryRead<bool>(out bool hasDestination);
+        Movement result = new Movement
         {
             HasDestination = hasDestination
         };
@@ -31,7 +31,7 @@ public class Movement
         else
         {
             packet.TryRead(out result.KeyMovement); //0 = Spinning, 1 = Sky-/Key-walking
-            packet.TryRead<short>(out var angle);
+            packet.TryRead<short>(out short angle);
 
             result.HasAngle = true;
             result.Angle = angle;
@@ -40,7 +40,7 @@ public class Movement
         packet.TryRead(out result.HasSource);
         if (result.HasSource)
         {
-            packet.TryRead<ushort>(out var regionId);
+            packet.TryRead<ushort>(out ushort regionId);
             result.Source = new Position
             {
                 Region = new Region(regionId)
@@ -48,9 +48,9 @@ public class Movement
 
             if (result.Source.Region.IsDungeon)
             {
-                packet.TryRead<int>(out var sourceXOffset)
-                    .TryRead<float>(out var sourceZOffset)
-                    .TryRead<int>(out var sourceYOffset);
+                packet.TryRead<int>(out int sourceXOffset)
+                    .TryRead<float>(out float sourceZOffset)
+                    .TryRead<int>(out int sourceYOffset);
 
                 result.Source.XOffset = sourceXOffset / 10f;
                 result.Source.ZOffset = sourceZOffset;
@@ -58,9 +58,9 @@ public class Movement
             }
             else
             {
-                packet.TryRead<short>(out var sourceXOffset)
-                    .TryRead<float>(out var sourceZOffset)
-                    .TryRead<short>(out var sourceYOffset);
+                packet.TryRead<short>(out short sourceXOffset)
+                    .TryRead<float>(out float sourceZOffset)
+                    .TryRead<short>(out short sourceYOffset);
 
                 result.Source.XOffset = sourceXOffset / 10f;
                 result.Source.ZOffset = sourceZOffset;
@@ -107,10 +107,10 @@ public class Movement
 
     public static Movement FromPacket(Packet packet)
     {
-        packet.TryRead<bool>(out var hasDestination)
-            .TryRead<MovementType>(out var movementType);
+        packet.TryRead<bool>(out bool hasDestination)
+            .TryRead<MovementType>(out MovementType movementType);
 
-        var result = new Movement
+        Movement result = new Movement
         {
             Source = Position.FromPacket(packet),
             HasDestination = hasDestination,
@@ -124,7 +124,7 @@ public class Movement
         }
         else
         {
-            packet.TryRead<byte>(out var unk1); //0 = Spinning, 1 = Sky-/Key-walking
+            packet.TryRead<byte>(out byte unk1); //0 = Spinning, 1 = Sky-/Key-walking
             result.HasAngle = true;
             packet.TryRead(out result.Angle);
         }

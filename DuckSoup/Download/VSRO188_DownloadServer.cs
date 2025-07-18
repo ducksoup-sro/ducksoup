@@ -19,7 +19,8 @@ public class VSRO188_DownloadServer : FakeServer
 
     public override void AddSession(ISession session)
     {
-        try {
+        try
+        {
             base.AddSession(session);
             _sharedObjects.DownloadSessions.Add(session);
         }

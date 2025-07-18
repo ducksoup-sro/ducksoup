@@ -33,7 +33,7 @@ public class EventFactoryImpl : IEventFactory
     {
         if (handler == null || Listeners == null || !Listeners.ContainsKey(name)) return;
 
-        var keysToRemove = Listeners[name].Where(m => m.Equals(handler)).ToList();
+        List<Delegate> keysToRemove = Listeners[name].Where(m => m.Equals(handler)).ToList();
         keysToRemove.ForEach(key => Listeners[name].Remove(key));
     }
 
@@ -41,7 +41,7 @@ public class EventFactoryImpl : IEventFactory
     {
         if (handler == null || Listeners == null || !Listeners.ContainsKey(name)) return;
 
-        var keysToRemove = Listeners[name].Where(m => m.Equals(handler)).ToList();
+        List<Delegate> keysToRemove = Listeners[name].Where(m => m.Equals(handler)).ToList();
         keysToRemove.ForEach(key => Listeners[name].Remove(key));
     }
 
@@ -51,14 +51,17 @@ public class EventFactoryImpl : IEventFactory
 
         Task.Run(() =>
         {
-            foreach (var listener in Listeners[name]) listener.DynamicInvoke(parameters);
+            foreach (Delegate listener in Listeners[name])
+            {
+                listener.DynamicInvoke(parameters);
+            }
         });
     }
 
     public bool HasSubscriptions(string name)
     {
-        if(Listeners == null || !Listeners.TryGetValue(name, out var listener)) return false;
-        
+        if (Listeners == null || !Listeners.TryGetValue(name, out HashSet<Delegate>? listener)) return false;
+
         return listener.Count > 0;
     }
 

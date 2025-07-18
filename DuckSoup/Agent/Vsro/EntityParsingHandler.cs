@@ -4,6 +4,7 @@ using API.EventFactory;
 using API.Extensions;
 using API.Session;
 using Database.VSRO188;
+using Database.VSRO188.SRO_VT_SHARD;
 using DuckSoup.Library.Session;
 using PacketLibrary.Handler;
 using PacketLibrary.VSRO188.Agent.Enums;
@@ -40,8 +41,8 @@ public class EntityParsingHandler
     {
         EventFactory.Publish(EventFactoryNames.OnCharacterSpawn, session);
 
-        session.GetData(Data.FirstSpawn, out var firstSpawn, false);
-        
+        session.GetData(Data.FirstSpawn, out bool firstSpawn, false);
+
         if (!firstSpawn)
         {
             session.SetData(Data.FirstSpawn, true);
@@ -58,13 +59,13 @@ public class EntityParsingHandler
             data.TryRead(out uint uniqueId)
                 .TryRead(out uint objectId);
 
-            var objCommon = await Cache.GetRefObjCommonAsync((int)objectId);
+            _RefObjCommon? objCommon = await Cache.GetRefObjCommonAsync((int)objectId);
             if (objCommon == null)
             {
                 return data;
             }
 
-            var objChar = await Cache.GetRefObjCharAsync(objCommon.Link);
+            _RefObjChar? objChar = await Cache.GetRefObjCharAsync(objCommon.Link);
             if (objChar == null)
             {
                 return data;
@@ -84,51 +85,51 @@ public class EntityParsingHandler
                             Id = objectId,
                             UniqueId = uniqueId,
                             Health = hp,
-                            MaxHealth = maxHp,
+                            MaxHealth = maxHp
                         });
                         break;
                     case 2:
-                        var jobTransport = new JobTransport
+                        JobTransport jobTransport = new JobTransport
                         {
                             Id = objectId,
                             UniqueId = uniqueId,
                             Health = hp,
                             MaxHealth = maxHp,
-                            Inventory = new InventoryItemCollection(data),
+                            Inventory = new InventoryItemCollection(data)
                         };
                         data.TryRead(out jobTransport.OwnerUniqueId);
                         session.SetData(Data.JobTransport, jobTransport);
                         break;
                     case 3:
-                        var growth = new Growth
+                        Growth growth = new Growth
                         {
                             Id = objectId,
                             UniqueId = uniqueId,
                             Health = hp,
-                            MaxHealth = maxHp,
+                            MaxHealth = maxHp
                         };
                         growth.Deserialize(data);
                         session.SetData(Data.Growth, growth);
                         break;
                     case 4:
-                        var ability = new Ability
+                        Ability ability = new Ability
                         {
                             Id = objectId,
                             UniqueId = uniqueId,
                             Health = hp,
-                            MaxHealth = maxHp,
+                            MaxHealth = maxHp
                         };
                         // TODO :: 
                         // ability.Deserialize(data);
                         session.SetData(Data.AbilityPet, ability);
                         break;
                     case 9:
-                        var fellow = new Fellow()
+                        Fellow fellow = new Fellow
                         {
                             Id = objectId,
                             UniqueId = uniqueId,
                             Health = hp,
-                            MaxHealth = maxHp,
+                            MaxHealth = maxHp
                         };
                         // TODO :: 
                         // fellow.Deserialize(data);
@@ -141,7 +142,7 @@ public class EntityParsingHandler
         {
             session.GetData(Data.CharInfo, out ICharInfo charInfo, null);
             session.GetData(Data.CharId, out int charId, -1);
-            Log.Error("EntityParsingHandler | Name: {0} | Id: {1}", (charInfo != null? charInfo.CharName : "null"), charId);
+            Log.Error("EntityParsingHandler | Name: {0} | Id: {1}", charInfo != null ? charInfo.CharName : "null", charId);
             Log.Error("EntityParsingHandler | {0}", exception.Message);
             Log.Error("EntityParsingHandler | {0}", exception.StackTrace);
             Log.Error("EntityParsingHandler | {0}", exception.InnerException);
@@ -155,11 +156,11 @@ public class EntityParsingHandler
         data.TryRead(out uint uniqueId)
             .TryRead(out byte type);
 
-        session.GetData<Transport?>(Data.Transport, out var transport, null);
-        session.GetData<JobTransport?>(Data.JobTransport, out var jobTransport, null);
-        session.GetData<Ability?>(Data.AbilityPet, out var abilityPet, null);
-        session.GetData<Growth?>(Data.Growth, out var growth, null);
-        session.GetData<Fellow?>(Data.Fellow, out var fellow, null);
+        session.GetData<Transport?>(Data.Transport, out Transport? transport, null);
+        session.GetData<JobTransport?>(Data.JobTransport, out JobTransport? jobTransport, null);
+        session.GetData<Ability?>(Data.AbilityPet, out Ability? abilityPet, null);
+        session.GetData<Growth?>(Data.Growth, out Growth? growth, null);
+        session.GetData<Fellow?>(Data.Fellow, out Fellow? fellow, null);
 
         if (growth?.UniqueId == uniqueId)
         {
@@ -178,7 +179,7 @@ public class EntityParsingHandler
 
                     growth.Experience += experience;
 
-                    var iLevel = growth.Level;
+                    byte iLevel = growth.Level;
                     while (growth.Experience > Cache.GetRefLevelAsync(iLevel).Result.Exp_C)
                     {
                         Log.Debug("EntityParsingHandler:167");
@@ -200,7 +201,7 @@ public class EntityParsingHandler
                     break;
                 case 7:
                     data.TryRead(out growth.Id);
-                    var record = growth.RefObjChar;
+                    _RefObjChar? record = growth.RefObjChar;
                     if (record != null)
                         growth.Health = growth.MaxHealth = record.MaxHP;
                     break;
@@ -226,7 +227,7 @@ public class EntityParsingHandler
 
                     fellow.Experience += experience;
 
-                    var iLevel = fellow.Level;
+                    byte iLevel = fellow.Level;
                     while (fellow.Experience > Cache.GetRefLevelAsync(iLevel).Result.Exp_C)
                     {
                         Log.Debug("EntityParsingHandler:215");
@@ -249,7 +250,7 @@ public class EntityParsingHandler
                     break;
                 case 7:
                     data.TryRead(out fellow.Id);
-                    var record = fellow.RefObjChar;
+                    _RefObjChar? record = fellow.RefObjChar;
                     if (record != null)
                         fellow.Health = fellow.MaxHealth = record.MaxHP;
                     break;
@@ -309,7 +310,7 @@ public class EntityParsingHandler
             .TryRead(out bool isMounted)
             .TryRead(out uint cosUniqueId);
 
-        session.GetData<ICharInfo?>(Data.CharInfo, out var charInfo, null);
+        session.GetData<ICharInfo?>(Data.CharInfo, out ICharInfo? charInfo, null);
         if (charInfo == null)
         {
             return data;
@@ -320,10 +321,10 @@ public class EntityParsingHandler
             return data;
         }
 
-        session.GetData<Transport?>(Data.Transport, out var transport, null);
-        session.GetData<JobTransport?>(Data.JobTransport, out var jobTransport, null);
-        session.GetData<Growth?>(Data.Growth, out var growth, null);
-        session.GetData<Fellow?>(Data.Fellow, out var fellow, null);
+        session.GetData<Transport?>(Data.Transport, out Transport? transport, null);
+        session.GetData<JobTransport?>(Data.JobTransport, out JobTransport? jobTransport, null);
+        session.GetData<Growth?>(Data.Growth, out Growth? growth, null);
+        session.GetData<Fellow?>(Data.Fellow, out Fellow? fellow, null);
 
         if (cosUniqueId == transport?.UniqueId)
             session.SetData(Data.Vehicle, transport);
@@ -354,14 +355,14 @@ public class EntityParsingHandler
     private async Task<Packet> EntityStateUpdate(SERVER_ENTITY_STATE_UPDATE data, ISession session)
     {
         data.TryRead(out uint uniqueId);
-        session.GetData<ICharInfo?>(Data.CharInfo, out var charInfo, null);
+        session.GetData<ICharInfo?>(Data.CharInfo, out ICharInfo? charInfo, null);
         if (charInfo == null || charInfo.UniqueCharId != uniqueId) return data;
 
         data.TryRead(out byte updateType)
             .TryRead(out byte updateState);
 
-        var countdownManager = session.GetCountdownManager();
-        var timerManager = session.GetTimerManager();
+        ICountdownManager? countdownManager = session.GetCountdownManager();
+        ITimerManager? timerManager = session.GetTimerManager();
 
         switch (updateType)
         {
@@ -383,7 +384,7 @@ public class EntityParsingHandler
 
                 break;
             case 1:
-                var motionState = (MotionState)updateState;
+                MotionState motionState = (MotionState)updateState;
                 charInfo.State.MotionState = motionState;
 
                 charInfo.State.MovementType = motionState switch
@@ -429,7 +430,7 @@ public class EntityParsingHandler
 
     private async Task<Packet> CharacterDataBegin(SERVER_CHARACTER_DATA_BEGIN data, ISession session)
     {
-        session.GetData(Data.CharInfo, out var charInfo, new CharInfo());
+        session.GetData(Data.CharInfo, out CharInfo charInfo, new CharInfo());
         charInfo.Initialize();
 
         return data;
@@ -437,7 +438,7 @@ public class EntityParsingHandler
 
     private async Task<Packet> CharacterData(SERVER_CHARACTER_DATA data, ISession session)
     {
-        session.GetData(Data.CharInfo, out var charInfo, new CharInfo());
+        session.GetData(Data.CharInfo, out CharInfo charInfo, new CharInfo());
         charInfo.Append(data);
 
         // data.ResultType = PacketResultType.Block;
@@ -446,26 +447,26 @@ public class EntityParsingHandler
 
     private async Task<Packet> CharacterDataEnd(SERVER_CHARACTER_DATA_END data, ISession session)
     {
-        session.GetData(Data.CharInfo, out var charInfo, new CharInfo());
+        session.GetData(Data.CharInfo, out CharInfo charInfo, new CharInfo());
 
-        var charPacket = charInfo.GetPacket();
+        Packet? charPacket = charInfo.GetPacket();
         if (charPacket == null) return data;
-        
+
         await charInfo.Read();
         // await session.SendToClient(charPacket);
         charInfo.Clear();
-        
-        
+
+
         return data;
     }
 
     private async Task<Packet> EntitySingleSpawn(SERVER_ENTITY_SPAWN data, ISession session)
     {
-        session.GetData(Data.EntityInfo, out var entityInfo, new EntityInfo(session));
+        session.GetData(Data.EntityInfo, out EntityInfo entityInfo, new EntityInfo(session));
         entityInfo.Initialize(SpawnInfoType.Spawn, 1, 0x3015);
         entityInfo.Append(data);
 
-        var entityPacket = entityInfo.GetPacket();
+        Packet? entityPacket = entityInfo.GetPacket();
         if (entityPacket == null) return data;
 
         await entityInfo.ReadSpawn();
@@ -478,11 +479,11 @@ public class EntityParsingHandler
 
     private async Task<Packet> EntitySingleDespawn(SERVER_ENTITY_DESPAWN data, ISession session)
     {
-        session.GetData(Data.EntityInfo, out var entityInfo, new EntityInfo(session));
+        session.GetData(Data.EntityInfo, out EntityInfo entityInfo, new EntityInfo(session));
         entityInfo.Initialize(SpawnInfoType.Despawn, 1, 0x3016);
         entityInfo.Append(data);
 
-        var entityPacket = entityInfo.GetPacket();
+        Packet? entityPacket = entityInfo.GetPacket();
         if (entityPacket == null) return data;
 
         await entityInfo.ReadDespawn();
@@ -495,15 +496,15 @@ public class EntityParsingHandler
 
     private async Task<Packet> EntityGroupSpawnBegin(SERVER_ENTITY_GROUPSPAWN_BEGIN data, ISession session)
     {
-        session.GetData(Data.EntityInfo, out var entityInfo, new EntityInfo(session));
+        session.GetData(Data.EntityInfo, out EntityInfo entityInfo, new EntityInfo(session));
         entityInfo.Initialize(data.SpawnInfoType, data.Amount, 0x3019);
-        
+
         return data;
     }
 
     private async Task<Packet> EntityGroupSpawnData(SERVER_ENTITY_GROUPSPAWN_DATA data, ISession session)
     {
-        session.GetData(Data.EntityInfo, out var entityInfo, new EntityInfo(session));
+        session.GetData(Data.EntityInfo, out EntityInfo entityInfo, new EntityInfo(session));
         entityInfo.Append(data);
 
         // data.ResultType = PacketResultType.Block;
@@ -512,8 +513,8 @@ public class EntityParsingHandler
 
     private async Task<Packet> EntityGroupSpawnEnd(SERVER_ENTITY_GROUPSPAWN_END data, ISession session)
     {
-        session.GetData(Data.EntityInfo, out var entityInfo, new EntityInfo(session));
-        var entityPacket = entityInfo.GetPacket();
+        session.GetData(Data.EntityInfo, out EntityInfo entityInfo, new EntityInfo(session));
+        Packet? entityPacket = entityInfo.GetPacket();
         if (entityPacket == null) return data;
 
         await entityInfo.Read();

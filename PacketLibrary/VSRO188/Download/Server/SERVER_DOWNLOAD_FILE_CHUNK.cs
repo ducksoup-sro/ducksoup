@@ -22,7 +22,10 @@ public class SERVER_DOWNLOAD_FILE_CHUNK : Packet
     public override async Task<Packet> Build()
     {
         Reset();
-        foreach (var b in Data) TryWrite(b);
+        foreach (byte b in Data)
+        {
+            TryWrite(b);
+        }
         return this;
     }
 

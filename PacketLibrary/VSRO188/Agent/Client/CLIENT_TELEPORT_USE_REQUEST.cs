@@ -5,12 +5,12 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_TELEPORT_USE
 public class CLIENT_TELEPORT_USE_REQUEST : Packet
 {
-    public uint NpcUniqueId;
-    public byte TeleportType;
-    public uint RefTeleportId;
-    public byte UnkByte0;
     public byte GuideTeleportType;
-    
+    public uint NpcUniqueId;
+    public uint RefTeleportId;
+    public byte TeleportType;
+    public byte UnkByte0;
+
     public CLIENT_TELEPORT_USE_REQUEST() : base(0x705A)
     {
     }

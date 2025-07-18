@@ -23,13 +23,13 @@ public class Notice
     {
         packet.TryRead(out Subject)
             .TryRead(out Article)
-            .TryRead<ushort>(out var year)
-            .TryRead<ushort>(out var month)
-            .TryRead<ushort>(out var day)
-            .TryRead<ushort>(out var hour)
-            .TryRead<ushort>(out var minute)
-            .TryRead<ushort>(out var second)
-            .TryRead<uint>(out var microsecond);
+            .TryRead<ushort>(out ushort year)
+            .TryRead<ushort>(out ushort month)
+            .TryRead<ushort>(out ushort day)
+            .TryRead<ushort>(out ushort hour)
+            .TryRead<ushort>(out ushort minute)
+            .TryRead<ushort>(out ushort second)
+            .TryRead<uint>(out uint microsecond);
         DateTime = new DateTime(year, month, day, hour, minute, second, Convert.ToUInt16(microsecond));
 
         // //2   ushort  notice.Subject.Length

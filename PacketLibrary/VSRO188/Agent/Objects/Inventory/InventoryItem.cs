@@ -30,7 +30,7 @@ public class InventoryItem
 
     public static InventoryItem FromPacket(Packet packet, byte destinationSlot = 0xFE)
     {
-        var item = new InventoryItem
+        InventoryItem item = new InventoryItem
         {
             MagicOptions = new List<MagicOptionInfo>(),
             BindingOptions = new List<BindingOption>(),
@@ -42,7 +42,7 @@ public class InventoryItem
 
         item.Rental = RentInfo.FromPacket(packet);
         packet.TryRead<uint>(out item.ItemId);
-        var record = item.Record;
+        _RefObjItem? record = item.Record;
         if (record == null) return null;
 
         //         public bool IsEquip => TypeID2 == 1;
@@ -54,24 +54,28 @@ public class InventoryItem
         if (record.IsEquip || record.IsFellowEquip || record.IsJobEquip)
         {
             packet.TryRead<byte>(out item.OptLevel)
-                .TryRead<ulong>(out var attributes)
+                .TryRead<ulong>(out ulong attributes)
                 .TryRead<uint>(out item.Durability)
-                .TryRead<byte>(out var magicOptionsAmount);
+                .TryRead<byte>(out byte magicOptionsAmount);
             item.Attributes = new ItemAttributesInfo(attributes);
 
             //Read magic options for the item
-            for (var iMagicOption = 0; iMagicOption < magicOptionsAmount; iMagicOption++)
+            for (int iMagicOption = 0; iMagicOption < magicOptionsAmount; iMagicOption++)
+            {
                 item.MagicOptions.Add(MagicOptionInfo.FromPacket(packet));
+            }
 
             //Read sockets & advanced elixirs
-            var bindingCount = 2;
+            int bindingCount = 2;
 
-            for (var bindingIndex = 0; bindingIndex < bindingCount; bindingIndex++)
+            for (int bindingIndex = 0; bindingIndex < bindingCount; bindingIndex++)
             {
-                packet.TryRead<BindingOptionType>(out var bindingType)
-                    .TryRead<byte>(out var bindingAmount);
-                for (var iSocketAmount = 0; iSocketAmount < bindingAmount; iSocketAmount++)
+                packet.TryRead<BindingOptionType>(out BindingOptionType bindingType)
+                    .TryRead<byte>(out byte bindingAmount);
+                for (int iSocketAmount = 0; iSocketAmount < bindingAmount; iSocketAmount++)
+                {
                     item.BindingOptions.Add(BindingOption.FromPacket(packet, bindingType));
+                }
             }
         }
         else if (record.IsPet)
@@ -87,19 +91,19 @@ public class InventoryItem
                 if (record.GetRefObjCommon.TypeID4 == 2)
                     item.Cos.Rental = RentInfo.FromPacket(packet);
 
-                packet.TryRead<byte>(out var buffCount);
-                for (var i = 0; i < buffCount; i++)
+                packet.TryRead<byte>(out byte buffCount);
+                for (int i = 0; i < buffCount; i++)
                 {
-                    packet.TryRead<byte>(out var buffType);
+                    packet.TryRead<byte>(out byte buffType);
                     if (buffType == 0 || buffType == 20 || buffType == 6)
-                        packet.TryRead<uint>(out var itemId) // buffType: 0 => skillId ? 20 => itemId
-                            .TryRead<uint>(out var leftTime);
+                        packet.TryRead<uint>(out uint itemId) // buffType: 0 => skillId ? 20 => itemId
+                            .TryRead<uint>(out uint leftTime);
 
                     if (buffType == 5)
-                        packet.TryRead<uint>(out var itemId)
-                            .TryRead<uint>(out var leftTime)
-                            .TryRead<uint>(out var leftTime2)
-                            .TryRead<byte>(out var unk2);
+                        packet.TryRead<uint>(out uint itemId)
+                            .TryRead<uint>(out uint leftTime)
+                            .TryRead<uint>(out uint leftTime2)
+                            .TryRead<byte>(out byte unk2);
                 }
             }
         }
@@ -109,13 +113,13 @@ public class InventoryItem
         }
         else if (record.IsMagicCube)
         {
-            packet.TryRead<uint>(out var amount); // Quantity
+            packet.TryRead<uint>(out uint amount); // Quantity
             item.Amount = (ushort)amount; //Quantity
         }
         else if (record.IsNormalTrading || record.IsSpecialTrading)
         {
             packet.TryRead(out item.Amount)
-                .TryRead(out var ownerName);
+                .TryRead(out string ownerName);
         }
         else if (record.IsSpecialtyGoodBox)
         {
@@ -128,16 +132,18 @@ public class InventoryItem
             if (record.GetRefObjCommon.TypeID3 == 11) //Magic/Attr stone
             {
                 if (record.GetRefObjCommon.TypeID4 == 1 || record.GetRefObjCommon.TypeID4 == 2)
-                    packet.TryRead<byte>(out var unk0);
+                    packet.TryRead<byte>(out byte unk0);
             }
             else if (record.GetRefObjCommon.TypeID3 == 14 && record.GetRefObjCommon.TypeID4 == 2)
             {
                 //ITEM_MALL_GACHA_CARD_WIN
                 //ITEM_MALL_GACHA_CARD_LOSE
-                packet.TryRead<byte>(out var magParamCount);
-                for (var i = 0; i < magParamCount; i++)
-                    packet.TryRead<uint>(out var unk1)
-                        .TryRead<uint>(out var unk2);
+                packet.TryRead<byte>(out byte magParamCount);
+                for (int i = 0; i < magParamCount; i++)
+                {
+                    packet.TryRead<uint>(out uint unk1)
+                        .TryRead<uint>(out uint unk2);
+                }
             }
         }
 

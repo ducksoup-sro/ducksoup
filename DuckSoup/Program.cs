@@ -19,7 +19,6 @@ using DuckSoup.Library.Services;
 using DuckSoup.Library.Settings;
 using DuckSoup.Library.Webserver;
 using Serilog;
-using Serilog.Core;
 using Serilog.Events;
 
 #endregion
@@ -31,13 +30,13 @@ public static class Program
     private static void Main()
     {
         ThreadPool.SetMinThreads(500, 500);
-        
-        Helper.LoggingLevelSwitch.MinimumLevel = LogEventLevel.Debug; 
+
+        Helper.LoggingLevelSwitch.MinimumLevel = LogEventLevel.Debug;
 
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.ControlledBy(Helper.LoggingLevelSwitch)
             .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}")
-            .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day, 
+            .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day,
                 outputTemplate: "{Timestamp:HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}")
             .CreateLogger();
 
@@ -62,18 +61,18 @@ public static class Program
 
         try
         {
-            var settingsManager = new SettingsManager();
-            var databaseManager = new DatabaseManager();
+            SettingsManager settingsManager = new SettingsManager();
+            DatabaseManager databaseManager = new DatabaseManager();
 
-            var sharedObjects = new SharedObjects();
-            var userService = new UserService();
-            var authService = new AuthService();
-            var partyManager = new PartyManager();
-            var serverManager = new ServerManager();
-            var webserverManager = new WebserverManager();
-            var commandManager = new CommandManager();
-            var pluginManager = new PluginManager();
-            var eventManager = new EventManager();
+            SharedObjects sharedObjects = new SharedObjects();
+            UserService userService = new UserService();
+            AuthService authService = new AuthService();
+            PartyManager partyManager = new PartyManager();
+            ServerManager serverManager = new ServerManager();
+            WebserverManager webserverManager = new WebserverManager();
+            CommandManager commandManager = new CommandManager();
+            PluginManager pluginManager = new PluginManager();
+            EventManager eventManager = new EventManager();
 
             // Make sure we start the command loop in order to not exit the application
             ServiceFactory.Load<ICommandManager>(typeof(ICommandManager)).StartCommandLoop();

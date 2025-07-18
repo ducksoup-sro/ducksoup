@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
-using LanguageExt.UnitsOfMeasure;
 using NetCoreServer;
 using Serilog;
 using SilkroadSecurityAPI.Exceptions;
@@ -18,14 +17,14 @@ namespace SilkroadSecurityAPI.VSRO188;
 
 public class Security : ISecurity
 {
+
+    private const int LockTimeout = 2000;
     private readonly Blowfish _mBlowfish;
     private readonly byte[] _mCountByteSeeds;
 
     private readonly List<Packet> _mOutgoingPackets;
 
     private readonly TransferBuffer _mRecvBuffer;
-    
-    private const int LockTimeout = 2000;
     private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
     private bool _mAcceptedHandshake;
     private ulong _mChallengeKey;
@@ -107,7 +106,7 @@ public class Security : ISecurity
                 LastLockState = CurrentLockState;
                 CurrentLockState = LockState.ChangeIdentity;
                 if (Debug) Log.Debug("Changing lock to {0} last lock was {1}", CurrentLockState, LastLockState);
-                
+
                 _mIdentityName = name;
                 _mIdentityFlag = flag;
             }
@@ -138,8 +137,8 @@ public class Security : ISecurity
                 LastLockState = CurrentLockState;
                 CurrentLockState = LockState.GenerateSecurity;
                 if (Debug) Log.Debug("Changing lock to {0} last lock was {1}", CurrentLockState, LastLockState);
-                
-                var flags = new SecurityFlags();
+
+                SecurityFlags flags = new SecurityFlags();
                 if (blowfish)
                 {
                     flags.none = 0;
@@ -221,7 +220,7 @@ public class Security : ISecurity
     // obtain a list of ready to process packets.
     public void Recv(TransferBuffer rawBuffer)
     {
-        var incomingBuffersTmp = new List<TransferBuffer>();
+        List<TransferBuffer> incomingBuffersTmp = new List<TransferBuffer>();
 
         bool lockWasTaken = semaphoreSlim.Wait(TimeSpan.FromMilliseconds(LockTimeout));
         try
@@ -232,14 +231,14 @@ public class Security : ISecurity
                 CurrentLockState = LockState.Recv;
                 if (Debug) Log.Debug("Changing lock to {0} last lock was {1}", CurrentLockState, LastLockState);
 
-                var length = rawBuffer.Size - rawBuffer.Offset;
-                var index = 0;
+                int length = rawBuffer.Size - rawBuffer.Offset;
+                int index = 0;
                 while (length > 0)
                 {
                     if (Debug)
                         Log.Debug("Security:170 ThreadId: {0} {1}", Guid, Environment.CurrentManagedThreadId);
-                    var maxLength = length;
-                    var calcLength = _mRecvBuffer.Buffer.Length - _mRecvBuffer.Size;
+                    int maxLength = length;
+                    int calcLength = _mRecvBuffer.Buffer.Length - _mRecvBuffer.Size;
 
                     if (maxLength > calcLength) maxLength = calcLength;
 
@@ -263,7 +262,7 @@ public class Security : ISecurity
                             if (_mRecvBuffer.Size < 2) break;
 
                             // Calculate the packet size.
-                            var packet_size = (_mRecvBuffer.Buffer[1] << 8) | _mRecvBuffer.Buffer[0];
+                            int packet_size = _mRecvBuffer.Buffer[1] << 8 | _mRecvBuffer.Buffer[0];
 
                             // Check to see if this packet is encrypted.
                             if ((packet_size & 0x8000) > 0)
@@ -287,7 +286,7 @@ public class Security : ISecurity
                         }
 
                         // Calculate how many bytes are left to receive in the packet.
-                        var max_copy_count = _mCurrentBuffer.Size - _mCurrentBuffer.Offset;
+                        int max_copy_count = _mCurrentBuffer.Size - _mCurrentBuffer.Offset;
 
                         // If we need more bytes than we currently have, update the size.
                         if (max_copy_count > _mRecvBuffer.Size) max_copy_count = _mRecvBuffer.Size;
@@ -327,11 +326,11 @@ public class Security : ISecurity
                 }
 
                 if (incomingBuffersTmp.Count > 0)
-                    foreach (var buffer in incomingBuffersTmp)
+                    foreach (TransferBuffer buffer in incomingBuffersTmp)
                     {
-                        var packet_encrypted = false;
+                        bool packet_encrypted = false;
 
-                        var packet_size = (buffer.Buffer[1] << 8) | buffer.Buffer[0];
+                        int packet_size = buffer.Buffer[1] << 8 | buffer.Buffer[0];
                         if ((packet_size & 0x8000) > 0)
                         {
                             if (_mSecurityFlags.blowfish == 1)
@@ -347,30 +346,30 @@ public class Security : ISecurity
 
                         if (packet_encrypted)
                         {
-                            var decrypted = _mBlowfish.Decode(buffer.Buffer, 2, buffer.Size - 2);
-                            var new_buffer = new byte[6 + packet_size];
+                            byte[] decrypted = _mBlowfish.Decode(buffer.Buffer, 2, buffer.Size - 2);
+                            byte[] new_buffer = new byte[6 + packet_size];
                             Buffer.BlockCopy(BitConverter.GetBytes((ushort)packet_size), 0, new_buffer, 0, 2);
                             Buffer.BlockCopy(decrypted, 0, new_buffer, 2, 4 + packet_size);
                             buffer.Buffer = null;
                             buffer.Buffer = new_buffer;
                         }
 
-                        var packet_data = new PacketReader(buffer.Buffer);
+                        PacketReader packet_data = new PacketReader(buffer.Buffer);
                         packet_size = packet_data.ReadUInt16();
-                        var packet_opcode = packet_data.ReadUInt16();
-                        var packet_security_count = packet_data.ReadByte();
-                        var packet_security_crc = packet_data.ReadByte();
+                        ushort packet_opcode = packet_data.ReadUInt16();
+                        byte packet_security_count = packet_data.ReadByte();
+                        byte packet_security_crc = packet_data.ReadByte();
 
                         // Client object whose bytes the server might need to verify
                         if (_mClientSecurity)
                             if (_mSecurityFlags.security_bytes == 1)
                             {
-                                var expected_count = GenerateCountByte(true);
+                                byte expected_count = GenerateCountByte(true);
                                 if (packet_security_count != expected_count)
                                     throw new RecvException("[SecurityAPI::Recv] Count byte mismatch.");
 
                                 if (packet_encrypted ||
-                                    (_mSecurityFlags.security_bytes == 1 && _mSecurityFlags.blowfish == 0))
+                                    _mSecurityFlags.security_bytes == 1 && _mSecurityFlags.blowfish == 0)
                                     if (packet_encrypted || IsEncrypted(packet_opcode))
                                     {
                                         packet_size |= 0x8000;
@@ -380,14 +379,14 @@ public class Security : ISecurity
 
                                 buffer.Buffer[5] = 0;
 
-                                var expected_crc = GenerateCheckByte(buffer.Buffer);
+                                byte expected_crc = GenerateCheckByte(buffer.Buffer);
                                 if (packet_security_crc != expected_crc)
                                     throw new RecvException("[SecurityAPI::Recv] CRC byte mismatch.");
 
                                 buffer.Buffer[4] = 0;
 
                                 if (packet_encrypted ||
-                                    (_mSecurityFlags.security_bytes == 1 && _mSecurityFlags.blowfish == 0))
+                                    _mSecurityFlags.security_bytes == 1 && _mSecurityFlags.blowfish == 0)
                                     if (packet_encrypted || IsEncrypted(packet_opcode))
                                     {
                                         packet_size &= 0x7FFF;
@@ -403,7 +402,7 @@ public class Security : ISecurity
                             // Pass the handshake packets to the user so they can at least see them.
                             // They do not need to actually do anything with them. This was added to
                             // help debugging and make output logs complete.
-                            var packet = new Packet(packet_opcode, packet_encrypted, false, buffer.Buffer, 6,
+                            Packet packet = new Packet(packet_opcode, packet_encrypted, false, buffer.Buffer, 6,
                                 packet_size);
                             packet.ToReadOnly();
                             _mIncomingPackets.Add(packet);
@@ -418,11 +417,11 @@ public class Security : ISecurity
 
                             if (packet_opcode == 0x600D) // Auto process massive messages for the user
                             {
-                                var mode = packet_data.ReadByte();
+                                byte mode = packet_data.ReadByte();
                                 if (mode == 1)
                                 {
                                     _mMassiveCount = packet_data.ReadUInt16();
-                                    var contained_packet_opcode = packet_data.ReadUInt16();
+                                    ushort contained_packet_opcode = packet_data.ReadUInt16();
                                     _mMassivePacket = new Packet(contained_packet_opcode, packet_encrypted, true);
                                 }
                                 else
@@ -431,8 +430,10 @@ public class Security : ISecurity
                                         throw new PacketFormatException(
                                             "[SecurityAPI::Recv] A malformed 0x600D packet was received.");
 
-                                    foreach (var readByte in packet_data.ReadBytes(packet_size - 1))
+                                    foreach (byte readByte in packet_data.ReadBytes(packet_size - 1))
+                                    {
                                         _mMassivePacket.TryWrite(readByte);
+                                    }
                                     // _mMassivePacket.WriteUInt8Array(packet_data.ReadBytes(packet_size - 1));
                                     _mMassiveCount--;
                                     if (_mMassiveCount == 0)
@@ -445,7 +446,7 @@ public class Security : ISecurity
                             }
                             else
                             {
-                                var packet = new Packet(packet_opcode, packet_encrypted, false, buffer.Buffer, 6,
+                                Packet packet = new Packet(packet_opcode, packet_encrypted, false, buffer.Buffer, 6,
                                     packet_size);
                                 packet.ToReadOnly();
                                 _mIncomingPackets.Add(packet);
@@ -488,7 +489,7 @@ public class Security : ISecurity
                     if (session == null || session.IsDisposed || !session.IsConnected)
                         break;
 
-                    var buff = GetPacketToSendLite();
+                    TransferBuffer buff = GetPacketToSendLite();
                     session.Send(buff.Buffer, buff.Offset, buff.Size);
                 }
             }
@@ -527,7 +528,7 @@ public class Security : ISecurity
                     if (client == null || client.IsDisposed || !client.IsConnected)
                         break;
 
-                    var buff = GetPacketToSendLite();
+                    TransferBuffer buff = GetPacketToSendLite();
                     client.Send(buff.Buffer, buff.Offset, buff.Size);
                 }
             }
@@ -665,7 +666,7 @@ public class Security : ISecurity
 
     private static SecurityFlags CopySecurityFlags(SecurityFlags flags)
     {
-        var copy = new SecurityFlags();
+        SecurityFlags copy = new SecurityFlags();
         copy.none = flags.none;
         copy.blowfish = flags.blowfish;
         copy.security_bytes = flags.security_bytes;
@@ -680,14 +681,14 @@ public class Security : ISecurity
     // Returns a byte from a SecurityFlags object.
     private static byte FromSecurityFlags(SecurityFlags flags)
     {
-        return (byte)(flags.none | (flags.blowfish << 1) | (flags.security_bytes << 2) | (flags.handshake << 3) |
-                      (flags.handshake_response << 4) | (flags._6 << 5) | (flags._7 << 6) | (flags._8 << 7));
+        return (byte)(flags.none | flags.blowfish << 1 | flags.security_bytes << 2 | flags.handshake << 3 |
+                      flags.handshake_response << 4 | flags._6 << 5 | flags._7 << 6 | flags._8 << 7);
     }
 
     // Returns a SecurityFlags object from a byte.
     private static SecurityFlags ToSecurityFlags(byte value)
     {
-        var flags = new SecurityFlags();
+        SecurityFlags flags = new SecurityFlags();
         flags.none = (byte)(value & 1);
         value >>= 1;
         flags.blowfish = (byte)(value & 1);
@@ -714,7 +715,7 @@ public class Security : ISecurity
     // Generates the crc bytes lookup table
     private static uint[] GenerateSecurityTable()
     {
-        var security_table = new uint[0x10000];
+        uint[] security_table = new uint[0x10000];
         byte[] base_security_table =
         {
             0xB1, 0xD6, 0x8B, 0x96, 0x96, 0x30, 0x07, 0x77, 0x2C, 0x61, 0x0E, 0xEE, 0xBA, 0x51, 0x09, 0x99, 0x19, 0xC4, 0x6D, 0x07, 0x8F, 0xF4, 0x6A, 0x70, 0x35, 0xA5, 0x63, 0xE9, 0xA3, 0x95, 0x64, 0x9E, 0x32, 0x88, 0xDB, 0x0E, 0xA4, 0xB8, 0xDC, 0x79, 0x1E,
@@ -744,20 +745,21 @@ public class Security : ISecurity
             0xE9, 0x57, 0xDE, 0x54, 0xBF, 0x67, 0xD9, 0x23, 0x2E, 0x72, 0x66, 0xB3, 0xB8, 0x4A, 0x61, 0xC4, 0x02, 0x1B, 0x38, 0x5D, 0x94, 0x2B, 0x6F, 0x2B, 0x37, 0xBE, 0xCB, 0xB4, 0xA1, 0x8E, 0xCC, 0xC3, 0x1B, 0xDF, 0x0D, 0x5A, 0x8D, 0xED, 0x02, 0x2D
         };
 
-        using (var in_memory_stream = new MemoryStream(base_security_table, false))
+        using (MemoryStream in_memory_stream = new MemoryStream(base_security_table, false))
         {
-            using (var reader = new BinaryReader(in_memory_stream))
+            using (BinaryReader reader = new BinaryReader(in_memory_stream))
             {
-                var index = 0;
-                for (var edi = 0; edi < 1024; edi += 4)
+                int index = 0;
+                for (int edi = 0; edi < 1024; edi += 4)
                 {
-                    var edx = reader.ReadUInt32();
+                    uint edx = reader.ReadUInt32();
                     for (uint ecx = 0; ecx < 256; ++ecx)
                     {
-                        var eax = ecx >> 1;
+                        uint eax = ecx >> 1;
                         if ((ecx & 1) != 0) eax ^= edx;
 
-                        for (var bit = 0; bit < 7; ++bit)
+                        for (int bit = 0; bit < 7; ++bit)
+                        {
                             if ((eax & 1) != 0)
                             {
                                 eax >>= 1;
@@ -767,6 +769,7 @@ public class Security : ISecurity
                             {
                                 eax >>= 1;
                             }
+                        }
 
                         security_table[index++] = eax;
                     }
@@ -788,21 +791,21 @@ public class Security : ISecurity
     {
         ulong a_ = a;
         ulong b_ = b;
-        return (b_ << 32) | a_;
+        return b_ << 32 | a_;
     }
 
     private static uint MAKELONG_(ushort a, ushort b)
     {
         uint a_ = a;
         uint b_ = b;
-        return (b_ << 16) | a_;
+        return b_ << 16 | a_;
     }
 
     private static ushort MAKEWORD_(byte a, byte b)
     {
         ushort a_ = a;
         ushort b_ = b;
-        return (ushort)((b_ << 8) | a_);
+        return (ushort)(b_ << 8 | a_);
     }
 
     private static ushort LOWORD_(uint a)
@@ -812,7 +815,7 @@ public class Security : ISecurity
 
     private static ushort HIWORD_(uint a)
     {
-        return (ushort)((a >> 16) & 0xFFFF);
+        return (ushort)(a >> 16 & 0xFFFF);
     }
 
     private static byte LOBYTE_(ushort a)
@@ -822,32 +825,32 @@ public class Security : ISecurity
 
     private static byte HIBYTE_(ushort a)
     {
-        return (byte)((a >> 8) & 0xFF);
+        return (byte)(a >> 8 & 0xFF);
     }
 
     #endregion
 
     #region Random
 
-    private static readonly Random random = new();
+    private static readonly Random random = new Random();
 
     private static ulong NextUInt64()
     {
-        var buffer = new byte[sizeof(ulong)];
+        byte[] buffer = new byte[sizeof(ulong)];
         random.NextBytes(buffer);
         return BitConverter.ToUInt64(buffer, 0);
     }
 
     private static uint NextUInt32()
     {
-        var buffer = new byte[sizeof(uint)];
+        byte[] buffer = new byte[sizeof(uint)];
         random.NextBytes(buffer);
         return BitConverter.ToUInt32(buffer, 0);
     }
 
     private static ushort NextUInt16()
     {
-        var buffer = new byte[2];
+        byte[] buffer = new byte[2];
         random.NextBytes(buffer);
         return BitConverter.ToUInt16(buffer, 0);
     }
@@ -864,9 +867,11 @@ public class Security : ISecurity
     // This function's logic was written by jMerlin as part of the article "How to generate the security bytes for SRO"
     private uint GenerateValue(ref uint val)
     {
-        for (var i = 0; i < 32; ++i)
-            val = (((((((((((val >> 2) ^ val) >> 2) ^ val) >> 1) ^ val) >> 1) ^ val) >> 1) ^ val) & 1) |
-                  ((((val & 1) << 31) | (val >> 1)) & 0xFFFFFFFE);
+        for (int i = 0; i < 32; ++i)
+        {
+            val = (((((val >> 2 ^ val) >> 2 ^ val) >> 1 ^ val) >> 1 ^ val) >> 1 ^ val) & 1 |
+                  ((val & 1) << 31 | val >> 1) & 0xFFFFFFFE;
+        }
 
         return val;
     }
@@ -876,13 +881,13 @@ public class Security : ISecurity
     private void SetupCountByte(uint seed)
     {
         if (seed == 0) seed = 0x9ABFB3B6;
-        var mut = seed;
-        var mut1 = GenerateValue(ref mut);
-        var mut2 = GenerateValue(ref mut);
-        var mut3 = GenerateValue(ref mut);
+        uint mut = seed;
+        uint mut1 = GenerateValue(ref mut);
+        uint mut2 = GenerateValue(ref mut);
+        uint mut3 = GenerateValue(ref mut);
         GenerateValue(ref mut);
-        var byte1 = (byte)((mut & 0xFF) ^ (mut3 & 0xFF));
-        var byte2 = (byte)((mut1 & 0xFF) ^ (mut2 & 0xFF));
+        byte byte1 = (byte)(mut & 0xFF ^ mut3 & 0xFF);
+        byte byte2 = (byte)(mut1 & 0xFF ^ mut2 & 0xFF);
         if (byte1 == 0) byte1 = 1;
         if (byte2 == 0) byte2 = 1;
         _mCountByteSeeds[0] = (byte)(byte1 ^ byte2);
@@ -913,7 +918,7 @@ public class Security : ISecurity
     // Helper function used in the handshake (Func_X_2)
     private void KeyTransformValue(ref ulong val, uint key, byte key_byte)
     {
-        var stream = BitConverter.GetBytes(val);
+        byte[] stream = BitConverter.GetBytes(val);
         stream[0] ^= (byte)(stream[0] + LOBYTE_(LOWORD_(key)) + key_byte);
         stream[1] ^= (byte)(stream[1] + HIBYTE_(LOWORD_(key)) + key_byte);
         stream[2] ^= (byte)(stream[2] + LOBYTE_(HIWORD_(key)) + key_byte);
@@ -929,8 +934,8 @@ public class Security : ISecurity
     // This function's logic was written by jMerlin as part of the article "How to generate the security bytes for SRO"
     private byte GenerateCountByte(bool update)
     {
-        var result = (byte)(_mCountByteSeeds[2] * (~_mCountByteSeeds[0] + _mCountByteSeeds[1]));
-        result = (byte)(result ^ (result >> 4));
+        byte result = (byte)(_mCountByteSeeds[2] * (~_mCountByteSeeds[0] + _mCountByteSeeds[1]));
+        result = (byte)(result ^ result >> 4);
         if (update) _mCountByteSeeds[0] = result;
 
         return result;
@@ -940,12 +945,14 @@ public class Security : ISecurity
     // This function's logic was written by jMerlin as part of the article "How to generate the security bytes for SRO"
     private byte GenerateCheckByte(byte[] stream, int offset, int length)
     {
-        var checksum = 0xFFFFFFFF;
-        var moddedseed = _mCrcSeed << 8;
-        for (var x = offset; x < offset + length; ++x)
-            checksum = (checksum >> 8) ^ global_security_table[moddedseed + ((stream[x] ^ checksum) & 0xFF)];
+        uint checksum = 0xFFFFFFFF;
+        uint moddedseed = _mCrcSeed << 8;
+        for (int x = offset; x < offset + length; ++x)
+        {
+            checksum = checksum >> 8 ^ global_security_table[moddedseed + ((stream[x] ^ checksum) & 0xFF)];
+        }
 
-        return (byte)(((checksum >> 24) & 0xFF) + ((checksum >> 8) & 0xFF) + ((checksum >> 16) & 0xFF) +
+        return (byte)((checksum >> 24 & 0xFF) + (checksum >> 8 & 0xFF) + (checksum >> 16 & 0xFF) +
                       (checksum & 0xFF));
     }
 
@@ -964,7 +971,7 @@ public class Security : ISecurity
         _mSecurityFlags = flags;
         _mClientSecurity = true;
 
-        var response = new Packet(0x5000);
+        Packet response = new Packet(0x5000);
 
         response.TryWrite(_mSecurityFlag);
 
@@ -1101,11 +1108,11 @@ public class Security : ISecurity
             KeyTransformValue(ref _mHandshakeBlowfishKey, _mValueK, 0x3);
             _mBlowfish.Initialize(BitConverter.GetBytes(_mHandshakeBlowfishKey));
 
-            var tmp_flags = new SecurityFlags();
+            SecurityFlags tmp_flags = new SecurityFlags();
             tmp_flags.handshake_response = 1;
-            var tmp_flag = FromSecurityFlags(tmp_flags);
+            byte tmp_flag = FromSecurityFlags(tmp_flags);
 
-            var response = new Packet(0x5000);
+            Packet response = new Packet(0x5000);
             response.TryWrite(tmp_flag)
                 .TryWrite(_mChallengeKey);
             _mOutgoingPackets.Add(response);
@@ -1116,9 +1123,9 @@ public class Security : ISecurity
                 throw new HandshakeException(
                     "[SecurityAPI::Handshake] Received an illogical handshake packet (programmer error).");
 
-            var flag = packet_data.ReadByte();
+            byte flag = packet_data.ReadByte();
 
-            var flags = ToSecurityFlags(flag);
+            SecurityFlags flags = ToSecurityFlags(flag);
 
             if (_mSecurityFlag == 0)
             {
@@ -1151,13 +1158,13 @@ public class Security : ISecurity
                 _mValueB = G_pow_X_mod_P(_mValueP, _mValueX, _mValueG);
                 _mValueK = G_pow_X_mod_P(_mValueP, _mValueX, _mValueA);
 
-                var key_array = MAKELONGLONG_(_mValueA, _mValueB);
+                ulong key_array = MAKELONGLONG_(_mValueA, _mValueB);
                 KeyTransformValue(ref key_array, _mValueK, (byte)(LOBYTE_(LOWORD_(_mValueK)) & 0x03));
                 _mBlowfish.Initialize(BitConverter.GetBytes(key_array));
 
                 _mClientKey = MAKELONGLONG_(_mValueB, _mValueA);
                 KeyTransformValue(ref _mClientKey, _mValueK, (byte)(LOBYTE_(LOWORD_(_mValueB)) & 0x07));
-                var tmp_bytes = _mBlowfish.Encode(BitConverter.GetBytes(_mClientKey));
+                byte[] tmp_bytes = _mBlowfish.Encode(BitConverter.GetBytes(_mClientKey));
                 _mClientKey = BitConverter.ToUInt64(tmp_bytes, 0);
             }
 
@@ -1165,9 +1172,9 @@ public class Security : ISecurity
             {
                 _mChallengeKey = packet_data.ReadUInt64();
 
-                var expected_challenge_key = MAKELONGLONG_(_mValueA, _mValueB);
+                ulong expected_challenge_key = MAKELONGLONG_(_mValueA, _mValueB);
                 KeyTransformValue(ref expected_challenge_key, _mValueK, (byte)(LOBYTE_(LOWORD_(_mValueA)) & 0x07));
-                var tmp_bytes = _mBlowfish.Encode(BitConverter.GetBytes(expected_challenge_key));
+                byte[] tmp_bytes = _mBlowfish.Encode(BitConverter.GetBytes(expected_challenge_key));
                 expected_challenge_key = BitConverter.ToUInt64(tmp_bytes, 0);
 
                 if (_mChallengeKey != expected_challenge_key)
@@ -1186,7 +1193,7 @@ public class Security : ISecurity
                         "[SecurityAPI::Handshake] Received an illogical handshake packet (duplicate 0x5000).");
 
                 // Handshake challenge
-                var response = new Packet(0x5000)
+                Packet response = new Packet(0x5000)
                     .TryWrite(_mValueB)
                     .TryWrite(_mClientKey);
                 _mOutgoingPackets.Insert(0, response);
@@ -1202,10 +1209,10 @@ public class Security : ISecurity
                         "[SecurityAPI::Handshake] Received an illogical handshake packet (duplicate 0x5000).");
 
                 // Handshake accepted
-                var response1 = new Packet(0x9000);
+                Packet response1 = new Packet(0x9000);
 
                 // Identify
-                var response2 = new Packet(0x2001, true)
+                Packet response2 = new Packet(0x2001, true)
                     .TryWriteString(_mIdentityName)
                     .TryWrite(_mIdentityFlag);
 
@@ -1225,10 +1232,10 @@ public class Security : ISecurity
         // Sanity check
         if (data.Length >= 0x8000) throw new FormatException("[SecurityAPI::FormatPacket] Payload is too large!");
 
-        var data_length = (ushort)data.Length;
+        ushort data_length = (ushort)data.Length;
 
         // Add the packet header to the start of the data
-        var writer = new PacketWriter();
+        PacketWriter writer = new PacketWriter();
         writer.Write(data_length); // packet size
         writer.Write(msgId); // packet msgId
         writer.Write((ushort)0); // packet security bytes
@@ -1237,11 +1244,11 @@ public class Security : ISecurity
 
         // Determine if we need to mark the packet size as encrypted
         if (encrypted && (_mSecurityFlags.blowfish == 1 ||
-                          (_mSecurityFlags.security_bytes == 1 && _mSecurityFlags.blowfish == 0)))
+                          _mSecurityFlags.security_bytes == 1 && _mSecurityFlags.blowfish == 0))
         {
-            var seek_index = writer.BaseStream.Seek(0, SeekOrigin.Current);
+            long seek_index = writer.BaseStream.Seek(0, SeekOrigin.Current);
 
-            var packet_size = (ushort)(data_length | 0x8000);
+            ushort packet_size = (ushort)(data_length | 0x8000);
 
             writer.BaseStream.Seek(0, SeekOrigin.Begin);
             writer.Write(packet_size);
@@ -1253,14 +1260,14 @@ public class Security : ISecurity
         // Only need to stamp bytes if this is a clientless object
         if (_mClientSecurity == false && _mSecurityFlags.security_bytes == 1)
         {
-            var seek_index = writer.BaseStream.Seek(0, SeekOrigin.Current);
+            long seek_index = writer.BaseStream.Seek(0, SeekOrigin.Current);
 
-            var sb1 = GenerateCountByte(true);
+            byte sb1 = GenerateCountByte(true);
             writer.BaseStream.Seek(4, SeekOrigin.Begin);
             writer.Write(sb1);
             writer.Flush();
 
-            var sb2 = GenerateCheckByte(writer.GetBytes());
+            byte sb2 = GenerateCheckByte(writer.GetBytes());
             writer.BaseStream.Seek(5, SeekOrigin.Begin);
             writer.Write(sb2);
             writer.Flush();
@@ -1271,8 +1278,8 @@ public class Security : ISecurity
         // If the packet should be physically encrypted, return an encrypted version of it
         if (encrypted && _mSecurityFlags.blowfish == 1)
         {
-            var raw_data = writer.GetBytes();
-            var encrypted_data = _mBlowfish.Encode(raw_data, 2, raw_data.Length - 2);
+            byte[] raw_data = writer.GetBytes();
+            byte[] encrypted_data = _mBlowfish.Encode(raw_data, 2, raw_data.Length - 2);
 
             writer.BaseStream.Seek(2, SeekOrigin.Begin);
 
@@ -1284,7 +1291,7 @@ public class Security : ISecurity
             // Determine if we need to unmark the packet size from being encrypted but not physically encrypted
             if (encrypted && _mSecurityFlags.security_bytes == 1 && _mSecurityFlags.blowfish == 0)
             {
-                var seek_index = writer.BaseStream.Seek(0, SeekOrigin.Current);
+                long seek_index = writer.BaseStream.Seek(0, SeekOrigin.Current);
 
                 writer.BaseStream.Seek(0, SeekOrigin.Begin);
                 writer.Write(data_length);
@@ -1308,7 +1315,7 @@ public class Security : ISecurity
         if (_mAcceptedHandshake) return true;
 
         // Otherwise, check to see if we have pending handshake packets to send
-        var packet = _mOutgoingPackets[0];
+        Packet packet = _mOutgoingPackets[0];
         if (packet.Opcode == 0x5000 || packet.Opcode == 0x9000) return true;
 
         // If we get here, we have out of order packets that cannot be sent yet.
@@ -1320,28 +1327,28 @@ public class Security : ISecurity
         if (_mOutgoingPackets.Count == 0)
             throw new SendException("[SecurityAPI::GetPacketToSend] No packets are avaliable to send.");
 
-        var packet = _mOutgoingPackets[0];
+        Packet packet = _mOutgoingPackets[0];
         _mOutgoingPackets.RemoveAt(0);
 
         if (packet.Massive)
         {
             ushort parts = 0;
 
-            var final = new PacketWriter();
-            var final_data = new PacketWriter();
+            PacketWriter final = new PacketWriter();
+            PacketWriter final_data = new PacketWriter();
 
-            var input_data = packet.GetBytes();
-            var input_reader = new PacketReader(input_data);
+            byte[] input_data = packet.GetBytes();
+            PacketReader input_reader = new PacketReader(input_data);
 
-            var workspace = new TransferBuffer(4089, 0, input_data.Length);
+            TransferBuffer workspace = new TransferBuffer(4089, 0, input_data.Length);
 
             while (workspace.Size > 0)
             {
                 if (Debug)
                     Log.Debug("Security:1165 {0}", Guid);
-                var part_data = new PacketWriter();
+                PacketWriter part_data = new PacketWriter();
 
-                var cur_size =
+                int cur_size =
                     workspace.Size > 4089 ? 4089 : workspace.Size; // Max buffer size is 4kb for the client
 
                 part_data.Write((byte)0); // Data flag
@@ -1357,7 +1364,7 @@ public class Security : ISecurity
             }
 
             // Write the final header packet to the front of the packet
-            var final_header = new PacketWriter();
+            PacketWriter final_header = new PacketWriter();
             final_header.Write((byte)1); // Header flag
             final_header.Write((short)parts);
             final_header.Write(packet.Opcode);
@@ -1367,19 +1374,19 @@ public class Security : ISecurity
             final.Write(final_data.GetBytes());
 
             // Return the collated data
-            var raw_bytes = final.GetBytes();
+            byte[] raw_bytes = final.GetBytes();
             packet.ToReadOnly();
             return new KeyValuePair<TransferBuffer, Packet>(
                 new TransferBuffer(raw_bytes, 0, raw_bytes.Length, true), packet);
         }
         else
         {
-            var encrypted = packet.Encrypted;
+            bool encrypted = packet.Encrypted;
             if (!_mClientSecurity)
                 if (IsEncrypted(packet.Opcode))
                     encrypted = true;
 
-            var raw_bytes = FormatPacket(packet.Opcode, packet.GetBytes(), encrypted);
+            byte[] raw_bytes = FormatPacket(packet.Opcode, packet.GetBytes(), encrypted);
             packet.ToReadOnly();
             return new KeyValuePair<TransferBuffer, Packet>(
                 new TransferBuffer(raw_bytes, 0, raw_bytes.Length, true), packet);
@@ -1394,7 +1401,7 @@ public class Security : ISecurity
 
         try
         {
-            var packet = _mOutgoingPackets[0];
+            Packet packet = _mOutgoingPackets[0];
             _mOutgoingPackets.RemoveAt(0);
 
 
@@ -1402,20 +1409,20 @@ public class Security : ISecurity
             {
                 ushort parts = 0;
 
-                var final = new PacketWriter();
-                var final_data = new PacketWriter();
+                PacketWriter final = new PacketWriter();
+                PacketWriter final_data = new PacketWriter();
 
-                var input_data = packet.GetBytes();
-                var input_reader = new PacketReader(input_data);
+                byte[] input_data = packet.GetBytes();
+                PacketReader input_reader = new PacketReader(input_data);
 
-                var workspace = new TransferBuffer(4089, 0, input_data.Length);
+                TransferBuffer workspace = new TransferBuffer(4089, 0, input_data.Length);
 
                 while (workspace.Size > 0)
                 {
                     Log.Debug("Security:1239 {0}", Guid);
-                    var part_data = new PacketWriter();
+                    PacketWriter part_data = new PacketWriter();
 
-                    var cur_size =
+                    int cur_size =
                         workspace.Size > 4089 ? 4089 : workspace.Size; // Max buffer size is 4kb for the client
 
                     part_data.Write((byte)0); // Data flag
@@ -1431,7 +1438,7 @@ public class Security : ISecurity
                 }
 
                 // Write the final header packet to the front of the packet
-                var final_header = new PacketWriter();
+                PacketWriter final_header = new PacketWriter();
                 final_header.Write((byte)1); // Header flag
                 final_header.Write((short)parts);
                 final_header.Write(packet.MsgId);
@@ -1441,18 +1448,18 @@ public class Security : ISecurity
                 final.Write(final_data.GetBytes());
 
                 // Return the collated data
-                var raw_bytes = final.GetBytes();
+                byte[] raw_bytes = final.GetBytes();
                 packet.ToReadOnly();
                 return new TransferBuffer(raw_bytes, 0, raw_bytes.Length, true);
             }
             else
             {
-                var encrypted = packet.Encrypted;
+                bool encrypted = packet.Encrypted;
                 if (!_mClientSecurity)
                     if (IsEncrypted(packet.MsgId))
                         encrypted = true;
 
-                var raw_bytes = FormatPacket(packet.MsgId, packet.GetBytes(), encrypted);
+                byte[] raw_bytes = FormatPacket(packet.MsgId, packet.GetBytes(), encrypted);
                 packet.ToReadOnly();
                 return new TransferBuffer(raw_bytes, 0, raw_bytes.Length, true);
             }

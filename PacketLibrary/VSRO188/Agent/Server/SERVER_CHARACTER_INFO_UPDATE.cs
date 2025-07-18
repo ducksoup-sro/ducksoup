@@ -6,16 +6,16 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_CHARACTER_INFO_UPDATE
 public class SERVER_CHARACTER_INFO_UPDATE : Packet
 {
-    public CharacterInfoUpdateType UpdateType;
+    public uint APPoints;
     public ulong Gold;
     public bool GoldDisplayed;
+    public byte HwanPoints;
     public uint SkillPoints;
     public bool SkillPointsDisplayed;
-    public ushort StatPoints;
-    public byte HwanPoints;
     public uint SourceUniqueId; // where particles come from
-    public uint APPoints;
-    
+    public ushort StatPoints;
+    public CharacterInfoUpdateType UpdateType;
+
     public SERVER_CHARACTER_INFO_UPDATE() : base(0x304E)
     {
     }
@@ -126,5 +126,4 @@ public class SERVER_CHARACTER_INFO_UPDATE : Packet
             APPoints = apPoints
         }.Build();
     }
-
 }

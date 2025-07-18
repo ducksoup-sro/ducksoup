@@ -4,7 +4,7 @@ namespace API.EventFactory;
 
 public static class EventFactory
 {
-    private static EventFactoryImpl? _eventFactoryImpl = new();
+    private static EventFactoryImpl? _eventFactoryImpl = new EventFactoryImpl();
 
     public static void Subscribe(string name, Action? handler)
     {

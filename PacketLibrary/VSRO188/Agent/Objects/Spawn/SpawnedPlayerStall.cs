@@ -14,8 +14,8 @@ public class SpawnedPlayerStall
 
     internal static SpawnedPlayerStall FromPacket(Packet packet)
     {
-        packet.TryRead(out var name)
-            .TryRead<uint>(out var decorationId);
+        packet.TryRead(out string name)
+            .TryRead<uint>(out uint decorationId);
 
         return new SpawnedPlayerStall
         {

@@ -5,7 +5,7 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 public class CLIENT_TELEPORT_DESIGNATE_REQUEST : Packet
 {
     public uint TeleportId;
-    
+
     public CLIENT_TELEPORT_DESIGNATE_REQUEST() : base(0x7059)
     {
     }

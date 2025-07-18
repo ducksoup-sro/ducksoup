@@ -9,7 +9,10 @@ public class PluginUnloadCommand : Command
 {
     private IPluginManager _pluginManager;
 
-    public PluginUnloadCommand() : base("unload", "plugin unload <name>", "Unloads a given plugin", new[] { "ul" })
+    public PluginUnloadCommand() : base("unload", "plugin unload <name>", "Unloads a given plugin", new[]
+    {
+        "ul"
+    })
     {
     }
 

@@ -2,7 +2,6 @@
 using API.ServiceFactory;
 using API.Settings;
 using Database;
-using Database.VSRO188;
 using Database.VSRO188.Context;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -14,7 +13,7 @@ public class DatabaseManager
     public DatabaseManager()
     {
         ServiceFactory.Register<DatabaseManager>(typeof(DatabaseManager), this);
-        var settings = ServiceFactory.Load<ISettingsManager>(typeof(ISettingsManager)).Settings;
+        ISettings settings = ServiceFactory.Load<ISettingsManager>(typeof(ISettingsManager)).Settings;
 
         // string address, int port, string username, string password, string sharDb, string logDb, string accountDb, string proxyDb
         DuckContext.ConnectionStrings[typeof(SRO_VT_ACCOUNT)] =
@@ -28,9 +27,9 @@ public class DatabaseManager
 
         try
         {
-            using var context = new API.Database.Context.DuckSoup();
+            using API.Database.Context.DuckSoup context = new API.Database.Context.DuckSoup();
             context.Database.Migrate();
-            
+
             // Cache.FillCache();
         }
         catch (Exception ex)

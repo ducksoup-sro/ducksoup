@@ -1,4 +1,5 @@
 ﻿using API.Command;
+using API.Database.DuckSoup;
 using API.ServiceFactory;
 using API.Services;
 using Serilog;
@@ -10,7 +11,10 @@ public class AuthInvalidateCommand : Command
     private IUserService _service;
 
     public AuthInvalidateCommand() : base("invalidate", "auth invalidate <username>",
-        "Invalidates (logs out) the given user.", new[] { "inv" })
+        "Invalidates (logs out) the given user.", new[]
+        {
+            "inv"
+        })
     {
     }
 
@@ -24,15 +28,15 @@ public class AuthInvalidateCommand : Command
             return;
         }
 
-        var username = args[0];
-        var user = _service.GetUser(username);
+        string username = args[0];
+        User? user = _service.GetUser(username);
         if (user == null)
         {
             Log.Information("Username {0} does not exist", username);
             return;
         }
 
-        var oldTokenVersion = user.tokenVersion;
+        int oldTokenVersion = user.tokenVersion;
 
         user.tokenVersion += 1;
         _service.AddUser(user);

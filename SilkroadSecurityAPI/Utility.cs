@@ -14,11 +14,11 @@ public static class Utility
     public static string HexDump(this byte[] buffer, int offset, int count)
     {
         const int bytesPerLine = 16;
-        var output = new StringBuilder();
-        var ascii_output = new StringBuilder();
-        var length = count;
+        StringBuilder output = new StringBuilder();
+        StringBuilder ascii_output = new StringBuilder();
+        int length = count;
         if (length % bytesPerLine != 0) length += bytesPerLine - length % bytesPerLine;
-        for (var x = 0; x <= length; ++x)
+        for (int x = 0; x <= length; ++x)
         {
             if (x % bytesPerLine == 0)
             {
@@ -34,7 +34,7 @@ public static class Utility
             if (x < count)
             {
                 output.Append($"{buffer[offset + x]:X2} ");
-                var ch = (char)buffer[offset + x];
+                char ch = (char)buffer[offset + x];
                 if (!char.IsControl(ch))
                     ascii_output.Append($"{ch}");
                 else

@@ -14,9 +14,9 @@ public class BindingOption
 
     public static BindingOption FromPacket(Packet packet, BindingOptionType type)
     {
-        packet.TryRead<byte>(out var slot)
-            .TryRead<uint>(out var id)
-            .TryRead<uint>(out var value);
+        packet.TryRead<byte>(out byte slot)
+            .TryRead<uint>(out uint id)
+            .TryRead<uint>(out uint value);
 
         return new BindingOption
         {

@@ -1,6 +1,5 @@
 using PacketLibrary.VSRO188.Agent.Enums;
 using PacketLibrary.VSRO188.Agent.Objects.Party;
-using Serilog;
 using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Server;

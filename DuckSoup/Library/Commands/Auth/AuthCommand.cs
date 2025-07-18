@@ -7,7 +7,7 @@ public class AuthCommand : Command
 {
     public AuthCommand() : base("auth", " <subcommand>", "none")
     {
-        var helpCommand = new HelpCommand(SubCommands);
+        HelpCommand helpCommand = new HelpCommand(SubCommands);
         SubCommands.Add(new AuthInvalidateCommand());
         SubCommands.Add(new AuthRegisterCommand());
         SubCommands.Add(new AuthChangePasswordCommand());
@@ -23,7 +23,7 @@ public class AuthCommand : Command
             return;
         }
 
-        foreach (var command in SubCommands.Where(command =>
+        foreach (Command command in SubCommands.Where(command =>
                      command.GetName().ToLower().Equals(args[0].ToLower()) ||
                      command.GetAliases().Contains(args[0].ToLower())))
         {

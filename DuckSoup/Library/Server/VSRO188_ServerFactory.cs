@@ -27,7 +27,7 @@ public class VSRO188_ServerFactory : IServerFactory
 
     public HashSet<ushort> GetWhitelist(ServerType serverType)
     {
-        var defaultList = Utility.GetDefaultList(SecurityType.VSRO188);
+        IDefaultList defaultList = Utility.GetDefaultList(SecurityType.VSRO188);
 
         return serverType switch
         {
@@ -45,7 +45,7 @@ public class VSRO188_ServerFactory : IServerFactory
 
     public HashSet<ushort> GetBlacklist(ServerType serverType)
     {
-        var defaultList = Utility.GetDefaultList(SecurityType.VSRO188);
+        IDefaultList defaultList = Utility.GetDefaultList(SecurityType.VSRO188);
 
         return serverType switch
         {

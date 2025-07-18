@@ -1,10 +1,9 @@
 ﻿using API;
+using API.Command;
+using Serilog;
 using Serilog.Events;
 
 namespace DuckSoup.Library.Commands.Utils;
-
-using API.Command;
-using Serilog;
 
 public class LogLevelCommand : Command
 {
@@ -21,7 +20,7 @@ public class LogLevelCommand : Command
             return;
         }
 
-        if (!int.TryParse(args[0], out var level))
+        if (!int.TryParse(args[0], out int level))
         {
             Log.Information("The Syntax for the following command is: {0}", GetSyntax());
             return;
@@ -32,10 +31,10 @@ public class LogLevelCommand : Command
             Log.Information("The Syntax for the following command is: {0}", GetSyntax());
             return;
         }
- 
-        var eventLevel = (LogEventLevel) level;
+
+        LogEventLevel eventLevel = (LogEventLevel)level;
         Helper.LoggingLevelSwitch.MinimumLevel = eventLevel;
-        
+
         Log.Information("Log level switched to {0} until the next restart", eventLevel);
     }
 }

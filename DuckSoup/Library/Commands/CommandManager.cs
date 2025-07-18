@@ -44,7 +44,7 @@ public class CommandManager : ICommandManager
         {
             if (_commands == null) return new Result<Void>(new DisposedException(nameof(CommandManager)));
 
-            var consoleInput = Console.ReadLine();
+            string? consoleInput = Console.ReadLine();
             ExecuteCommand(consoleInput);
         }
 
@@ -53,9 +53,9 @@ public class CommandManager : ICommandManager
 
     public void ExecuteCommand(string? input)
     {
-        var removeList = new List<Command>();
+        List<Command> removeList = new List<Command>();
 
-        var split = input?.Split(" ");
+        string[]? split = input?.Split(" ");
 
         if (split == null || _commands == null || split.Length == 0 || split[0] == "")
         {
@@ -63,8 +63,8 @@ public class CommandManager : ICommandManager
             return;
         }
 
-        var commandFound = false;
-        foreach (var command in _commands)
+        bool commandFound = false;
+        foreach (Command command in _commands)
         {
             if (command.GetName() == null || command.GetAliases() == null)
             {
@@ -82,7 +82,10 @@ public class CommandManager : ICommandManager
             break;
         }
 
-        foreach (var command in removeList) _commands.Remove(command);
+        foreach (Command command in removeList)
+        {
+            _commands.Remove(command);
+        }
 
         removeList.Clear();
 

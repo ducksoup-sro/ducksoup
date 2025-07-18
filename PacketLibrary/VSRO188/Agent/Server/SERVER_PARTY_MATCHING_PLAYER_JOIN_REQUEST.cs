@@ -31,7 +31,7 @@ public class SERVER_PARTY_MATCHING_PLAYER_JOIN_REQUEST : Packet
         TryRead<uint>(out PrimaryMastery);
         TryRead<uint>(out SecondaryMastery);
         TryRead<byte>(out JobState);
-        var memberInfo = new PartyMemberInfo(this);
+        PartyMemberInfo memberInfo = new PartyMemberInfo(this);
     }
 
     public override async Task<Packet> Build()

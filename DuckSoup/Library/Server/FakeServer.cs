@@ -15,7 +15,7 @@ public class FakeServer : TcpServer, IFakeServer
     public FakeServer(Service service) : base(service.LocalMachine_Machine.Address, service.BindPort)
     {
         Service = service;
-        var factory = ServiceFactory.Load<IServerManager>(typeof(IServerManager))
+        IServerFactory factory = ServiceFactory.Load<IServerManager>(typeof(IServerManager))
             .GetServiceFactory(service.SecurityType);
 
         PacketHandler = new PacketHandler(
@@ -34,7 +34,8 @@ public class FakeServer : TcpServer, IFakeServer
         Log.Information("{0} - Redirecting Sessions from {1}:{2} to {3}:{4}", Service.Name,
             Service.LocalMachine_Machine.Address, Service.BindPort,
             Service.RemoteMachine_Machine.Address, Service.RemotePort);
-        if(Service.SpoofMachine_Machine != null) {
+        if (Service.SpoofMachine_Machine != null)
+        {
             Log.Information("{0} - Spoofing to {1}:{2}", Service.Name,
                 Service.SpoofMachine_Machine?.Address, Service.BindPort);
         }

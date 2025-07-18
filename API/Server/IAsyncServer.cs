@@ -17,7 +17,10 @@ public interface IAsyncServer : IDisposable
     IPEndPoint RemoteEndPoint { get; set; }
 
     void AddSession(ISession session);
+
     void RemoveSession(ISession session);
+
     Task Start();
+
     Task OnAccept(Task<TcpClient> task);
 }

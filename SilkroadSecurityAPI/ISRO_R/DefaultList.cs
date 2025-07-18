@@ -4,20 +4,20 @@ namespace SilkroadSecurityAPI.ISRO_R;
 
 public class DefaultList : IDefaultList
 {
-    private readonly HashSet<ushort> _clientAgentBlacklist = new();
+    private readonly HashSet<ushort> _clientAgentBlacklist = new HashSet<ushort>();
 
-    private readonly HashSet<ushort> _clientAgentWhitelist = new();
+    private readonly HashSet<ushort> _clientAgentWhitelist = new HashSet<ushort>();
 
-    private readonly HashSet<ushort> _clientDownloadBlacklist = new();
+    private readonly HashSet<ushort> _clientDownloadBlacklist = new HashSet<ushort>();
 
-    private readonly HashSet<ushort> _clientDownloadWhitelist = new()
+    private readonly HashSet<ushort> _clientDownloadWhitelist = new HashSet<ushort>
     {
         0x6004 // CLIENT_DOWNLOAD_FILE_REQUEST 
     };
 
-    private readonly HashSet<ushort> _clientGatewayBlacklist = new();
+    private readonly HashSet<ushort> _clientGatewayBlacklist = new HashSet<ushort>();
 
-    private readonly HashSet<ushort> _clientGatewayWhitelist = new()
+    private readonly HashSet<ushort> _clientGatewayWhitelist = new HashSet<ushort>
     {
         0x6100, // CLIENT_GATEWAY_PATCH_REQUEST 
         0x6101, // CLIENT_GATEWAY_SHARD_LIST_REQUEST 
@@ -31,9 +31,9 @@ public class DefaultList : IDefaultList
         0x6323 // CLIENT_GATEWAY_LOGIN_IBUV_CONFIRM_REQUEST
     };
 
-    private readonly HashSet<ushort> _clientGlobalBlacklist = new();
+    private readonly HashSet<ushort> _clientGlobalBlacklist = new HashSet<ushort>();
 
-    private readonly HashSet<ushort> _clientGlobalWhitelist = new()
+    private readonly HashSet<ushort> _clientGlobalWhitelist = new HashSet<ushort>
     {
         0x2001, // CLIENT_GLOBAL_MODULE_IDENTIFICATION 
         0x2002, // CLIENT_GLOBAL_MODULE_KEEP_ALIVE (Empty)

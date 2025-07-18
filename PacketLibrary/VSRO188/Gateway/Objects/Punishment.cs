@@ -7,9 +7,9 @@ public class Punishment
     public readonly ushort EndDateDay;
     public readonly ushort EndDateHour;
     public readonly ushort EndDateMicrosecond;
-    public readonly ushort EndDateNanosecond;
     public readonly ushort EndDateMinute;
     public readonly ushort EndDateMonth;
+    public readonly ushort EndDateNanosecond;
     public readonly ushort EndDateSecond;
     public readonly ushort EndDateYear;
     public readonly string Reason;

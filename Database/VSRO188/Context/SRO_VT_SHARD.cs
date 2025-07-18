@@ -141,11 +141,7 @@ public partial class SRO_VT_SHARD : DuckContext
 
     public virtual DbSet<_RefConditionToSellScrapItem> _RefConditionToSellScrapItems { get; set; }
 
-    public virtual DbSet<_RefCustomizingReservedItemDropForMonster> _RefCustomizingReservedItemDropForMonsters
-    {
-        get;
-        set;
-    }
+    public virtual DbSet<_RefCustomizingReservedItemDropForMonster> _RefCustomizingReservedItemDropForMonsters { get; set; }
 
     public virtual DbSet<_RefDropClassSel_Alchemy_ATTRStone> _RefDropClassSel_Alchemy_ATTRStones { get; set; }
 
@@ -373,11 +369,7 @@ public partial class SRO_VT_SHARD : DuckContext
 
     public virtual DbSet<_RentItemInfo> _RentItemInfos { get; set; }
 
-    public virtual DbSet<_ResultOfPackageItemToMappingWithServerSide> _ResultOfPackageItemToMappingWithServerSides
-    {
-        get;
-        set;
-    }
+    public virtual DbSet<_ResultOfPackageItemToMappingWithServerSide> _ResultOfPackageItemToMappingWithServerSides { get; set; }
 
     public virtual DbSet<_Schedule> _Schedules { get; set; }
 
@@ -591,14 +583,15 @@ public partial class SRO_VT_SHARD : DuckContext
                 .UseCollation("Chinese_Taiwan_Stroke_CI_AS");
         });
 
-        modelBuilder.Entity<_AlliedClan>(entity =>
-        {
-            entity.Property(e => e.FoundationDate).HasColumnType("smalldatetime");
-        });
+        modelBuilder.Entity<_AlliedClan>(entity => { entity.Property(e => e.FoundationDate).HasColumnType("smalldatetime"); });
 
         modelBuilder.Entity<_AssociationReputation>(entity =>
         {
-            entity.HasKey(e => new { e.AssociationCodeName, e.AssociationTypeName });
+            entity.HasKey(e => new
+            {
+                e.AssociationCodeName,
+                e.AssociationTypeName
+            });
 
             entity.ToTable("_AssociationReputation");
 
@@ -617,7 +610,12 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_BindingOptionWithItem>(entity =>
         {
-            entity.HasKey(e => new { e.nItemDBID, e.bOptType, e.nSlot });
+            entity.HasKey(e => new
+            {
+                e.nItemDBID,
+                e.bOptType,
+                e.nSlot
+            });
 
             entity.ToTable("_BindingOptionWithItem");
         });
@@ -691,7 +689,12 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_CharCollectionBook>(entity =>
         {
-            entity.HasKey(e => new { e.CharID, e.ThemeID, e.SlotIndex });
+            entity.HasKey(e => new
+            {
+                e.CharID,
+                e.ThemeID,
+                e.SlotIndex
+            });
 
             entity.ToTable("_CharCollectionBook");
 
@@ -700,7 +703,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_CharInstanceWorldDatum>(entity =>
         {
-            entity.HasKey(e => new { e.CharID, e.WorldID });
+            entity.HasKey(e => new
+            {
+                e.CharID,
+                e.WorldID
+            });
 
             entity.Property(e => e.LastEnterTime).HasColumnType("datetime");
             entity.Property(e => e.OpenedTime).HasColumnType("datetime");
@@ -708,7 +715,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_CharNameList>(entity =>
         {
-            entity.HasKey(e => new { e.CharName16, e.CharID });
+            entity.HasKey(e => new
+            {
+                e.CharName16,
+                e.CharID
+            });
 
             entity.ToTable("_CharNameList");
 
@@ -720,7 +731,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_CharNickNameList>(entity =>
         {
-            entity.HasKey(e => new { e.NickName16, e.CharID });
+            entity.HasKey(e => new
+            {
+                e.NickName16,
+                e.CharID
+            });
 
             entity.ToTable("_CharNickNameList");
 
@@ -733,7 +748,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_CharQuest>(entity =>
         {
-            entity.HasKey(e => new { e.CharID, e.QuestID });
+            entity.HasKey(e => new
+            {
+                e.CharID,
+                e.QuestID
+            });
 
             entity.ToTable("_CharQuest");
 
@@ -743,7 +762,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_CharSkill>(entity =>
         {
-            entity.HasKey(e => new { e.CharID, e.SkillID });
+            entity.HasKey(e => new
+            {
+                e.CharID,
+                e.SkillID
+            });
 
             entity.ToTable("_CharSkill");
 
@@ -752,7 +775,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_CharSkillMastery>(entity =>
         {
-            entity.HasKey(e => new { e.CharID, e.MasteryID });
+            entity.HasKey(e => new
+            {
+                e.CharID,
+                e.MasteryID
+            });
 
             entity.ToTable("_CharSkillMastery");
         });
@@ -782,7 +809,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_Chest>(entity =>
         {
-            entity.HasKey(e => new { e.UserJID, e.Slot });
+            entity.HasKey(e => new
+            {
+                e.UserJID,
+                e.Slot
+            });
 
             entity.ToTable("_Chest");
 
@@ -823,7 +854,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_ExploitLog>(entity =>
         {
-            entity.HasKey(e => new { e.ID, e.CharID });
+            entity.HasKey(e => new
+            {
+                e.ID,
+                e.CharID
+            });
 
             entity.ToTable("_ExploitLog");
 
@@ -852,7 +887,11 @@ public partial class SRO_VT_SHARD : DuckContext
                 .HasNoKey()
                 .ToTable("_FleaMarketNetwork");
 
-            entity.HasIndex(e => new { e.CharID, e.Slot }, "CIX__FleaMarketNetwork")
+            entity.HasIndex(e => new
+                {
+                    e.CharID,
+                    e.Slot
+                }, "CIX__FleaMarketNetwork")
                 .IsClustered()
                 .HasFillFactor(90);
         });
@@ -915,14 +954,22 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_GuildChest>(entity =>
         {
-            entity.HasKey(e => new { e.GuildID, e.Slot });
+            entity.HasKey(e => new
+            {
+                e.GuildID,
+                e.Slot
+            });
 
             entity.ToTable("_GuildChest");
         });
 
         modelBuilder.Entity<_GuildMember>(entity =>
         {
-            entity.HasKey(e => new { e.GuildID, e.CharID });
+            entity.HasKey(e => new
+            {
+                e.GuildID,
+                e.CharID
+            });
 
             entity.ToTable("_GuildMember");
 
@@ -949,7 +996,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_InvCO>(entity =>
         {
-            entity.HasKey(e => new { e.COSID, e.Slot });
+            entity.HasKey(e => new
+            {
+                e.COSID,
+                e.Slot
+            });
 
             entity.ToTable("_InvCOS");
 
@@ -958,7 +1009,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_Inventory>(entity =>
         {
-            entity.HasKey(e => new { e.CharID, e.Slot }).HasName("PK_Inventory");
+            entity.HasKey(e => new
+            {
+                e.CharID,
+                e.Slot
+            }).HasName("PK_Inventory");
 
             entity.ToTable("_Inventory");
 
@@ -967,7 +1022,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_InventoryForAvatar>(entity =>
         {
-            entity.HasKey(e => new { e.CharID, e.Slot });
+            entity.HasKey(e => new
+            {
+                e.CharID,
+                e.Slot
+            });
 
             entity.ToTable("_InventoryForAvatar");
 
@@ -976,7 +1035,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_InventoryForLinkedStorage>(entity =>
         {
-            entity.HasKey(e => new { e.LinkedItemID, e.Slot });
+            entity.HasKey(e => new
+            {
+                e.LinkedItemID,
+                e.Slot
+            });
 
             entity.ToTable("_InventoryForLinkedStorage");
         });
@@ -1061,14 +1124,29 @@ public partial class SRO_VT_SHARD : DuckContext
                 .HasNoKey()
                 .ToTable("_OpenMarket");
 
-            entity.HasIndex(e => new { e.Status, e.TidGroupID, e.ItemClass, e.RegDate }, "IX__OpenMarket_For_SMC")
+            entity.HasIndex(e => new
+                {
+                    e.Status,
+                    e.TidGroupID,
+                    e.ItemClass,
+                    e.RegDate
+                }, "IX__OpenMarket_For_SMC")
                 .HasFillFactor(90);
 
-            entity.HasIndex(e => new { e.JID, e.Status }, "IX__OpenMarket_JID_STATUS").HasFillFactor(90);
+            entity.HasIndex(e => new
+            {
+                e.JID,
+                e.Status
+            }, "IX__OpenMarket_JID_STATUS").HasFillFactor(90);
 
             entity.HasIndex(e => e.JID, "IX__OpenMarket_RefItemID").HasFillFactor(90);
 
-            entity.HasIndex(e => new { e.TidGroupID, e.Status, e.EndDate }, "IX__OpenMarket_TID_STATUS_REGDATE")
+            entity.HasIndex(e => new
+                {
+                    e.TidGroupID,
+                    e.Status,
+                    e.EndDate
+                }, "IX__OpenMarket_TID_STATUS_REGDATE")
                 .HasFillFactor(90);
 
             entity.Property(e => e.CharName16)
@@ -1087,7 +1165,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
             entity.HasIndex(e => e.ID, "IX__RefAbilityByItemOptLevel").IsUnique();
 
-            entity.HasIndex(e => new { e.RefItemID, e.ItemOptLevel }, "IX__RefAbilityByItemOptLevel_1").IsUnique();
+            entity.HasIndex(e => new
+            {
+                e.RefItemID,
+                e.ItemOptLevel
+            }, "IX__RefAbilityByItemOptLevel_1").IsUnique();
 
             entity.Property(e => e.ID).ValueGeneratedOnAdd();
         });
@@ -1098,7 +1180,12 @@ public partial class SRO_VT_SHARD : DuckContext
                 .HasNoKey()
                 .ToTable("_RefAccessPermissionOfShop");
 
-            entity.HasIndex(e => new { e.Country, e.RefShopCodeName, e.FourCC }, "IX__RefAccessPermissionOfShop")
+            entity.HasIndex(e => new
+                {
+                    e.Country,
+                    e.RefShopCodeName,
+                    e.FourCC
+                }, "IX__RefAccessPermissionOfShop")
                 .IsUnique();
 
             entity.Property(e => e.Param1_Desc128)
@@ -1247,7 +1334,14 @@ public partial class SRO_VT_SHARD : DuckContext
             entity.HasIndex(
                 e => new
                 {
-                    e.Country, e.Cash, e.TypeID1, e.TypeID2, e.TypeID3, e.TypeID4, e.RefItemCodeName, e.AcceptOrReject,
+                    e.Country,
+                    e.Cash,
+                    e.TypeID1,
+                    e.TypeID2,
+                    e.TypeID3,
+                    e.TypeID4,
+                    e.RefItemCodeName,
+                    e.AcceptOrReject,
                     e.FourCC
                 }, "IX__RefConditionToBuyScrapItem").IsUnique();
 
@@ -1279,7 +1373,12 @@ public partial class SRO_VT_SHARD : DuckContext
                 .HasNoKey()
                 .ToTable("_RefConditionToSellPackageItem");
 
-            entity.HasIndex(e => new { e.Country, e.RefPackageItemCodeName, e.FourCC },
+            entity.HasIndex(e => new
+                {
+                    e.Country,
+                    e.RefPackageItemCodeName,
+                    e.FourCC
+                },
                 "IX__RefConditionToSellPackageItem").IsUnique();
 
             entity.Property(e => e.Param1_Desc128)
@@ -1312,7 +1411,14 @@ public partial class SRO_VT_SHARD : DuckContext
             entity.HasIndex(
                 e => new
                 {
-                    e.Country, e.Cash, e.TypeID1, e.TypeID2, e.TypeID3, e.TypeID4, e.RefItemCodeName, e.AcceptOrReject,
+                    e.Country,
+                    e.Cash,
+                    e.TypeID1,
+                    e.TypeID2,
+                    e.TypeID3,
+                    e.TypeID4,
+                    e.RefItemCodeName,
+                    e.AcceptOrReject,
                     e.FourCC
                 }, "IX__RefConditionToSellScrapItem").IsUnique();
 
@@ -1440,7 +1546,11 @@ public partial class SRO_VT_SHARD : DuckContext
                 .HasNoKey()
                 .ToTable("_RefDropItemGroup");
 
-            entity.HasIndex(e => new { e.RefItemGroupID, e.RefItemID }, "IX__RefDropItemGroup").IsUnique();
+            entity.HasIndex(e => new
+            {
+                e.RefItemGroupID,
+                e.RefItemID
+            }, "IX__RefDropItemGroup").IsUnique();
 
             entity.Property(e => e.CodeName128)
                 .HasMaxLength(129)
@@ -1657,10 +1767,7 @@ public partial class SRO_VT_SHARD : DuckContext
             entity.ToTable("_RefGameWorldBindGameWorldGroup");
         });
 
-        modelBuilder.Entity<_RefGameWorldBindTriggerCategory>(entity =>
-        {
-            entity.ToTable("_RefGameWorldBindTriggerCategory");
-        });
+        modelBuilder.Entity<_RefGameWorldBindTriggerCategory>(entity => { entity.ToTable("_RefGameWorldBindTriggerCategory"); });
 
         modelBuilder.Entity<_RefGameWorldGroup>(entity =>
         {
@@ -1962,7 +2069,11 @@ public partial class SRO_VT_SHARD : DuckContext
                 .HasNoKey()
                 .ToTable("_RefMagicOptByItemOptLevel");
 
-            entity.HasIndex(e => new { e.RefMagicOptID, e.Link }, "IX__RefMagicOptByItemOptLevel").IsUnique();
+            entity.HasIndex(e => new
+            {
+                e.RefMagicOptID,
+                e.Link
+            }, "IX__RefMagicOptByItemOptLevel").IsUnique();
 
             entity.Property(e => e.TooltipCodename)
                 .HasMaxLength(128)
@@ -1977,7 +2088,12 @@ public partial class SRO_VT_SHARD : DuckContext
                 .HasNoKey()
                 .ToTable("_RefMagicOptGroup");
 
-            entity.HasIndex(e => new { e.LinkID, e.MagicType, e.MOptID }, "IX__RefMagicOptGroup").IsUnique();
+            entity.HasIndex(e => new
+            {
+                e.LinkID,
+                e.MagicType,
+                e.MOptID
+            }, "IX__RefMagicOptGroup").IsUnique();
 
             entity.Property(e => e.CodeName128)
                 .HasMaxLength(129)
@@ -1995,7 +2111,12 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_RefMappingShopGroup>(entity =>
         {
-            entity.HasKey(e => new { e.Country, e.RefShopGroupCodeName, e.RefShopCodeName });
+            entity.HasKey(e => new
+            {
+                e.Country,
+                e.RefShopGroupCodeName,
+                e.RefShopCodeName
+            });
 
             entity.ToTable("_RefMappingShopGroup");
 
@@ -2009,7 +2130,12 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_RefMappingShopWithTab>(entity =>
         {
-            entity.HasKey(e => new { e.Country, e.RefShopCodeName, e.RefTabGroupCodeName });
+            entity.HasKey(e => new
+            {
+                e.Country,
+                e.RefShopCodeName,
+                e.RefTabGroupCodeName
+            });
 
             entity.ToTable("_RefMappingShopWithTab");
 
@@ -2058,7 +2184,11 @@ public partial class SRO_VT_SHARD : DuckContext
                 .HasNoKey()
                 .ToTable("_RefMonster_AssignedItemRndDrop");
 
-            entity.HasIndex(e => new { e.RefMonsterID, e.RefItemGroupID }, "IX__RefMonster_AssignedItemRndDrop")
+            entity.HasIndex(e => new
+                {
+                    e.RefMonsterID,
+                    e.RefItemGroupID
+                }, "IX__RefMonster_AssignedItemRndDrop")
                 .IsUnique();
 
             entity.Property(e => e.ItemGroupCodeName128)
@@ -2221,7 +2351,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_RefPackageItem>(entity =>
         {
-            entity.HasKey(e => new { e.ID, e.Country });
+            entity.HasKey(e => new
+            {
+                e.ID,
+                e.Country
+            });
 
             entity.ToTable("_RefPackageItem");
 
@@ -2265,7 +2399,12 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_RefPricePolicyOfItem>(entity =>
         {
-            entity.HasKey(e => new { e.RefPackageItemCodeName, e.PaymentDevice, e.Country });
+            entity.HasKey(e => new
+            {
+                e.RefPackageItemCodeName,
+                e.PaymentDevice,
+                e.Country
+            });
 
             entity.ToTable("_RefPricePolicyOfItem");
 
@@ -2462,7 +2601,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_RefRentItem>(entity =>
         {
-            entity.HasKey(e => new { e.RentCodeName, e.RefItemID });
+            entity.HasKey(e => new
+            {
+                e.RentCodeName,
+                e.RefItemID
+            });
 
             entity.ToTable("_RefRentItem");
 
@@ -2485,7 +2628,14 @@ public partial class SRO_VT_SHARD : DuckContext
             entity.HasIndex(
                 e => new
                 {
-                    e.Country, e.Cash, e.TypeID1, e.TypeID2, e.TypeID3, e.TypeID4, e.RefItemCodeName, e.AcceptOrReject,
+                    e.Country,
+                    e.Cash,
+                    e.TypeID1,
+                    e.TypeID2,
+                    e.TypeID3,
+                    e.TypeID4,
+                    e.RefItemCodeName,
+                    e.AcceptOrReject,
                     e.FourCC
                 }, "IX__RefRewardPolicyToBuyScrapItem").IsUnique();
 
@@ -2513,11 +2663,21 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_RefRewardPolicyToSellPackageItem>(entity =>
         {
-            entity.HasKey(e => new { e.RefPackageItemCodeName, e.FourCC, e.Country });
+            entity.HasKey(e => new
+            {
+                e.RefPackageItemCodeName,
+                e.FourCC,
+                e.Country
+            });
 
             entity.ToTable("_RefRewardPolicyToSellPackageItem");
 
-            entity.HasIndex(e => new { e.Country, e.RefPackageItemCodeName, e.FourCC },
+            entity.HasIndex(e => new
+                {
+                    e.Country,
+                    e.RefPackageItemCodeName,
+                    e.FourCC
+                },
                 "IX__RefRewardPolicyToSellPackageItem").IsUnique();
 
             entity.Property(e => e.RefPackageItemCodeName)
@@ -2550,7 +2710,14 @@ public partial class SRO_VT_SHARD : DuckContext
             entity.HasIndex(
                 e => new
                 {
-                    e.Country, e.Cash, e.TypeID1, e.TypeID2, e.TypeID3, e.TypeID4, e.RefItemCodeName, e.AcceptOrReject,
+                    e.Country,
+                    e.Cash,
+                    e.TypeID1,
+                    e.TypeID2,
+                    e.TypeID3,
+                    e.TypeID4,
+                    e.RefItemCodeName,
+                    e.AcceptOrReject,
                     e.FourCC
                 }, "IX__RefRewardPolicyToSellScrapItem").IsUnique();
 
@@ -2734,7 +2901,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_RefShop>(entity =>
         {
-            entity.HasKey(e => new { e.ID, e.Country }).HasName("PK__RefShop_renewal");
+            entity.HasKey(e => new
+            {
+                e.ID,
+                e.Country
+            }).HasName("PK__RefShop_renewal");
 
             entity.ToTable("_RefShop");
 
@@ -2762,7 +2933,12 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_RefShopGood>(entity =>
         {
-            entity.HasKey(e => new { e.Country, e.RefTabCodeName, e.RefPackageItemCodeName })
+            entity.HasKey(e => new
+                {
+                    e.Country,
+                    e.RefTabCodeName,
+                    e.RefPackageItemCodeName
+                })
                 .HasName("PK__RefShopGoods_renewal");
 
             entity.Property(e => e.RefTabCodeName)
@@ -2791,7 +2967,12 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_RefShopGroup>(entity =>
         {
-            entity.HasKey(e => new { e.Country, e.ID, e.RefNPCCodeName }).HasName("PK__RefShopGroup_renewal");
+            entity.HasKey(e => new
+            {
+                e.Country,
+                e.ID,
+                e.RefNPCCodeName
+            }).HasName("PK__RefShopGroup_renewal");
 
             entity.ToTable("_RefShopGroup");
 
@@ -2836,7 +3017,12 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_RefShopItemStockPeriod>(entity =>
         {
-            entity.HasKey(e => new { e.Country, e.RefShopGroupCodeName, e.RefPackageItemCodeName })
+            entity.HasKey(e => new
+                {
+                    e.Country,
+                    e.RefShopGroupCodeName,
+                    e.RefPackageItemCodeName
+                })
                 .HasName("PK__RefShopItemStockQuantity");
 
             entity.ToTable("_RefShopItemStockPeriod");
@@ -2865,7 +3051,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_RefShopTab>(entity =>
         {
-            entity.HasKey(e => new { e.ID, e.Country }).HasName("PK__RefShopTab_renewal");
+            entity.HasKey(e => new
+            {
+                e.ID,
+                e.Country
+            }).HasName("PK__RefShopTab_renewal");
 
             entity.ToTable("_RefShopTab");
 
@@ -2883,7 +3073,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_RefShopTabGroup>(entity =>
         {
-            entity.HasKey(e => new { e.ID, e.Country });
+            entity.HasKey(e => new
+            {
+                e.ID,
+                e.Country
+            });
 
             entity.ToTable("_RefShopTabGroup");
 
@@ -2961,14 +3155,22 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_RefSiegeFortressGuard>(entity =>
         {
-            entity.HasKey(e => new { e.FortressID, e.GuardRefObjID });
+            entity.HasKey(e => new
+            {
+                e.FortressID,
+                e.GuardRefObjID
+            });
 
             entity.ToTable("_RefSiegeFortressGuard");
         });
 
         modelBuilder.Entity<_RefSiegeFortressItemForge>(entity =>
         {
-            entity.HasKey(e => new { e.FortressID, e.RefItemID });
+            entity.HasKey(e => new
+            {
+                e.FortressID,
+                e.RefItemID
+            });
 
             entity.ToTable("_RefSiegeFortressItemForge");
         });
@@ -3078,7 +3280,11 @@ public partial class SRO_VT_SHARD : DuckContext
                 .HasNoKey()
                 .ToTable("_RefSkillByItemOptLevel");
 
-            entity.HasIndex(e => new { e.RefSkillID, e.Link }, "IX__RefSkillByItemOptLevel").IsUnique();
+            entity.HasIndex(e => new
+            {
+                e.RefSkillID,
+                e.Link
+            }, "IX__RefSkillByItemOptLevel").IsUnique();
         });
 
         modelBuilder.Entity<_RefSkillGroup>(entity =>
@@ -3142,8 +3348,16 @@ public partial class SRO_VT_SHARD : DuckContext
             entity.HasIndex(
                 e => new
                 {
-                    e.Country, e.RefShopCodeName, e.Cash, e.TypeID1, e.TypeID2, e.TypeID3, e.TypeID4, e.RefItemCodeName,
-                    e.AcceptOrReject, e.FourCC
+                    e.Country,
+                    e.RefShopCodeName,
+                    e.Cash,
+                    e.TypeID1,
+                    e.TypeID2,
+                    e.TypeID3,
+                    e.TypeID4,
+                    e.RefItemCodeName,
+                    e.AcceptOrReject,
+                    e.FourCC
                 }, "IX__RefTreatItemOfShop").IsUnique();
 
             entity.Property(e => e.Param1_Desc128)
@@ -3237,10 +3451,7 @@ public partial class SRO_VT_SHARD : DuckContext
                 .UseCollation("Korean_Wansung_CI_AS");
         });
 
-        modelBuilder.Entity<_RefTriggerCategoryBindTrigger>(entity =>
-        {
-            entity.ToTable("_RefTriggerCategoryBindTrigger");
-        });
+        modelBuilder.Entity<_RefTriggerCategoryBindTrigger>(entity => { entity.ToTable("_RefTriggerCategoryBindTrigger"); });
 
         modelBuilder.Entity<_RefTriggerCommon>(entity =>
         {
@@ -3356,7 +3567,13 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_ResultOfPackageItemToMappingWithServerSide>(entity =>
         {
-            entity.HasKey(e => new { e.CharID, e.Slot, e.RefItemSerial64, e.RefItemDBID });
+            entity.HasKey(e => new
+            {
+                e.CharID,
+                e.Slot,
+                e.RefItemSerial64,
+                e.RefItemDBID
+            });
 
             entity.ToTable("_ResultOfPackageItemToMappingWithServerSide");
         });
@@ -3405,7 +3622,12 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_ShopItemStockQuantity>(entity =>
         {
-            entity.HasKey(e => new { e.Country, e.RefShopGroupCodeName, e.RefPackageItemCodeName });
+            entity.HasKey(e => new
+            {
+                e.Country,
+                e.RefShopGroupCodeName,
+                e.RefPackageItemCodeName
+            });
 
             entity.ToTable("_ShopItemStockQuantity");
 
@@ -3438,7 +3660,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_SiegeFortressBattleRecord>(entity =>
         {
-            entity.HasKey(e => new { e.FortressID, e.CharID });
+            entity.HasKey(e => new
+            {
+                e.FortressID,
+                e.CharID
+            });
 
             entity.ToTable("_SiegeFortressBattleRecord");
 
@@ -3447,7 +3673,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_SiegeFortressItemForge>(entity =>
         {
-            entity.HasKey(e => new { e.FortressID, e.ItemRefID });
+            entity.HasKey(e => new
+            {
+                e.FortressID,
+                e.ItemRefID
+            });
 
             entity.ToTable("_SiegeFortressItemForge");
 
@@ -3465,7 +3695,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_SiegeFortressRequest>(entity =>
         {
-            entity.HasKey(e => new { e.FortressID, e.GuildID });
+            entity.HasKey(e => new
+            {
+                e.FortressID,
+                e.GuildID
+            });
 
             entity.ToTable("_SiegeFortressRequest");
         });
@@ -3568,7 +3802,12 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_TrainingCampBuffStatus>(entity =>
         {
-            entity.HasKey(e => new { e.CampID, e.RecipientCharID, e.BuffSlotIdx });
+            entity.HasKey(e => new
+            {
+                e.CampID,
+                e.RecipientCharID,
+                e.BuffSlotIdx
+            });
 
             entity.ToTable("_TrainingCampBuffStatus");
 
@@ -3597,7 +3836,11 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_TrainingCampMember>(entity =>
         {
-            entity.HasKey(e => new { e.CampID, e.CharID });
+            entity.HasKey(e => new
+            {
+                e.CampID,
+                e.CharID
+            });
 
             entity.ToTable("_TrainingCampMember");
 
@@ -3618,7 +3861,12 @@ public partial class SRO_VT_SHARD : DuckContext
 
         modelBuilder.Entity<_TrijobRanking4WEB>(entity =>
         {
-            entity.HasKey(e => new { e.TrijobType, e.RankType, e.Rank });
+            entity.HasKey(e => new
+            {
+                e.TrijobType,
+                e.RankType,
+                e.Rank
+            });
 
             entity.ToTable("_TrijobRanking4WEB");
 

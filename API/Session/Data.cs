@@ -15,7 +15,7 @@ public static class Data
     public static string CharacterGameReady = "CharacterGameReady";
     public static string CharacterGameReadyTimestamp = "CharacterGameReadyTimestamp";
     public static string FirstSpawn = "FirstSpawn";
-    
+
     public static string Transport = "Transport";
     public static string JobTransport = "JobTransport";
     public static string Growth = "Growth";

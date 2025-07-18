@@ -41,7 +41,7 @@ public class WebserverManager : IWebserverManager
         _server.Routes.PreRouting = PreRoutingHandler;
         _server?.Start();
         Log.Information("Webserver on http://{0}:{1} started", hostname, port);
-        var authRoutes = new AuthRoutes(this);
+        AuthRoutes authRoutes = new AuthRoutes(this);
     }
 
     public void Stop()
@@ -106,9 +106,9 @@ public class WebserverManager : IWebserverManager
             // block access because we cannot verify if the route is legit or not
             return Task.FromResult(true);
 
-        var needsAuth = false;
-        var roles = new List<UserRole>();
-        foreach (var protectedRoute in _protectedRoutes.Where(protectedRoute =>
+        bool needsAuth = false;
+        List<UserRole> roles = new List<UserRole>();
+        foreach (KeyValuePair<string, List<UserRole>> protectedRoute in _protectedRoutes.Where(protectedRoute =>
                      ctx.Request.Url.RawWithQuery.ToLower().StartsWith(protectedRoute.Key)))
         {
             roles = protectedRoute.Value;
@@ -122,10 +122,10 @@ public class WebserverManager : IWebserverManager
         User user = null;
         string accessToken = null;
         IAuthPayload payload = null;
-        var hasHeader = ctx.Request.HeaderExists("Authorization");
+        bool hasHeader = ctx.Request.HeaderExists("Authorization");
         if (hasHeader)
         {
-            var split = ctx.Request.Headers["Authorization"].Split(" ");
+            string[] split = ctx.Request.Headers["Authorization"].Split(" ");
             if (split.Length == 2) accessToken = split[1];
         }
 

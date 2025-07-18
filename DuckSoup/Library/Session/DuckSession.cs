@@ -100,7 +100,7 @@ public class DuckSession : ISession
             return Task.CompletedTask;
         }
 
-        var notice = SERVER_CHAT_UPDATE.of(ChatType.Notice, reason).Result;
+        Packet notice = SERVER_CHAT_UPDATE.of(ChatType.Notice, reason).Result;
         SendToClient(notice);
 
         Disconnect();
@@ -116,14 +116,14 @@ public class DuckSession : ISession
             return this;
         }
 
-        SessionData.TryGetValue(key, out var val);
+        SessionData.TryGetValue(key, out object? val);
         value = (T)val;
         return this;
     }
 
     public ISession SetData<T>(string key, T value)
     {
-        SessionData.Remove(key, out var _);
+        SessionData.Remove(key, out _);
         SessionData.TryAdd(key, value);
         return this;
     }
@@ -133,10 +133,10 @@ public class DuckSession : ISession
         value = SessionData.ContainsKey(key);
         return this;
     }
-    
+
     public ISession RemoveData(string key)
     {
-        SessionData.Remove(key, out var _);
+        SessionData.Remove(key, out _);
         return this;
     }
 

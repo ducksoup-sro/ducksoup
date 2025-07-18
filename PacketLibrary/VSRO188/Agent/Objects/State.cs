@@ -7,7 +7,7 @@ namespace PacketLibrary.VSRO188.Agent.Objects;
 // Partially from: https://github.com/SDClowen/RSBot/
 public class State
 {
-    public List<SkillInfo> ActiveBuffs = new();
+    public List<SkillInfo> ActiveBuffs = new List<SkillInfo>();
     public BattleState BattleState = BattleState.InPeace;
     public float BerzerkSpeed;
     public BodyState BodyState;
@@ -22,7 +22,7 @@ public class State
 
     public static State FromPacket(Packet packet)
     {
-        var state = new State();
+        State state = new State();
         state.Deserialize(packet);
         return state;
     }
@@ -30,25 +30,25 @@ public class State
     public void Deserialize(Packet packet)
     {
         packet.TryRead(out LifeState)
-            .TryRead<byte>(out var unk0)
+            .TryRead<byte>(out byte unk0)
             .TryRead(out MotionState)
             .TryRead(out BodyState)
             .TryRead(out WalkSpeed)
             .TryRead(out RunSpeed)
             .TryRead(out BerzerkSpeed)
-            .TryRead<byte>(out var buffCount);
+            .TryRead<byte>(out byte buffCount);
 
-        for (var i = 0; i < buffCount; i++)
+        for (int i = 0; i < buffCount; i++)
         {
-            packet.TryRead<uint>(out var id)
-                .TryRead<uint>(out var token);
+            packet.TryRead<uint>(out uint id)
+                .TryRead<uint>(out uint token);
 
-            var buff = new SkillInfo(id, token);
+            SkillInfo buff = new SkillInfo(id, token);
             if (buff.Record == null)
                 continue;
 
             if (buff.Record.ParamsContains(1701213281))
-                packet.TryRead<bool>(out var isCreator);
+                packet.TryRead<bool>(out bool isCreator);
 
             ActiveBuffs.Add(buff);
         }
@@ -56,7 +56,7 @@ public class State
 
     public float GetSpeed()
     {
-        var speed = MovementType switch
+        float speed = MovementType switch
         {
             MovementType.Walking => WalkSpeed,
             MovementType.Running => RunSpeed,

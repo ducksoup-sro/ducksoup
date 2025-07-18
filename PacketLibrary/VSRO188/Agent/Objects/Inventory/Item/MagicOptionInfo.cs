@@ -10,8 +10,8 @@ public class MagicOptionInfo
 
     public static MagicOptionInfo FromPacket(Packet packet)
     {
-        packet.TryRead<uint>(out var id)
-            .TryRead<uint>(out var value);
+        packet.TryRead<uint>(out uint id)
+            .TryRead<uint>(out uint value);
 
         return new MagicOptionInfo
         {

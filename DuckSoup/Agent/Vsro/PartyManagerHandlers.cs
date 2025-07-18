@@ -6,14 +6,17 @@ using API;
 using API.Party;
 using API.ServiceFactory;
 using API.Session;
+using DuckSoup.Library.Party;
 using DuckSoup.Library.Session;
 using PacketLibrary.Handler;
 using PacketLibrary.VSRO188.Agent.Enums;
+using PacketLibrary.VSRO188.Agent.Objects.Party;
 using PacketLibrary.VSRO188.Agent.Server;
 using Serilog;
 using SilkroadSecurityAPI.Message;
+using PartyMatchEntry = DuckSoup.Library.Party.PartyMatchEntry;
 
-namespace DuckSoup.Library.Party;
+namespace DuckSoup.Agent.Vsro;
 
 public class PartyManagerHandlers
 {
@@ -40,7 +43,7 @@ public class PartyManagerHandlers
     {
         try
         {
-            var entry = _partyManager.GetPartyMatchEntry((int)data.MatchingId);
+            IPartyMatchEntry? entry = _partyManager.GetPartyMatchEntry((int)data.MatchingId);
 
             if (entry == null) return data;
 
@@ -80,15 +83,15 @@ public class PartyManagerHandlers
                     sess.GetData(Data.CharInfo, out CharInfo? sessData, null);
                     if (sessData == null) break;
 
-                    var needsAdding = true;
-                    var tParty = _partyManager.GetParty(session);
+                    bool needsAdding = true;
+                    IParty? tParty = _partyManager.GetParty(session);
                     if (tParty == null)
                     {
                         Log.Error("Couldn't find a party for the char {0}", sessData.CharName);
                         break;
                     }
 
-                    foreach (var tPartyMember in tParty.Members)
+                    foreach (ISession tPartyMember in tParty.Members)
                     {
                         tPartyMember.GetData(Data.CharInfo, out CharInfo? tPartyData, null);
                         if (tPartyData == null)
@@ -121,7 +124,7 @@ public class PartyManagerHandlers
                     sess = await Helper.GetSessionByAccountJid((int)data.UserJID);
                     if (sess == null) break;
 
-                    var party = _partyManager.GetParty(session);
+                    IParty? party = _partyManager.GetParty(session);
                     if (party == null) break;
 
                     party.Leader = sess;
@@ -162,7 +165,10 @@ public class PartyManagerHandlers
                 {
                     PartyId = (int)data.Id,
                     Leader = session,
-                    Members = new List<ISession> { session },
+                    Members = new List<ISession>
+                    {
+                        session
+                    },
                     PartySettingsFlag = data.partySetting
                 };
             else
@@ -199,10 +205,10 @@ public class PartyManagerHandlers
     {
         try
         {
-            var party = _partyManager.GetParty(data.ID);
+            IParty? party = _partyManager.GetParty(data.ID);
             if (party != null || data.ID == 0) return data;
 
-            var leaderSession = await Helper.GetSessionByAccountJid(data.LeaderJID);
+            ISession? leaderSession = await Helper.GetSessionByAccountJid(data.LeaderJID);
             if (leaderSession == null)
             {
                 return data;
@@ -215,9 +221,9 @@ public class PartyManagerHandlers
                 PartySettingsFlag = data.PartySettingsFlag
             };
 
-            foreach (var dataMemberInfo in data.MemberInfos)
+            foreach (PartyMemberInfo dataMemberInfo in data.MemberInfos)
             {
-                var sess = await Helper.GetSessionByAccountJid(dataMemberInfo.JID);
+                ISession? sess = await Helper.GetSessionByAccountJid(dataMemberInfo.JID);
                 if (sess == null)
                 {
                     continue;
@@ -228,7 +234,7 @@ public class PartyManagerHandlers
 
             _partyManager.AddParty(party);
 
-            var partyMatchEntry = _partyManager.GetPartyMatchEntries()
+            IPartyMatchEntry? partyMatchEntry = _partyManager.GetPartyMatchEntries()
                 .FirstOrDefault(entry =>
                 {
                     if (entry == null || entry.Party == null)

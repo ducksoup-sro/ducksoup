@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using API.Extensions;
 using API.Session;
 using Database.VSRO188;
+using Database.VSRO188.SRO_VT_SHARD;
 using PacketLibrary.Handler;
 using PacketLibrary.VSRO188.Agent.Client;
 using PacketLibrary.VSRO188.Agent.Enums;
@@ -17,7 +18,7 @@ public class BugfixHandler
         packetHandler.RegisterClientHandler<CLIENT_CHARACTER_ACTION_REQUEST>(1,
             ClientCharacterActionRequest); // Snow Shield fix
     }
-    
+
     private async Task<Packet> ClientCharacterActionRequest(CLIENT_CHARACTER_ACTION_REQUEST data, ISession session)
     {
         data.TryRead(out byte result);
@@ -27,7 +28,7 @@ public class BugfixHandler
         if (action != CharacterAction.SkillCast) return data;
 
         data.TryRead(out uint skillId);
-        var skill = await Cache.GetRefSkillAsync((int)skillId);
+        _RefSkill? skill = await Cache.GetRefSkillAsync((int)skillId);
         if (skill == null) return data;
 
         if (!skill.Basic_Code.Contains("COLD_SHIELD")) return data;

@@ -13,5 +13,6 @@ public interface ISettings : IDisposable
     int MaximumPool { get; set; }
     int MinimumPool { get; set; }
     int ConnectionLifetime { get; set; }
+
     ISettings Init();
 }

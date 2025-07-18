@@ -15,7 +15,7 @@ public class RentInfo
 
     internal static RentInfo FromPacket(Packet packet)
     {
-        var result = new RentInfo();
+        RentInfo result = new RentInfo();
         packet.TryRead(out result.Type);
 
         switch (result.Type)

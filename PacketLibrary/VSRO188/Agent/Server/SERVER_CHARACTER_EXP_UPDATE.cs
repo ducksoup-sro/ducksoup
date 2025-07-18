@@ -6,15 +6,15 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_CHARACTER_EXP_UPDATE
 public class SERVER_CHARACTER_EXP_UPDATE : Packet
 {
-    public uint SourceUniqueId; // where particles come from
+    public uint AccumulatedSize;
+    public uint CumulatedSize;
     public ulong GainedExpPoint;
     public ulong GainedSExpPoint;
-    public TCBuffUpdateMask TCBuffUpdateFlag;
-    public uint CumulatedSize;
     public uint SourceCharID;
-    public uint AccumulatedSize;
+    public uint SourceUniqueId; // where particles come from
     public ushort STP; // This will be calculated based on the experience and level data.
-    
+    public TCBuffUpdateMask TCBuffUpdateFlag;
+
     public SERVER_CHARACTER_EXP_UPDATE() : base(0x3056)
     {
     }
@@ -43,7 +43,7 @@ public class SERVER_CHARACTER_EXP_UPDATE : Packet
 
         if (Character.CurrentExp + gainedExpPoint > requiredExpForCurrentLevel)
         {
-            
+
         }*/
     }
 
@@ -78,7 +78,8 @@ public class SERVER_CHARACTER_EXP_UPDATE : Packet
     public static Task<Packet> of()
     {
         return new SERVER_CHARACTER_EXP_UPDATE
-                { }
+            {
+            }
             .Build();
     }
 }

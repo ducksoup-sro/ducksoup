@@ -15,7 +15,7 @@ public class _Inventory
     {
         if (_item != null) return _item;
 
-        using var db = new Context.SRO_VT_SHARD();
+        using Context.SRO_VT_SHARD db = new Context.SRO_VT_SHARD();
         _item = db._Items.FirstOrDefault(c => ItemID == c.ID64);
         return _item;
     }
@@ -24,7 +24,7 @@ public class _Inventory
     {
         if (_char != null) return _char;
 
-        using var db = new Context.SRO_VT_SHARD();
+        using Context.SRO_VT_SHARD db = new Context.SRO_VT_SHARD();
         _char = db._Chars.FirstOrDefault(c => CharID == c.CharID);
         return _char;
     }

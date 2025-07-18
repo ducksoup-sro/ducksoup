@@ -49,7 +49,7 @@ public class _Item
     {
         if (_refObjCommon != null) return _refObjCommon;
 
-        using var db = new Context.SRO_VT_SHARD();
+        using Context.SRO_VT_SHARD db = new Context.SRO_VT_SHARD();
         _refObjCommon = db._RefObjCommons.AsNoTracking().FirstOrDefault(c => RefItemID == c.ID);
         return _refObjCommon;
     }

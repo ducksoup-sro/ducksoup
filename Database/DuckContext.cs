@@ -4,7 +4,7 @@ namespace Database;
 
 public class DuckContext : DbContext
 {
-    public static Dictionary<Type, string> ConnectionStrings = new();
+    public static Dictionary<Type, string> ConnectionStrings = new Dictionary<Type, string>();
 
     protected DuckContext()
     {
@@ -26,7 +26,7 @@ public class DuckContext : DbContext
 
     public bool CanConnect()
     {
-        using var db = new DuckContext();
+        using DuckContext db = new DuckContext();
         return db.Database.CanConnect();
     }
 }

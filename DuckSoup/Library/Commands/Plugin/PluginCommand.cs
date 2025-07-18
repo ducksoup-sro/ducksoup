@@ -5,9 +5,12 @@ namespace DuckSoup.Library.Commands.Plugin;
 
 public class PluginCommand : Command
 {
-    public PluginCommand() : base("plugin", "plugin <subcommand>", "none", new[] { "pl" })
+    public PluginCommand() : base("plugin", "plugin <subcommand>", "none", new[]
     {
-        var helpCommand = new HelpCommand(SubCommands);
+        "pl"
+    })
+    {
+        HelpCommand helpCommand = new HelpCommand(SubCommands);
         SubCommands.Add(new PluginListCommand());
         SubCommands.Add(new PluginLoadCommand());
         SubCommands.Add(new PluginUnloadCommand());
@@ -21,7 +24,7 @@ public class PluginCommand : Command
             return;
         }
 
-        foreach (var command in SubCommands.Where(command =>
+        foreach (Command command in SubCommands.Where(command =>
                      command.GetName().ToLower().Equals(args[0].ToLower()) ||
                      command.GetAliases().Contains(args[0].ToLower())))
         {

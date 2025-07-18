@@ -9,7 +9,7 @@ public class InternalPluginCommand : Command
     public InternalPluginCommand(string? name, string? syntax, string? description, IEnumerable<string>? aliases = null)
         : base(name, syntax, description, aliases)
     {
-        var helpCommand = new HelpCommand(SubCommands);
+        HelpCommand helpCommand = new HelpCommand(SubCommands);
     }
 
     public void AddCommands(List<Command> commands)
@@ -25,7 +25,7 @@ public class InternalPluginCommand : Command
             return;
         }
 
-        foreach (var command in SubCommands.Where(command =>
+        foreach (Command command in SubCommands.Where(command =>
                      command.GetName().ToLower().Equals(args[0].ToLower()) ||
                      command.GetAliases().Contains(args[0].ToLower())))
         {

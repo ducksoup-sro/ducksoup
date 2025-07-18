@@ -7,7 +7,10 @@ namespace DuckSoup.Library.Commands;
 
 public class HelpCommand : Command
 {
-    public HelpCommand(List<Command> subCommands) : base("help", "help", "Shows the help page", new[] { "h", "hilfe" })
+    public HelpCommand(List<Command> subCommands) : base("help", "help", "Shows the help page", new[]
+    {
+        "h", "hilfe"
+    })
     {
         SubCommands = subCommands;
         subCommands.Insert(0, this);
@@ -21,15 +24,15 @@ public class HelpCommand : Command
             return;
         }
 
-        foreach (var subCommand in SubCommands)
+        foreach (Command subCommand in SubCommands)
         {
-            var hasSubCommand = subCommand.HasSubCommands().Match(
+            bool hasSubCommand = subCommand.HasSubCommands().Match(
                 data => data, exception => false);
 
             if (hasSubCommand && !subCommand.GetName().Equals("help"))
             {
-                var sublist = "";
-                foreach (var command in subCommand.GetSubCommands())
+                string sublist = "";
+                foreach (Command command in subCommand.GetSubCommands())
                 {
                     sublist += command.GetName();
 

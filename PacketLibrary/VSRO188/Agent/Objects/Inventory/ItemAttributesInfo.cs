@@ -70,17 +70,17 @@ public class ItemAttributesInfo
     {
         get
         {
-            var offset = slot * SlotSize;
-            var mask = ((1ul << SlotSize) - 1ul) << offset;
+            int offset = slot * SlotSize;
+            ulong mask = (1ul << SlotSize) - 1ul << offset;
 
             return (byte)((Variance & mask) >> offset);
         }
         set
         {
-            var offset = slot * SlotSize;
-            var mask = ((1ul << SlotSize) - 1ul) << offset;
+            int offset = slot * SlotSize;
+            ulong mask = (1ul << SlotSize) - 1ul << offset;
 
-            Variance = (Variance & ~mask) | ((ulong)(value << offset) & mask);
+            Variance = Variance & ~mask | (ulong)(value << offset) & mask;
         }
     }
 
@@ -106,11 +106,13 @@ public class ItemAttributesInfo
     /// <returns></returns>
     public IEnumerable<byte> CompareSlots(ItemAttributesInfo info)
     {
-        var result = new List<byte>(6);
+        List<byte> result = new List<byte>(6);
 
         for (byte i = 0; i < 6; i++)
+        {
             if (info[i] != this[i])
                 result.Add(i);
+        }
 
         return result;
     }
@@ -140,7 +142,7 @@ public class ItemAttributesInfo
         if (slot > 6)
             return 0;
 
-        var value = Math.Floor(this[slot] / 31f * 100f);
+        double value = Math.Floor(this[slot] / 31f * 100f);
 
         return (byte)value;
     }
@@ -150,26 +152,19 @@ public class ItemAttributesInfo
         if (item.IsArmor)
             return new[]
             {
-                ItemAttributeGroup.Durability, ItemAttributeGroup.PhysicalSpecialize,
-                ItemAttributeGroup.MagicalSpecialize,
-                ItemAttributeGroup.PhysicalDefense, ItemAttributeGroup.MagicalDefense, ItemAttributeGroup.EvasionRatio
+                ItemAttributeGroup.Durability, ItemAttributeGroup.PhysicalSpecialize, ItemAttributeGroup.MagicalSpecialize, ItemAttributeGroup.PhysicalDefense, ItemAttributeGroup.MagicalDefense, ItemAttributeGroup.EvasionRatio
             };
 
         if (item.IsWeapon)
             return new[]
             {
-                ItemAttributeGroup.Durability, ItemAttributeGroup.PhysicalSpecialize,
-                ItemAttributeGroup.MagicalSpecialize,
-                ItemAttributeGroup.HitRatio, ItemAttributeGroup.PhysicalDamage, ItemAttributeGroup.MagicalDamage,
-                ItemAttributeGroup.Critical
+                ItemAttributeGroup.Durability, ItemAttributeGroup.PhysicalSpecialize, ItemAttributeGroup.MagicalSpecialize, ItemAttributeGroup.HitRatio, ItemAttributeGroup.PhysicalDamage, ItemAttributeGroup.MagicalDamage, ItemAttributeGroup.Critical
             };
 
         if (item.IsShield)
             return new[]
             {
-                ItemAttributeGroup.Durability, ItemAttributeGroup.PhysicalSpecialize,
-                ItemAttributeGroup.MagicalSpecialize,
-                ItemAttributeGroup.BlockRatio, ItemAttributeGroup.PhysicalDefense, ItemAttributeGroup.MagicalDefense
+                ItemAttributeGroup.Durability, ItemAttributeGroup.PhysicalSpecialize, ItemAttributeGroup.MagicalSpecialize, ItemAttributeGroup.BlockRatio, ItemAttributeGroup.PhysicalDefense, ItemAttributeGroup.MagicalDefense
             };
 
         if (item.IsAccessory)

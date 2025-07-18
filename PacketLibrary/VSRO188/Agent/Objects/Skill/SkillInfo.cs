@@ -29,8 +29,8 @@ public class SkillInfo
 
     internal static SkillInfo FromPacket(Packet packet)
     {
-        packet.TryRead<uint>(out var id)
-            .TryRead<bool>(out var enabled);
+        packet.TryRead<uint>(out uint id)
+            .TryRead<bool>(out bool enabled);
         return new SkillInfo(id, enabled);
     }
 }

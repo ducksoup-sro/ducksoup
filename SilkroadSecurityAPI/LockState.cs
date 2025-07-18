@@ -10,5 +10,5 @@ public enum LockState
     TransferIncoming,
     TransferOutgoing,
     TransferOutgoingNewClient,
-    TransferOutgoingNewSession,
+    TransferOutgoingNewSession
 }

@@ -6,7 +6,7 @@ namespace PacketLibrary.ISRO_R.Gateway.Server;
 public class SERVER_GATEWAY_PING_LIST_RESPONSE : Packet
 {
     public byte Count;
-    public List<PingHost> PingHosts = new();
+    public List<PingHost> PingHosts = new List<PingHost>();
 
     /// <summary>
     ///     Probably answer onto 0x6107 <see cref="SERVER_GATEWAY_PING_LIST_RESPONSE" />
@@ -26,7 +26,10 @@ public class SERVER_GATEWAY_PING_LIST_RESPONSE : Packet
         // 0000000048   32                                                2...............
 
         TryRead(out Count);
-        for (var i = 0; i < Count; i++) PingHosts.Add(new PingHost(this));
+        for (int i = 0; i < Count; i++)
+        {
+            PingHosts.Add(new PingHost(this));
+        }
     }
 
     public override async Task<Packet> Build()
@@ -34,7 +37,10 @@ public class SERVER_GATEWAY_PING_LIST_RESPONSE : Packet
         Reset();
 
         TryWrite(Count);
-        foreach (var pingHost in PingHosts) pingHost.Build(this);
+        foreach (PingHost pingHost in PingHosts)
+        {
+            pingHost.Build(this);
+        }
 
         return this;
     }

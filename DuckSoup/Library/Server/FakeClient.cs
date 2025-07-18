@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using API.Database.DuckSoup;
 using API.EventFactory;
@@ -23,7 +24,7 @@ public class FakeClient : TcpClient
         {
             ServerSecurity = Utility.GetSecurity(service.SecurityType);
             FakeServer = fakeServer;
-        } 
+        }
         catch (Exception exception)
         {
             Log.Error("FakeClient | Something went wrong in initialisation");
@@ -74,30 +75,31 @@ public class FakeClient : TcpClient
         {
             return;
         }
-        
+
         string message = string.Empty;
         try
         {
             ServerSecurity.Recv(buffer, (int)offset, (int)size);
 
-            var receivedPackets = ServerSecurity.TransferIncoming();
+            List<Packet>? receivedPackets = ServerSecurity.TransferIncoming();
 
             if (receivedPackets == null || receivedPackets.Count == 0) return;
 
-            foreach (var packet in receivedPackets)
+            foreach (Packet packet in receivedPackets)
             {
-                
-                var packetType = packet.Encrypted ? "[E]" : packet.Massive ? "[M]" : "";
+
+                string packetType = packet.Encrypted ? "[E]" : packet.Massive ? "[M]" : "";
                 message = $"[S -> P] {packetType} Packet: 0x{packet.MsgId:X} - {Id}";
                 Log.Verbose(message);
 
-                if(EventFactory.HasSubscriptions(EventFactoryNames.OnModuleReceivePacket)) {
+                if (EventFactory.HasSubscriptions(EventFactoryNames.OnModuleReceivePacket))
+                {
                     EventFactory.Publish(EventFactoryNames.OnModuleReceivePacket, DateTime.Now, FakeServer.Service.ServerType, Session, new Packet(packet));
                 }
-                
+
                 if (packet.MsgId == 0x5000 || packet.MsgId == 0x9000) continue;
 
-                var packetResult = FakeServer.PacketHandler.HandleServer(packet, Session).Result;
+                Packet packetResult = FakeServer.PacketHandler.HandleServer(packet, Session).Result;
 
                 switch (packetResult.ResultType)
                 {
@@ -125,7 +127,7 @@ public class FakeClient : TcpClient
         {
             Session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
             Session.GetData(Data.CharId, out int charId, -1);
-            Log.Error("FakeClient Recv | 0x{0:X} | Name: {1} | Id: {2} | ServerType: {3} ", message, (charInfo != null? charInfo.CharName : "null"), charId, FakeServer.Service.ServerType);
+            Log.Error("FakeClient Recv | 0x{0:X} | Name: {1} | Id: {2} | ServerType: {3} ", message, charInfo != null ? charInfo.CharName : "null", charId, FakeServer.Service.ServerType);
             Log.Error("FakeClient Recv | SSAClientId: {0} | Current: {1} | Last: {2} ", Session.GetServerSecurity().GetId(), Session.GetServerSecurity().GetCurrentLockState(), Session.GetServerSecurity().GetLastLockState());
             Log.Error("FakeClient Recv | SSAServerId: {0} | Current: {1} | Last: {2} ", Session.GetClientSecurity().GetId(), Session.GetClientSecurity().GetCurrentLockState(), Session.GetClientSecurity().GetLastLockState());
             Log.Error("FakeClient Recv | {0}", exception.Message);
@@ -141,21 +143,22 @@ public class FakeClient : TcpClient
         try
         {
             ServerSecurity.Send(packet);
-            
-            if(EventFactory.HasSubscriptions(EventFactoryNames.OnModuleTransferPacket)) {
+
+            if (EventFactory.HasSubscriptions(EventFactoryNames.OnModuleTransferPacket))
+            {
                 EventFactory.Publish(EventFactoryNames.OnModuleTransferPacket, DateTime.Now, FakeServer.Service.ServerType, Session, new Packet(packet));
             }
-            
+
             if (transfer) Transfer();
         }
         catch (Exception exception)
         {
-            Log.Error("FakeClient:124 | ID: {0} ", this.Id);
+            Log.Error("FakeClient:124 | ID: {0} ", Id);
             Log.Error("FakeClient:124 | {0}", exception.Message);
             Log.Error("FakeClient:124 | {0}", exception.StackTrace);
             Log.Error("FakeClient:124 | {0}", exception.InnerException);
             Log.Error("FakeClient:124 | {0}", exception.Data);
-            this.Disconnect();
+            Disconnect();
         }
     }
 
@@ -167,12 +170,12 @@ public class FakeClient : TcpClient
         }
         catch (Exception exception)
         {
-            Log.Error("FakeClient:143 | ID: {0} ", this.Id);
+            Log.Error("FakeClient:143 | ID: {0} ", Id);
             Log.Error("FakeClient:143 | {0}", exception.Message);
             Log.Error("FakeClient:143 | {0}", exception.StackTrace);
             Log.Error("FakeClient:143 | {0}", exception.InnerException);
             Log.Error("FakeClient:143 | {0}", exception.Data);
-            this.Disconnect();
+            Disconnect();
         }
     }
 }

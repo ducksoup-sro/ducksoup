@@ -1,4 +1,5 @@
-﻿using SilkroadSecurityAPI.Message;
+﻿using Database.VSRO188.SRO_VT_SHARD;
+using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Objects.Spawn;
 
@@ -21,7 +22,7 @@ public sealed class SpawnedCos : SpawnedNpc
         ParseBionicDetails(packet);
         base.Deserialize(packet);
 
-        var refObj = RefObjCommon;
+        _RefObjCommon refObj = RefObjCommon;
 
         if (refObj.TypeID4 == 2 //NPC_COS_TRANSPORT
             || refObj.TypeID4 == 3 //NPC_COS_P_GROWTH
@@ -60,7 +61,7 @@ public sealed class SpawnedCos : SpawnedNpc
                 || refObj.TypeID4 == 5 //NPC_COS_GUILD
                 || refObj.TypeID4 == 9) //COS_PET2 
             {
-                packet.TryRead<byte>(out var ownerJobType);
+                packet.TryRead<byte>(out byte ownerJobType);
 
                 // if (refObj.TypeID4 == 2 //NPC_COS_TRASNPORT
                 //     || refObj.TypeID4 == 3 //NPC_COS_P_GROWTH
@@ -75,17 +76,17 @@ public sealed class SpawnedCos : SpawnedNpc
                 //     }
                 // }
                 if (refObj.TypeID4 != 4) //NO NPC_COS_P (Ability)
-                    packet.TryRead<byte>(out var murderFlag); //0 = White, 1 = Purple, 2 = Red
+                    packet.TryRead<byte>(out byte murderFlag); //0 = White, 1 = Purple, 2 = Red
 
                 if (refObj.TypeID4 == 5)
                     //NPC_COS_GUILD
-                    packet.TryRead<uint>(out var ownerRegObjId);
+                    packet.TryRead<uint>(out uint ownerRegObjId);
             }
             // }
 
             packet.TryRead(out OwnerUniqueId);
             if (refObj.TypeID4 == 9)
-                packet.TryRead<byte>(out var unk1);
+                packet.TryRead<byte>(out byte unk1);
         }
     }
 }

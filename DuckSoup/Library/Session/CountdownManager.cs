@@ -111,10 +111,10 @@ public class CountdownManager : ICountdownManager
 
     private Packet CreateStartPacket()
     {
-        var packetTime = 1200000 - (int)_started.GetValueOrDefault().AddMilliseconds(_timerInterval)
+        int packetTime = 1200000 - (int)_started.GetValueOrDefault().AddMilliseconds(_timerInterval)
             .Subtract(DateTime.Now).TotalMilliseconds;
 
-        var response = new Packet(0x34B1);
+        Packet response = new Packet(0x34B1);
         response.TryWrite<byte>(0xFF)
             .TryWrite<byte>(0x0E)
             .TryWrite((uint)packetTime);
@@ -123,7 +123,7 @@ public class CountdownManager : ICountdownManager
 
     private Packet CreateStopPacket()
     {
-        var response = new Packet(0x34B1);
+        Packet response = new Packet(0x34B1);
         response.TryWrite<byte>(0x05);
         return response;
     }

@@ -11,7 +11,7 @@ public class SERVER_GATEWAY_PATCH_RESPONSE : Packet
     public uint CurVersion;
     public HostAndPort DownloadServer;
     public PatchErrorCode ErrorCode;
-    public List<DownloadFile> Files = new();
+    public List<DownloadFile> Files = new List<DownloadFile>();
 
     public byte Result;
 
@@ -35,7 +35,7 @@ public class SERVER_GATEWAY_PATCH_RESPONSE : Packet
 
                 while (true)
                 {
-                    TryRead<bool>(out var hasEntries); // 1	bool hasEntries
+                    TryRead<bool>(out bool hasEntries); // 1	bool hasEntries
                     if (!hasEntries)
                         break;
                     Files.Add(new DownloadFile(this));
@@ -57,7 +57,7 @@ public class SERVER_GATEWAY_PATCH_RESPONSE : Packet
                 DownloadServer.Build(this);
                 TryWrite(CurVersion);
 
-                foreach (var downloadFile in Files)
+                foreach (DownloadFile downloadFile in Files)
                 {
                     TryWrite(true);
                     downloadFile.Build(this);

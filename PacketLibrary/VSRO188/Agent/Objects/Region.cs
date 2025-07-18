@@ -40,15 +40,15 @@ public struct Region
     {
         return new Region[]
         {
-            new((byte)(X - 1), (byte)(Y + 1)), //TL
-            new(X, (byte)(Y + 1)), //TC
-            new((byte)(X + 1), (byte)(Y + 1)), //TR
-            new((byte)(X - 1), Y), //CL
-            new(X, Y), //CC
-            new((byte)(X + 1), Y), //CR
-            new((byte)(X - 1), (byte)(Y - 1)), //BL
-            new(X, (byte)(Y - 1)), //BC
-            new((byte)(X + 1), (byte)(Y - 1)) //BR
+            new Region((byte)(X - 1), (byte)(Y + 1)), //TL
+            new Region(X, (byte)(Y + 1)), //TC
+            new Region((byte)(X + 1), (byte)(Y + 1)), //TR
+            new Region((byte)(X - 1), Y), //CL
+            new Region(X, Y), //CC
+            new Region((byte)(X + 1), Y), //CR
+            new Region((byte)(X - 1), (byte)(Y - 1)), //BL
+            new Region(X, (byte)(Y - 1)), //BC
+            new Region((byte)(X + 1), (byte)(Y - 1)) //BR
         };
     }
 

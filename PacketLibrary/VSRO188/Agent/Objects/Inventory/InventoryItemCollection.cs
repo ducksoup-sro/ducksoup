@@ -149,18 +149,22 @@ public class InventoryItemCollection : IEnumerable
 
     public int GetSumAmount(string recordCodeName)
     {
-        var sum = 0;
-        foreach (var item in GetItems(recordCodeName))
+        int sum = 0;
+        foreach (InventoryItem item in GetItems(recordCodeName))
+        {
             sum += item.Amount;
+        }
 
         return sum;
     }
 
     public int GetSumAmount(TypeIdFilter filter)
     {
-        var sum = 0;
-        foreach (var item in GetItems(filter))
+        int sum = 0;
+        foreach (InventoryItem item in GetItems(filter))
+        {
             sum += item.Amount;
+        }
 
         return sum;
     }
@@ -168,8 +172,10 @@ public class InventoryItemCollection : IEnumerable
     public virtual byte GetFreeSlot()
     {
         for (byte slot = 0; slot < Capacity; slot++)
+        {
             if (GetItemAt(slot) == null)
                 return slot;
+        }
 
         return 0xFF;
     }
@@ -192,12 +198,14 @@ public class InventoryItemCollection : IEnumerable
 
     public void Deserialize(Packet packet)
     {
-        packet.TryRead<byte>(out var capacity);
+        packet.TryRead<byte>(out byte capacity);
         if (capacity <= 0)
             return;
 
-        packet.TryRead<byte>(out var amount);
-        for (var i = 0; i < amount; i++)
+        packet.TryRead<byte>(out byte amount);
+        for (int i = 0; i < amount; i++)
+        {
             _collection.Add(InventoryItem.FromPacket(packet));
+        }
     }
 }

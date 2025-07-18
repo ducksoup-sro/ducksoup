@@ -22,7 +22,10 @@ public class SpawnedItem : SpawnedEntity
 
     internal static SpawnedItem FromPacket(Packet packet, uint itemId)
     {
-        var result = new SpawnedItem { Id = itemId };
+        SpawnedItem result = new SpawnedItem
+        {
+            Id = itemId
+        };
 
         if (result.RefObjCommon.TypeID2 == 1)
             // isEquip
@@ -31,8 +34,8 @@ public class SpawnedItem : SpawnedEntity
                  result.RefObjCommon.TypeID4 == 0)
             // isGold
             packet.TryRead(out result.Amount);
-        else if ((result.RefObjCommon.TypeID2 == 3 && result.RefObjCommon.TypeID3 == 9) ||
-                 (result.RefObjCommon.TypeID2 == 3 && result.RefObjCommon.TypeID3 == 8)) // isQuest || isTrading
+        else if (result.RefObjCommon.TypeID2 == 3 && result.RefObjCommon.TypeID3 == 9 ||
+                 result.RefObjCommon.TypeID2 == 3 && result.RefObjCommon.TypeID3 == 8) // isQuest || isTrading
             packet.TryRead(out result.OwnerName);
 
         packet.TryRead(out result.UniqueId);

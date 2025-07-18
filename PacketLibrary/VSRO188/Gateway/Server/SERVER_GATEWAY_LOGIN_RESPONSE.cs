@@ -54,17 +54,17 @@ public class SERVER_GATEWAY_LOGIN_RESPONSE : Packet
         else if (Result == 0x03) //Custom Message as A102 result, not supported by every client.
         {
             //I've not looked into this yet.
-            TryRead<byte>(out var unkByte0) // 1   byte    unkByte0
-                .TryRead<byte>(out var unkByte1) // 1   byte    unkByte1
-                .TryRead(out var unkAscii) // 2   ushort  Message.Length //     *   string  Message
-                .TryRead<ushort>(out var unkUshort0); // 2   ushort  unkUShort0
+            TryRead<byte>(out byte unkByte0) // 1   byte    unkByte0
+                .TryRead<byte>(out byte unkByte1) // 1   byte    unkByte1
+                .TryRead(out string unkAscii) // 2   ushort  Message.Length //     *   string  Message
+                .TryRead<ushort>(out ushort unkUshort0); // 2   ushort  unkUShort0
         }
     }
 
     public override async Task<Packet> Build()
     {
         Reset();
-        
+
         TryWrite<byte>(Result);
         if (Result == 0x01)
         {
@@ -92,7 +92,7 @@ public class SERVER_GATEWAY_LOGIN_RESPONSE : Packet
             // response.WriteAscii();
             // response.WriteUInt16();
         }
-        
+
         return this;
     }
 

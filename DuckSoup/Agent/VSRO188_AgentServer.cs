@@ -1,29 +1,11 @@
 ﻿using System;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
 using API;
 using API.Database.DuckSoup;
-using API.EventFactory;
-using API.Extensions;
 using API.ServiceFactory;
-using API.Session;
-using Database.VSRO188;
-using Database.VSRO188.Context;
 using DuckSoup.Agent.Vsro;
-using DuckSoup.Library.Party;
 using DuckSoup.Library.Server;
-using DuckSoup.Library.Session;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using PacketLibrary.Handler;
-using PacketLibrary.VSRO188.Agent.Client;
-using PacketLibrary.VSRO188.Agent.Enums;
-using PacketLibrary.VSRO188.Agent.Enums.Logout;
-using PacketLibrary.VSRO188.Agent.Objects;
-using PacketLibrary.VSRO188.Agent.Server;
 using Serilog;
-using SilkroadSecurityAPI.Message;
 
 namespace DuckSoup.Agent;
 
@@ -34,14 +16,14 @@ public class VSRO188_AgentServer : FakeServer
     public VSRO188_AgentServer(Service service) : base(service)
     {
         _sharedObjects = ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
-        var dataHandlers = new DataHandler(PacketHandler);
-        var entityParsingHandlers = new EntityParsingHandler(PacketHandler);
-        var exploitHandlers = new ExploitHandler(PacketHandler);
-        var partyManagerHandlers = new PartyManagerHandlers(PacketHandler);
+        DataHandler dataHandlers = new DataHandler(PacketHandler);
+        EntityParsingHandler entityParsingHandlers = new EntityParsingHandler(PacketHandler);
+        ExploitHandler exploitHandlers = new ExploitHandler(PacketHandler);
+        PartyManagerHandlers partyManagerHandlers = new PartyManagerHandlers(PacketHandler);
     }
 
     /*
-    
+
 
     public void ParseSpawn(ISession session, Packet packet, bool isGroup = false)
     {
@@ -161,7 +143,7 @@ public class VSRO188_AgentServer : FakeServer
         }
     }
      */
-    
+
     public override void AddSession(ISession session)
     {
         try
@@ -177,7 +159,8 @@ public class VSRO188_AgentServer : FakeServer
 
     public override void RemoveSession(ISession session)
     {
-        try {
+        try
+        {
             base.RemoveSession(session);
             bool remove = _sharedObjects.AgentSessions.TryRemove(session);
             if (!remove)

@@ -33,7 +33,7 @@ public static class SessionExtension
         {
             return null;
         }
-        
+
         return await Cache.GetCharAsync(charId);
     }
 }

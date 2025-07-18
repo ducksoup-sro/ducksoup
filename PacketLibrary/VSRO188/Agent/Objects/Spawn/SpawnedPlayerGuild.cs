@@ -14,17 +14,17 @@ public class SpawnedPlayerGuild
 
     internal static SpawnedPlayerGuild FromPacket(Packet packet)
     {
-        var result = new SpawnedPlayerGuild();
+        SpawnedPlayerGuild result = new SpawnedPlayerGuild();
         packet.TryRead(out result.Id)
-            .TryRead(out var nickname);
+            .TryRead(out string nickname);
         result.Member = new SpawnedPlayerGuildMember
         {
             Nickname = nickname
         };
 
         packet.TryRead(out result.LastCrestRev)
-            .TryRead<uint>(out var unionId)
-            .TryRead<uint>(out var unionLastCrestRev);
+            .TryRead<uint>(out uint unionId)
+            .TryRead<uint>(out uint unionLastCrestRev);
         result.Union = new SpawnedPlayerUnion
         {
             Id = unionId,

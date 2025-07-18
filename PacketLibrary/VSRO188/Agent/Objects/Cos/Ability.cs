@@ -12,6 +12,6 @@ public class Ability : Cos
             .TryRead(out Name);
         Inventory = new InventoryItemCollection(packet);
         packet.TryRead(out OwnerUniqueId)
-            .TryRead<byte>(out var inventorySlot);
+            .TryRead<byte>(out byte inventorySlot);
     }
 }

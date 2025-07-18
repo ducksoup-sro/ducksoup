@@ -10,7 +10,7 @@ public class SERVER_PARTY_CREATE_FROM_MATCHING : Packet
     public int ID;
     public int LeaderJID;
     public byte MemberCount;
-    public List<PartyMemberInfo> MemberInfos = new();
+    public List<PartyMemberInfo> MemberInfos = new List<PartyMemberInfo>();
     public PartyInfoFlag PartyInfoFlag;
     public PartySettingsFlag PartySettingsFlag;
 
@@ -36,7 +36,10 @@ public class SERVER_PARTY_CREATE_FROM_MATCHING : Packet
         if (PartyInfoFlag.HasFlag(PartyInfoFlag.MemberList))
         {
             TryRead<byte>(out MemberCount);
-            for (var i = 0; i < MemberCount; i++) MemberInfos.Add(new PartyMemberInfo(this));
+            for (int i = 0; i < MemberCount; i++)
+            {
+                MemberInfos.Add(new PartyMemberInfo(this));
+            }
         }
     }
 

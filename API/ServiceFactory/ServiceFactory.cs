@@ -6,7 +6,7 @@ namespace API.ServiceFactory;
 
 public static class ServiceFactory
 {
-    private static ServiceFactoryImpl? _serviceFactoryImpl = new();
+    private static ServiceFactoryImpl? _serviceFactoryImpl = new ServiceFactoryImpl();
 
     public static T Register<T>(Type service, object provider)
     {

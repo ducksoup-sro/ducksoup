@@ -26,9 +26,9 @@ public class CLIENT_AUTH_REQUEST : Packet
         TryRead(out Username);
         TryRead(out Password);
         TryRead(out ContentId);
-        for (var i = 0; i < 6; i++)
+        for (int i = 0; i < 6; i++)
         {
-            TryRead<byte>(out var macAddressByte);
+            TryRead<byte>(out byte macAddressByte);
             MacAddress[i] = macAddressByte;
         }
     }
@@ -40,7 +40,10 @@ public class CLIENT_AUTH_REQUEST : Packet
         TryWrite(Username);
         TryWrite(Password);
         TryWrite(ContentId);
-        foreach (var b in MacAddress) TryWrite(b);
+        foreach (byte b in MacAddress)
+        {
+            TryWrite(b);
+        }
         return this;
     }
 

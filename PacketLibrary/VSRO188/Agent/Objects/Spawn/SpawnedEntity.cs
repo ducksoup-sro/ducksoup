@@ -9,8 +9,8 @@ namespace PacketLibrary.VSRO188.Agent.Objects.Spawn;
 public class SpawnedEntity
 {
     public uint Id;
-    public Movement Movement = new();
-    public State State = new();
+    public Movement Movement = new Movement();
+    public State State = new State();
     public uint UniqueId;
     public _RefObjCommon RefObjCommon => Cache.GetRefObjCommonAsync((int)Id).Result;
     public _RefObjChar RefObjChar => Cache.GetRefObjCharAsync(c => c.Link == Id).Result;

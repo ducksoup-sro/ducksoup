@@ -21,20 +21,26 @@ namespace DuckSoup.Library.Server;
 
 public class ServerManager : IServerManager
 {
-    private readonly Dictionary<SecurityType, IServerFactory> serverFactories = new()
+    private readonly Dictionary<SecurityType, IServerFactory> serverFactories = new Dictionary<SecurityType, IServerFactory>
     {
-        { SecurityType.VSRO188, new VSRO188_ServerFactory() },
-        { SecurityType.ISRO_R, new ISRO_R_ServerFactory() }
+        {
+            SecurityType.VSRO188, new VSRO188_ServerFactory()
+        },
+        {
+            SecurityType.ISRO_R, new ISRO_R_ServerFactory()
+        }
     };
 
     public ServerManager()
     {
         ServiceFactory.Register<IServerManager>(typeof(IServerManager), this);
         Servers = new List<IFakeServer>();
-        using var context = new API.Database.Context.DuckSoup();
-        foreach (var contextService in context.Services.Include(b => b.LocalMachine_Machine)
+        using API.Database.Context.DuckSoup context = new API.Database.Context.DuckSoup();
+        foreach (Service contextService in context.Services.Include(b => b.LocalMachine_Machine)
                      .Include(b => b.RemoteMachine_Machine).Include(b => b.SpoofMachine_Machine))
+        {
             AddServer(contextService);
+        }
 
         Start(true);
     }
@@ -43,7 +49,7 @@ public class ServerManager : IServerManager
 
     public IServerFactory GetServiceFactory(SecurityType securityType)
     {
-        serverFactories.TryGetValue(securityType, out var result);
+        serverFactories.TryGetValue(securityType, out IServerFactory? result);
         return result;
     }
 
@@ -55,9 +61,11 @@ public class ServerManager : IServerManager
 
     public void Start(bool firstStart)
     {
-        foreach (var asyncServer in Servers.Where(asyncServer =>
-                     (firstStart && asyncServer.Service.AutoStart) || !firstStart))
+        foreach (IFakeServer asyncServer in Servers.Where(asyncServer =>
+                     firstStart && asyncServer.Service.AutoStart || !firstStart))
+        {
             asyncServer.Start();
+        }
     }
 
     public void Start(string name)
@@ -67,10 +75,12 @@ public class ServerManager : IServerManager
 
     public void Start(string name, bool firstStart)
     {
-        foreach (var asyncServer in Servers
+        foreach (IFakeServer asyncServer in Servers
                      .Where(asyncServer => asyncServer.Service.Name.ToLower().Equals(name.ToLower()))
-                     .Where(asyncServer => (firstStart && asyncServer.Service.AutoStart) || !firstStart))
+                     .Where(asyncServer => firstStart && asyncServer.Service.AutoStart || !firstStart))
+        {
             asyncServer.Start();
+        }
     }
 
     public void Start(Service service)
@@ -80,17 +90,21 @@ public class ServerManager : IServerManager
 
     public void Start(Service service, bool firstStart)
     {
-        foreach (var asyncServer in Servers.Where(asyncServer => asyncServer.Service.Equals(service))
-                     .Where(asyncServer => (firstStart && asyncServer.Service.AutoStart) || !firstStart))
+        foreach (IFakeServer asyncServer in Servers.Where(asyncServer => asyncServer.Service.Equals(service))
+                     .Where(asyncServer => firstStart && asyncServer.Service.AutoStart || !firstStart))
+        {
             asyncServer.Start();
+        }
     }
 
     public void Stop(string name)
     {
         IFakeServer temp = null;
-        foreach (var asyncServer in Servers.Where(asyncServer =>
+        foreach (IFakeServer asyncServer in Servers.Where(asyncServer =>
                      asyncServer.Service.Name.ToLower().Equals(name.ToLower())))
+        {
             temp = asyncServer;
+        }
 
         if (temp == null) return;
 
@@ -101,8 +115,10 @@ public class ServerManager : IServerManager
     public void Stop(Service service)
     {
         IFakeServer temp = null;
-        foreach (var asyncServer in Servers.Where(asyncServer => asyncServer.Service.Equals(service)))
+        foreach (IFakeServer asyncServer in Servers.Where(asyncServer => asyncServer.Service.Equals(service)))
+        {
             temp = asyncServer;
+        }
 
         if (temp == null) return;
 
@@ -113,8 +129,10 @@ public class ServerManager : IServerManager
     public Task RegisterModuleHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler)
         where T : Packet, new()
     {
-        foreach (var asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
+        foreach (IFakeServer asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
+        {
             asyncServer.PacketHandler.RegisterModuleHandler(handler);
+        }
 
         return Task.CompletedTask;
     }
@@ -122,8 +140,10 @@ public class ServerManager : IServerManager
     public Task RegisterModuleHandler<T>(ServerType serverType, int priority, Func<T, ISession, Task<Packet>> handler)
         where T : Packet, new()
     {
-        foreach (var asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
+        foreach (IFakeServer asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
+        {
             asyncServer.PacketHandler.RegisterModuleHandler(priority, handler);
+        }
 
         return Task.CompletedTask;
     }
@@ -131,8 +151,10 @@ public class ServerManager : IServerManager
     public Task RegisterClientHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler)
         where T : Packet, new()
     {
-        foreach (var asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
+        foreach (IFakeServer asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
+        {
             asyncServer.PacketHandler.RegisterClientHandler(handler);
+        }
 
         return Task.CompletedTask;
     }
@@ -140,8 +162,10 @@ public class ServerManager : IServerManager
     public Task RegisterClientHandler<T>(ServerType serverType, int priority, Func<T, ISession, Task<Packet>> handler)
         where T : Packet, new()
     {
-        foreach (var asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
+        foreach (IFakeServer asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
+        {
             asyncServer.PacketHandler.RegisterClientHandler(priority, handler);
+        }
 
         return Task.CompletedTask;
     }
@@ -149,8 +173,10 @@ public class ServerManager : IServerManager
     public Task UnregisterModuleHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler)
         where T : Packet, new()
     {
-        foreach (var asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
+        foreach (IFakeServer asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
+        {
             asyncServer.PacketHandler.UnregisterModuleHandler(handler);
+        }
 
         return Task.CompletedTask;
     }
@@ -158,8 +184,10 @@ public class ServerManager : IServerManager
     public Task UnregisterClientHandler<T>(ServerType serverType, Func<T, ISession, Task<Packet>> handler)
         where T : Packet, new()
     {
-        foreach (var asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
+        foreach (IFakeServer asyncServer in Servers.Where(asyncServer => asyncServer.Service.ServerType == serverType))
+        {
             asyncServer.PacketHandler.UnregisterClientHandler(handler);
+        }
 
         return Task.CompletedTask;
     }
@@ -167,18 +195,20 @@ public class ServerManager : IServerManager
     public void Dispose()
     {
         if (Servers != null)
-            foreach (var asyncServer in Servers)
+            foreach (IFakeServer asyncServer in Servers)
+            {
                 asyncServer.Dispose();
+            }
 
         Servers = null;
     }
 
     public Result<Void> AddServer(Service service)
     {
-        if (!serverFactories.TryGetValue(service.SecurityType, out var serverFactory))
+        if (!serverFactories.TryGetValue(service.SecurityType, out IServerFactory? serverFactory))
             return new Result<Void>(new ArgumentOutOfRangeException());
 
-        var server = serverFactory.Create(service, service.ServerType);
+        IFakeServer? server = serverFactory.Create(service, service.ServerType);
 
         if (server != null) Servers.Add(server);
 

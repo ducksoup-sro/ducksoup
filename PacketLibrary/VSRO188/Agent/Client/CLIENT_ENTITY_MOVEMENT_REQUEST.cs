@@ -7,10 +7,10 @@ namespace PacketLibrary.VSRO188.Agent.Client;
 public class CLIENT_ENTITY_MOVEMENT_REQUEST : Packet
 {
     public byte ClickType; // 0 = sky/keys, 1 = ground
+    public Position Position;
     public byte Unk1;
     public short Unk2;
-    public Position Position;
-    
+
     public CLIENT_ENTITY_MOVEMENT_REQUEST() : base(0x7021)
     {
     }

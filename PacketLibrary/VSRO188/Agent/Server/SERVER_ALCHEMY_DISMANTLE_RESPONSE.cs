@@ -4,8 +4,8 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 
 public class SERVER_ALCHEMY_DISMANTLE_RESPONSE : Packet
 {
-    public byte Result;
     public ushort ErrorCode;
+    public byte Result;
     public SERVER_ALCHEMY_DISMANTLE_RESPONSE() : base(0xB157)
     {
     }

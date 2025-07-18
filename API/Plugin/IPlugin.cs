@@ -18,6 +18,8 @@ public interface IPlugin : IDisposable
     public ServerType ServerType { get; }
 
     public void OnEnable();
+
     public void OnServerStart(IAsyncServer server);
+
     public List<Command.Command> RegisterCommands();
 }

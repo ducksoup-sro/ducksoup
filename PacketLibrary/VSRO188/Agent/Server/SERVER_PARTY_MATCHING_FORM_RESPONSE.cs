@@ -53,8 +53,8 @@ public class SERVER_PARTY_MATCHING_FORM_RESPONSE : Packet
             case 0x01:
                 TryWrite<uint>(MatchingId);
                 TryWrite<uint>(Id);
-                TryWrite<byte>((byte) partySetting);
-                TryWrite<byte>((byte) partyPurpose);
+                TryWrite<byte>((byte)partySetting);
+                TryWrite<byte>((byte)partyPurpose);
                 TryWrite<byte>(LevelRangeMin);
                 TryWrite<byte>(LevelRangeMax);
                 TryWrite(Title);

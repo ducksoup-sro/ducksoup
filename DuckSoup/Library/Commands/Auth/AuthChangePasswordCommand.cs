@@ -1,4 +1,5 @@
 ﻿using API.Command;
+using API.Database.DuckSoup;
 using API.ServiceFactory;
 using API.Services;
 using Serilog;
@@ -10,7 +11,10 @@ public class AuthChangePasswordCommand : Command
     private IUserService _service;
 
     public AuthChangePasswordCommand() : base("changepassword", "auth changepassword <user> <new password>",
-        "Changes the password of the user and invalidates the current token.", new[] { "passwd" })
+        "Changes the password of the user and invalidates the current token.", new[]
+        {
+            "passwd"
+        })
     {
     }
 
@@ -24,9 +28,9 @@ public class AuthChangePasswordCommand : Command
             return;
         }
 
-        var username = args[0];
-        var user = _service.GetUser(username);
-        _service.CreatePassword(args[1], out var passwordHash, out var passwordSalt);
+        string username = args[0];
+        User? user = _service.GetUser(username);
+        _service.CreatePassword(args[1], out byte[] passwordHash, out byte[] passwordSalt);
 
         if (user == null)
         {

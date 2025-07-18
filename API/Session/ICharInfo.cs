@@ -35,13 +35,13 @@ public class ICharInfo
         {
             if (TargetPosition.IsEmpty()) return CurPosition;
 
-            var time = (DateTime.UtcNow.ToUnixTimeMilliseconds() - LastPositionUpdate) / 1000.0; // Convert to seconds
+            double time = (DateTime.UtcNow.ToUnixTimeMilliseconds() - LastPositionUpdate) / 1000.0; // Convert to seconds
 
-            var speed = State.GetSpeed();
+            float speed = State.GetSpeed();
 
             double dx = TargetPosition.X - CurPosition.X;
             double dy = TargetPosition.Y - CurPosition.Y;
-            var distance = CurPosition.DistanceTo(TargetPosition);
+            double distance = CurPosition.DistanceTo(TargetPosition);
 
             // Ensure there is a distance to move
             if (distance == 0)
@@ -50,13 +50,13 @@ public class ICharInfo
                 return CurPosition;
             }
 
-            var dirX = dx / distance;
-            var dirY = dy / distance;
+            double dirX = dx / distance;
+            double dirY = dy / distance;
 
-            var newX = CurPosition.X + dirX * (speed / 10.0f) * time;
-            var newY = CurPosition.Y + dirY * (speed / 10.0f) * time;
+            double newX = CurPosition.X + dirX * (speed / 10.0f) * time;
+            double newY = CurPosition.Y + dirY * (speed / 10.0f) * time;
 
-            var newPosition = new Position((float)newX, (float)newY);
+            Position newPosition = new Position((float)newX, (float)newY);
             if (CurPosition.DistanceTo(newPosition) > distance)
             {
                 CurPosition = TargetPosition;
@@ -71,13 +71,13 @@ public class ICharInfo
     #region entityData
 
     public uint UniqueCharId;
-    
+
     public long LastPositionUpdate;
     public Position CurPosition;
-    public Position TargetPosition = new(0, 0);
-    
+    public Position TargetPosition = new Position(0, 0);
+
     public State State;
-    
+
     public string CharName;
     public string JobName;
     public Job JobType;
@@ -96,4 +96,5 @@ public class ICharInfo
     public byte GmFlag;
 
     #endregion
+
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using API.Database.DuckSoup;
 using API.EventFactory;
@@ -27,8 +28,8 @@ public class FakeSession : TcpSession
         {
             ClientSecurity = Utility.GetSecurity(service.SecurityType);
             ClientSecurity.GenerateSecurity(true, true, true);
-            
-            var fakeRemoteClient = new FakeClient(server, service);
+
+            FakeClient fakeRemoteClient = new FakeClient(server, service);
             fakeRemoteClient.ConnectAsync();
 
             Session = new DuckSession(this, fakeRemoteClient);
@@ -93,35 +94,36 @@ public class FakeSession : TcpSession
             return;
         }
 
-        Session.GetData(Data.CrcFailure, out var crc, 0);
+        Session.GetData(Data.CrcFailure, out int crc, 0);
         if (crc > 5)
         {
             Session.Disconnect();
             return;
         }
 
-        string message = String.Empty;
+        string message = string.Empty;
         try
         {
             ClientSecurity.Recv(buffer, (int)offset, (int)size);
 
-            var receivedPackets = ClientSecurity.TransferIncoming();
+            List<Packet>? receivedPackets = ClientSecurity.TransferIncoming();
 
             if (receivedPackets == null || receivedPackets.Count == 0) return;
 
-            foreach (var packet in receivedPackets)
+            foreach (Packet packet in receivedPackets)
             {
-                var packetType = packet.Encrypted ? "[E]" : packet.Massive ? "[M]" : "";
+                string packetType = packet.Encrypted ? "[E]" : packet.Massive ? "[M]" : "";
                 message = $"[C -> P] {packetType} Packet: 0x{packet.MsgId:X} - {Id}";
                 Log.Verbose(message);
 
-                if(EventFactory.HasSubscriptions(EventFactoryNames.OnClientReceivePacket)) {
+                if (EventFactory.HasSubscriptions(EventFactoryNames.OnClientReceivePacket))
+                {
                     EventFactory.Publish(EventFactoryNames.OnClientReceivePacket, DateTime.Now, FakeServer.Service.ServerType, Session, new Packet(packet));
                 }
-                
+
                 if (packet.MsgId == 0x5000 || packet.MsgId == 0x9000 || packet.MsgId == 0x2001) continue;
 
-                var packetResult = FakeServer.PacketHandler.HandleClient(packet, Session).Result;
+                Packet packetResult = FakeServer.PacketHandler.HandleClient(packet, Session).Result;
 
                 switch (packetResult.ResultType)
                 {
@@ -154,7 +156,7 @@ public class FakeSession : TcpSession
         {
             Session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
             Session.GetData(Data.CharId, out int charId, -1);
-            Log.Error("FakeSession Recv | 0x{0:X} | Name: {1} | Id: {2} | ServerType: {3} ", message, (charInfo != null ? charInfo.CharName : "null"), charId, FakeServer.Service.ServerType);
+            Log.Error("FakeSession Recv | 0x{0:X} | Name: {1} | Id: {2} | ServerType: {3} ", message, charInfo != null ? charInfo.CharName : "null", charId, FakeServer.Service.ServerType);
             Log.Error("FakeSession Recv | SSAClientId: {1} | Current: {2} | Last: {3} ", Session.GetServerSecurity().GetId(), Session.GetServerSecurity().GetCurrentLockState(), Session.GetServerSecurity().GetLastLockState());
             Log.Error("FakeSession Recv | SSAServerId: {1} | Current: {2} | Last: {3} ", Session.GetClientSecurity().GetId(), Session.GetClientSecurity().GetCurrentLockState(), Session.GetClientSecurity().GetLastLockState());
             Log.Error("FakeSession Recv | {0}", exception.Message);
@@ -171,20 +173,21 @@ public class FakeSession : TcpSession
         {
             ClientSecurity.Send(packet);
 
-            if(EventFactory.HasSubscriptions(EventFactoryNames.OnClientTransferPacket)) {
+            if (EventFactory.HasSubscriptions(EventFactoryNames.OnClientTransferPacket))
+            {
                 EventFactory.Publish(EventFactoryNames.OnClientTransferPacket, DateTime.Now, FakeServer.Service.ServerType, Session, new Packet(packet));
             }
-            
+
             if (transfer) Transfer();
         }
         catch (Exception exception)
         {
-            Log.Error("FakeSession:166 | ID: {0} ", this.Id);
+            Log.Error("FakeSession:166 | ID: {0} ", Id);
             Log.Error("FakeSession:166 | {0}", exception.Message);
             Log.Error("FakeSession:166 | {0}", exception.StackTrace);
             Log.Error("FakeSession:166 | {0}", exception.InnerException);
             Log.Error("FakeSession:166 | {0}", exception.Data);
-            this.Disconnect();
+            Disconnect();
         }
     }
 
@@ -196,12 +199,12 @@ public class FakeSession : TcpSession
         }
         catch (Exception exception)
         {
-            Log.Error("FakeSession:181 | ID: {0} ", this.Id);
+            Log.Error("FakeSession:181 | ID: {0} ", Id);
             Log.Error("FakeSession:181 | {0}", exception.Message);
             Log.Error("FakeSession:181 | {0}", exception.StackTrace);
             Log.Error("FakeSession:181 | {0}", exception.InnerException);
             Log.Error("FakeSession:181 | {0}", exception.Data);
-            this.Disconnect();
+            Disconnect();
         }
     }
 }

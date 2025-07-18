@@ -1,4 +1,5 @@
 using Database.VSRO188;
+using Database.VSRO188.SRO_VT_SHARD;
 using SilkroadSecurityAPI.Message;
 
 namespace PacketLibrary.VSRO188.Agent.Server;
@@ -24,7 +25,7 @@ public class SERVER_PARTY_DISTRIBUTION : Packet
     {
         TryRead<uint>(out UserJID);
         TryRead<uint>(out RefItemID);
-        var item = await Cache.GetRefObjCommonAsync((int)RefItemID);
+        _RefObjCommon? item = await Cache.GetRefObjCommonAsync((int)RefItemID);
         if (item == null || item.TypeID1 != 3) return;
         switch (item.TypeID2)
         {
@@ -45,7 +46,7 @@ public class SERVER_PARTY_DISTRIBUTION : Packet
         Reset();
         TryWrite<uint>(UserJID);
         TryWrite<uint>(RefItemID);
-        var item = await Cache.GetRefObjCommonAsync((int)RefItemID);
+        _RefObjCommon? item = await Cache.GetRefObjCommonAsync((int)RefItemID);
         if (item == null || item.TypeID1 != 3) return this;
         switch (item.TypeID2)
         {

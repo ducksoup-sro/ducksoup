@@ -29,7 +29,7 @@ public class PacketHandler : IPacketHandler
         if (_clientBlacklist.Contains(msgId)) _clientBlacklist.Remove(msgId);
     }
 
-    public SortedDictionary<ushort, SortedDictionary<int, IBasePacketHandler>> _clientHandlers { get; init; } = new();
+    public SortedDictionary<ushort, SortedDictionary<int, IBasePacketHandler>> _clientHandlers { get; init; } = new SortedDictionary<ushort, SortedDictionary<int, IBasePacketHandler>>();
 
     public HashSet<ushort> _clientWhitelist { get; init; }
 
@@ -43,7 +43,7 @@ public class PacketHandler : IPacketHandler
         if (_clientWhitelist.Contains(msgId)) _clientWhitelist.Remove(msgId);
     }
 
-    public SortedDictionary<ushort, SortedDictionary<int, IBasePacketHandler>> _serverHandlers { get; init; } = new();
+    public SortedDictionary<ushort, SortedDictionary<int, IBasePacketHandler>> _serverHandlers { get; init; } = new SortedDictionary<ushort, SortedDictionary<int, IBasePacketHandler>>();
 
 
     public _PacketHandler<Packet> _blockHandler { get; set; }
@@ -93,13 +93,13 @@ public class PacketHandler : IPacketHandler
         // make sure its not negative
         if (priority < 0) priority = 1;
 
-        var msgId = new T().MsgId;
+        ushort msgId = new T().MsgId;
 
         if (_serverHandlers.GetValueOrDefault(msgId, null) == null)
             _serverHandlers.TryAdd(msgId, new SortedDictionary<int, IBasePacketHandler>());
 
         if (_serverHandlers[msgId].ContainsKey(priority))
-            foreach (var keyValuePair in _serverHandlers[msgId])
+            foreach (KeyValuePair<int, IBasePacketHandler> keyValuePair in _serverHandlers[msgId])
             {
                 if (keyValuePair.Key <= priority)
                 {
@@ -116,22 +116,22 @@ public class PacketHandler : IPacketHandler
                 break;
             }
 
-        var handlerWrapper = new _PacketHandler<T>(handler);
+        _PacketHandler<T> handlerWrapper = new _PacketHandler<T>(handler);
         _serverHandlers[msgId].TryAdd(priority, handlerWrapper);
     }
 
     public void UnregisterModuleHandler<T>(Func<T, ISession, Task<Packet>> handler) where T : Packet, new()
     {
-        var msgId = new T().MsgId;
+        ushort msgId = new T().MsgId;
         if (_serverHandlers.GetValueOrDefault(msgId, null) == null) return;
 
-        var keysToRemove = _serverHandlers[msgId].Where(m => m.Value.IsEqual(handler)).Select(c => c.Key).ToList();
-        keysToRemove.ForEach(key => _serverHandlers[msgId].Remove(key, out var tempObject));
+        List<int> keysToRemove = _serverHandlers[msgId].Where(m => m.Value.IsEqual(handler)).Select(c => c.Key).ToList();
+        keysToRemove.ForEach(key => _serverHandlers[msgId].Remove(key, out IBasePacketHandler? tempObject));
     }
 
     public void UnregisterAllModuleHandler<T>() where T : Packet, new()
     {
-        var msgId = new T().MsgId;
+        ushort msgId = new T().MsgId;
         if (_serverHandlers.GetValueOrDefault(msgId, null) == null) return;
 
         _serverHandlers[msgId].Clear();
@@ -147,14 +147,14 @@ public class PacketHandler : IPacketHandler
         // make sure its not negative
         if (priority < 0) priority = 1;
 
-        var msgId = new T().MsgId;
+        ushort msgId = new T().MsgId;
         AddWhitelist(msgId);
 
         if (_clientHandlers.GetValueOrDefault(msgId, null) == null)
             _clientHandlers.TryAdd(msgId, new SortedDictionary<int, IBasePacketHandler>());
 
         if (_clientHandlers[msgId].ContainsKey(priority))
-            foreach (var keyValuePair in _clientHandlers[msgId])
+            foreach (KeyValuePair<int, IBasePacketHandler> keyValuePair in _clientHandlers[msgId])
             {
                 if (keyValuePair.Key <= priority)
                 {
@@ -171,22 +171,22 @@ public class PacketHandler : IPacketHandler
                 break;
             }
 
-        var handlerWrapper = new _PacketHandler<T>(handler);
+        _PacketHandler<T> handlerWrapper = new _PacketHandler<T>(handler);
         _clientHandlers[msgId].TryAdd(priority, handlerWrapper);
     }
 
     public void UnregisterClientHandler<T>(Func<T, ISession, Task<Packet>> handler) where T : Packet, new()
     {
-        var msgId = new T().MsgId;
+        ushort msgId = new T().MsgId;
         if (_clientHandlers.GetValueOrDefault(msgId, null) == null) return;
-        
-        var keysToRemove = _clientHandlers[msgId].Where(m => m.Value.IsEqual(handler)).Select(c => c.Key).ToList();
-        keysToRemove.ForEach(key => _clientHandlers[msgId].Remove(key, out var tempObject));
+
+        List<int> keysToRemove = _clientHandlers[msgId].Where(m => m.Value.IsEqual(handler)).Select(c => c.Key).ToList();
+        keysToRemove.ForEach(key => _clientHandlers[msgId].Remove(key, out IBasePacketHandler? tempObject));
     }
 
     public void UnregisterAllClientHandler<T>() where T : Packet, new()
     {
-        var msgId = new T().MsgId;
+        ushort msgId = new T().MsgId;
         if (_clientHandlers.GetValueOrDefault(msgId, null) == null) return;
 
         _clientHandlers[msgId].Clear();
@@ -204,46 +204,46 @@ public class PacketHandler : IPacketHandler
         if (!_clientWhitelist.Contains(packet.MsgId))
             return await _unknownClientHandler.Handle(packet, session);
 
-        _clientHandlers.TryGetValue(0x0, out var catchAllHandler);
-        _clientHandlers.TryGetValue(packet.MsgId, out var clientHandlers);
+        _clientHandlers.TryGetValue(0x0, out SortedDictionary<int, IBasePacketHandler>? catchAllHandler);
+        _clientHandlers.TryGetValue(packet.MsgId, out SortedDictionary<int, IBasePacketHandler>? clientHandlers);
 
-        
-        var outcome = await _defaultHandler.Handle(packet, session);
+
+        Packet outcome = await _defaultHandler.Handle(packet, session);
         if (catchAllHandler == null && clientHandlers == null) return outcome;
 
         SortedDictionary<int, IBasePacketHandler> handler = new SortedDictionary<int, IBasePacketHandler>();
         int index = 0;
         if (clientHandlers != null)
         {
-            foreach (var basePacketHandler in clientHandlers)
+            foreach (KeyValuePair<int, IBasePacketHandler> basePacketHandler in clientHandlers)
             {
                 handler.Add(index++, basePacketHandler.Value);
             }
         }
-        
+
         if (catchAllHandler != null)
         {
-            foreach (var basePacketHandler in catchAllHandler)
+            foreach (KeyValuePair<int, IBasePacketHandler> basePacketHandler in catchAllHandler)
             {
                 handler.Add(index++, basePacketHandler.Value);
             }
         }
-        
-        var last = 0;
+
+        int last = 0;
         if (handler.Count > 0) last = handler.Last().Key;
 
-        var oldIndex = -1;
-        foreach (var packetHandler in handler)
+        int oldIndex = -1;
+        foreach (KeyValuePair<int, IBasePacketHandler> packetHandler in handler)
         {
             outcome = await packetHandler.Value.Handle(outcome, session);
             // reset reader position, in case it was read before
             outcome.SetReaderPosition(0);
-            
+
             if (packetHandler.Key != last)
             {
                 continue;
             }
-            
+
             await outcome.Build();
             outcome.ToReadOnly();
 
@@ -267,53 +267,52 @@ public class PacketHandler : IPacketHandler
 
     public async Task<Packet> HandleServer(Packet packet, ISession session)
     {
-        _serverHandlers.TryGetValue(0x0, out var catchAllHandler);
-        _serverHandlers.TryGetValue(packet.MsgId, out var serverHandlers);
+        _serverHandlers.TryGetValue(0x0, out SortedDictionary<int, IBasePacketHandler>? catchAllHandler);
+        _serverHandlers.TryGetValue(packet.MsgId, out SortedDictionary<int, IBasePacketHandler>? serverHandlers);
 
-        
-        var outcome = await _defaultHandler.Handle(packet, session);
+
+        Packet outcome = await _defaultHandler.Handle(packet, session);
         if (catchAllHandler == null && serverHandlers == null) return outcome;
 
         SortedDictionary<int, IBasePacketHandler> handler = new SortedDictionary<int, IBasePacketHandler>();
         int index = 0;
         if (serverHandlers != null)
         {
-            foreach (var basePacketHandler in serverHandlers)
+            foreach (KeyValuePair<int, IBasePacketHandler> basePacketHandler in serverHandlers)
             {
                 handler.Add(index++, basePacketHandler.Value);
             }
         }
-        
+
         if (catchAllHandler != null)
         {
-            foreach (var basePacketHandler in catchAllHandler)
+            foreach (KeyValuePair<int, IBasePacketHandler> basePacketHandler in catchAllHandler)
             {
                 handler.Add(index++, basePacketHandler.Value);
             }
         }
 
 
-        
         // _serverHandlers.TryGetValue(packet.MsgId, out var handler);
         //
         // var outcome = await _defaultHandler.Handle(packet, session);
         // if (handler == null) return outcome;
-        
-        var last = 0;
+
+        int last = 0;
         if (handler.Count > 0) last = handler.Last().Key;
 
-        var oldIndex = -1;
-        foreach (var packetHandler in handler)
+        int oldIndex = -1;
+        foreach (KeyValuePair<int, IBasePacketHandler> packetHandler in handler)
         {
             outcome = await packetHandler.Value.Handle(outcome, session);
             // reset reader position, in case it was read before
             outcome.SetReaderPosition(0);
-            
+
             if (packetHandler.Key != last)
             {
-               continue;
+                continue;
             }
-            
+
             await outcome.Build();
             outcome.ToReadOnly();
 
@@ -321,7 +320,7 @@ public class PacketHandler : IPacketHandler
             {
                 case PacketResultType.Disconnect:
                     return await _disconnectHandler.Handle(outcome, session);
-                case PacketResultType.Block: 
+                case PacketResultType.Block:
                     return await _blockHandler.Handle(outcome, session);
                 case PacketResultType.Nothing:
                     break;

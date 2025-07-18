@@ -8,7 +8,7 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 public class SERVER_CHARACTER_SELECTION_ACTION_RESPONSE : Packet
 {
     public CharacterSelectionAction Action;
-    public List<SelectionCharacter> Characters = new();
+    public List<SelectionCharacter> Characters = new List<SelectionCharacter>();
     public CharacterSelectionErrorCode ErrorCode;
     public byte Result;
 
@@ -28,7 +28,10 @@ public class SERVER_CHARACTER_SELECTION_ACTION_RESPONSE : Packet
             case 0x01 when Action == CharacterSelectionAction.List:
             {
                 TryRead(out byte characterCount);
-                for (var i = 0; i < characterCount; i++) Characters.Add(new SelectionCharacter(this));
+                for (int i = 0; i < characterCount; i++)
+                {
+                    Characters.Add(new SelectionCharacter(this));
+                }
 
                 break;
             }
@@ -48,7 +51,10 @@ public class SERVER_CHARACTER_SELECTION_ACTION_RESPONSE : Packet
             case 0x01 when Action == CharacterSelectionAction.List:
             {
                 TryWrite(Characters.Count);
-                foreach (var selectionCharacter in Characters) await selectionCharacter.Build(this);
+                foreach (SelectionCharacter selectionCharacter in Characters)
+                {
+                    await selectionCharacter.Build(this);
+                }
                 break;
             }
             case 0x02:

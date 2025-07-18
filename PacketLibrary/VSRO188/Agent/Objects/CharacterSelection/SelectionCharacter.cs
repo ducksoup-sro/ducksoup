@@ -7,7 +7,7 @@ namespace PacketLibrary.VSRO188.Agent.Objects.CharacterSelection;
 public class SelectionCharacter
 {
     public byte AcademyMemberClass;
-    public List<SelectionItem> AvatarItems = new();
+    public List<SelectionItem> AvatarItems = new List<SelectionItem>();
     public string CurGuildName;
     public uint CurHP;
     public byte CurLevel;
@@ -21,7 +21,7 @@ public class SelectionCharacter
     public bool IsDeleting;
     public bool IsGuildRenameRequired;
 
-    public List<SelectionItem> Items = new();
+    public List<SelectionItem> Items = new List<SelectionItem>();
     public string Name;
     public uint RefObjId;
     public byte Scale;
@@ -58,10 +58,16 @@ public class SelectionCharacter
 
         packet.TryRead<byte>(out AcademyMemberClass)
             .TryRead<byte>(out byte itemCount);
-        for (var i = 0; i < itemCount; i++) Items.Add(new SelectionItem(packet));
+        for (int i = 0; i < itemCount; i++)
+        {
+            Items.Add(new SelectionItem(packet));
+        }
 
         packet.TryRead<byte>(out byte avatarItemCount);
-        for (var i = 0; i < avatarItemCount; i++) AvatarItems.Add(new SelectionItem(packet));
+        for (int i = 0; i < avatarItemCount; i++)
+        {
+            AvatarItems.Add(new SelectionItem(packet));
+        }
     }
 
     public async Task Build(Packet packet)
@@ -87,9 +93,15 @@ public class SelectionCharacter
 
         packet.TryWrite<byte>(AcademyMemberClass)
             .TryWrite<byte>((byte)Items.Count);
-        foreach (var selectionItem in Items) await selectionItem.Build(packet);
+        foreach (SelectionItem selectionItem in Items)
+        {
+            await selectionItem.Build(packet);
+        }
 
         packet.TryWrite<byte>((byte)AvatarItems.Count);
-        foreach (var selectionItem in AvatarItems) await selectionItem.Build(packet);
+        foreach (SelectionItem selectionItem in AvatarItems)
+        {
+            await selectionItem.Build(packet);
+        }
     }
 }

@@ -23,9 +23,9 @@ public class Fellow : Cos
         packet.TryRead(out Experience)
             .TryRead(out Level)
             .TryRead(out Satiety)
-            .TryRead<ushort>(out var unk1)
+            .TryRead<ushort>(out ushort unk1)
             .TryRead(out StoredSp)
-            .TryRead<int>(out var unk2)
+            .TryRead<int>(out int unk2)
             .TryRead(out Settings)
             .TryRead(out Name);
 

@@ -5,10 +5,10 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 
 public class SERVER_JOB_UPDATE_EXP : Packet
 {
-    public TriJobType TriJobType; 
-    public byte JobLevel;
     public uint JobExp;
-    
+    public byte JobLevel;
+    public TriJobType TriJobType;
+
     public SERVER_JOB_UPDATE_EXP() : base(0x30E6)
     {
     }

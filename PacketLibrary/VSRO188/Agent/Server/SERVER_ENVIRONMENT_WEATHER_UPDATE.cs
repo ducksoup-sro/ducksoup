@@ -6,9 +6,9 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 // https://github.com/DummkopfOfHachtenduden/SilkroadDoc/wiki/AGENT_ENVIRONMENT_WEATHER_UPDATE
 public class SERVER_ENVIRONMENT_WEATHER_UPDATE : Packet
 {
-    public WeatherType WeatherType;
     public byte Intensity;
-    
+    public WeatherType WeatherType;
+
     public SERVER_ENVIRONMENT_WEATHER_UPDATE() : base(0x3809)
     {
     }

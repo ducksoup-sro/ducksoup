@@ -4,9 +4,9 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 
 public class SERVER_TELEPORT_USE_RESPONSE : Packet
 {
-    public byte Result;
     public ushort ErrorCode;
-    
+    public byte Result;
+
     public SERVER_TELEPORT_USE_RESPONSE() : base(0xB05A)
     {
     }

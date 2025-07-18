@@ -9,7 +9,10 @@ public class ServerStopCommand : Command
 {
     private readonly IServerManager _serverManager;
 
-    public ServerStopCommand() : base("stop", "stop <id>", "Stops a given server", new[] { "close" })
+    public ServerStopCommand() : base("stop", "stop <id>", "Stops a given server", new[]
+    {
+        "close"
+    })
     {
         _serverManager = ServiceFactory.Load<IServerManager>(typeof(IServerManager));
     }
@@ -23,7 +26,7 @@ public class ServerStopCommand : Command
         }
 
         int id;
-        var isNumber = int.TryParse(args[0], out id);
+        bool isNumber = int.TryParse(args[0], out id);
         if (isNumber == false)
         {
             ExecuteHelpCommand();

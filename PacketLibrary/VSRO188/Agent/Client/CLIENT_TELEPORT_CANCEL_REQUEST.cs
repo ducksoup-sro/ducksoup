@@ -28,7 +28,7 @@ public class CLIENT_TELEPORT_CANCEL_REQUEST : Packet
     {
         return new CLIENT_TELEPORT_CANCEL_REQUEST
         {
-            
+
         }.Build();
     }
 }

@@ -85,10 +85,10 @@ public struct Position
         // World map coordinates has been provided
         if (!Region.IsDungeon)
         {
-            var xOffset = (int)(Math.Abs(x) % 192 * 10);
+            int xOffset = (int)(Math.Abs(x) % 192 * 10);
             if (x < 0) xOffset = 1920 - xOffset;
 
-            var yOffset = (int)(Math.Abs(y) % 192 * 10);
+            int yOffset = (int)(Math.Abs(y) % 192 * 10);
             if (y < 0) yOffset = 1920 - yOffset;
 
             Region.X = (byte)MathF.Round((x - xOffset / 10.0f) / 192.0f + 135.0f);
@@ -134,11 +134,11 @@ public struct Position
 
     public static Position FromPacket(Packet packet)
     {
-        packet.TryRead<ushort>(out var region)
-            .TryRead<float>(out var xOffset)
-            .TryRead<float>(out var zOffset)
-            .TryRead<float>(out var yOffset)
-            .TryRead<short>(out var angle);
+        packet.TryRead<ushort>(out ushort region)
+            .TryRead<float>(out float xOffset)
+            .TryRead<float>(out float zOffset)
+            .TryRead<float>(out float yOffset)
+            .TryRead<short>(out short angle);
 
         return new Position
         {
@@ -162,10 +162,10 @@ public struct Position
 
     public static Position FromPacketInt(Packet packet)
     {
-        packet.TryRead<ushort>(out var region)
-            .TryRead<float>(out var xOffset)
-            .TryRead<float>(out var zOffset)
-            .TryRead<float>(out var yOffset);
+        packet.TryRead<ushort>(out ushort region)
+            .TryRead<float>(out float xOffset)
+            .TryRead<float>(out float zOffset)
+            .TryRead<float>(out float yOffset);
 
         return new Position
         {
@@ -178,27 +178,27 @@ public struct Position
 
     public static Position FromPacketConditional(Packet packet, bool parseLayerWorldId = true)
     {
-        packet.TryRead<ushort>(out var region);
+        packet.TryRead<ushort>(out ushort region);
 
-        var position = new Position
+        Position position = new Position
         {
             Region = region
         };
 
         if (!position.Region.IsDungeon)
         {
-            packet.TryRead<short>(out var xOffset)
-                .TryRead<short>(out var zOffset)
-                .TryRead<short>(out var yOffset);
+            packet.TryRead<short>(out short xOffset)
+                .TryRead<short>(out short zOffset)
+                .TryRead<short>(out short yOffset);
             position.XOffset = xOffset;
             position.YOffset = yOffset;
             position.ZOffset = zOffset;
         }
         else
         {
-            packet.TryRead<int>(out var xOffset)
-                .TryRead<int>(out var zOffset)
-                .TryRead<int>(out var yOffset);
+            packet.TryRead<int>(out int xOffset)
+                .TryRead<int>(out int zOffset)
+                .TryRead<int>(out int yOffset);
             position.XOffset = xOffset;
             position.YOffset = yOffset;
             position.ZOffset = zOffset;

@@ -17,7 +17,7 @@ public sealed class SpawnedMonster : SpawnedNpc
     {
         get
         {
-            var baseHealth = RefObjChar.MaxHP;
+            int baseHealth = RefObjChar.MaxHP;
             switch (Rarity)
             {
                 case MonsterRarity.Champion:
@@ -59,6 +59,6 @@ public sealed class SpawnedMonster : SpawnedNpc
         if (RefObjCommon.CodeName128.StartsWith("MOB_EV")) Rarity = MonsterRarity.Event;
 
         //NPC_MOB_TIEF, NPC_MOB_HUNTER
-        if (RefObjCommon.TypeID4 == 2 || RefObjCommon.TypeID4 == 3) packet.TryRead<byte>(out var appearance);
+        if (RefObjCommon.TypeID4 == 2 || RefObjCommon.TypeID4 == 3) packet.TryRead<byte>(out byte appearance);
     }
 }

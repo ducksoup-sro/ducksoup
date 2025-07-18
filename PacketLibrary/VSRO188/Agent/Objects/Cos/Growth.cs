@@ -15,8 +15,8 @@ public class Growth : Cos
             .TryRead(out CurrentHungerPoints)
             .TryRead(out Settings)
             .TryRead(out Name)
-            .TryRead<byte>(out var unk1)
+            .TryRead<byte>(out byte unk1)
             .TryRead(out OwnerUniqueId)
-            .TryRead<byte>(out var inventorySlot);
+            .TryRead<byte>(out byte inventorySlot);
     }
 }

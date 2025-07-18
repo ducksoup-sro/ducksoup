@@ -5,9 +5,12 @@ namespace DuckSoup.Library.Commands.Server;
 
 public class ServerCommand : Command
 {
-    public ServerCommand() : base("server", "server <subcommand>", "none", new[] { "ser" })
+    public ServerCommand() : base("server", "server <subcommand>", "none", new[]
     {
-        var helpCommand = new HelpCommand(SubCommands);
+        "ser"
+    })
+    {
+        HelpCommand helpCommand = new HelpCommand(SubCommands);
         SubCommands.Add(new ServerListCommand());
         SubCommands.Add(new ServerStartCommand());
         SubCommands.Add(new ServerStopCommand());
@@ -21,7 +24,7 @@ public class ServerCommand : Command
             return;
         }
 
-        foreach (var command in SubCommands.Where(command =>
+        foreach (Command command in SubCommands.Where(command =>
                      command.GetName().ToLower().Equals(args[0].ToLower()) ||
                      command.GetAliases().Contains(args[0].ToLower())))
         {

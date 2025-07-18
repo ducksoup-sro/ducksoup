@@ -10,7 +10,7 @@ public class SERVER_PARTY_MATCHING_LIST_RESPONSE : Packet
     public byte PageCount;
     public byte PageIndex;
     public byte PartyCount;
-    public List<PartyMatchEntry> PartyMatch = new();
+    public List<PartyMatchEntry> PartyMatch = new List<PartyMatchEntry>();
     public byte Result;
 
     public SERVER_PARTY_MATCHING_LIST_RESPONSE() : base(0xB06C)
@@ -32,7 +32,10 @@ public class SERVER_PARTY_MATCHING_LIST_RESPONSE : Packet
                 TryRead<byte>(out PageCount);
                 TryRead<byte>(out PageIndex);
                 TryRead<byte>(out PartyCount);
-                for (var i = 0; i < PartyCount; i++) PartyMatch.Add(new PartyMatchEntry(this));
+                for (int i = 0; i < PartyCount; i++)
+                {
+                    PartyMatch.Add(new PartyMatchEntry(this));
+                }
                 break;
             }
             case 2:
@@ -52,7 +55,10 @@ public class SERVER_PARTY_MATCHING_LIST_RESPONSE : Packet
                 TryWrite<byte>(PageCount);
                 TryWrite<byte>(PageIndex);
                 TryWrite<byte>(PartyCount);
-                foreach (var partyMatchEntry in PartyMatch) partyMatchEntry.Build(this);
+                foreach (PartyMatchEntry partyMatchEntry in PartyMatch)
+                {
+                    partyMatchEntry.Build(this);
+                }
                 break;
             }
             case 2:

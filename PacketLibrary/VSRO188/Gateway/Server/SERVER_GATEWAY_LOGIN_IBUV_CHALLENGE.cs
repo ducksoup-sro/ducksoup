@@ -30,7 +30,10 @@ public class SERVER_GATEWAY_LOGIN_IBUV_CHALLENGE : Packet
             .TryRead(out ImageWidth)
             .TryRead(out ImageHeight);
         ImageCompressedData = new byte[RemainingRead()];
-        for (var i = 0; i < RemainingRead(); i++) TryRead(out ImageCompressedData[i]);
+        for (int i = 0; i < RemainingRead(); i++)
+        {
+            TryRead(out ImageCompressedData[i]);
+        }
         // TODO :: check imageCompressedData - might be inserted wrongly
     }
 
@@ -43,7 +46,10 @@ public class SERVER_GATEWAY_LOGIN_IBUV_CHALLENGE : Packet
         TryWrite(ImageUncompressed);
         TryWrite(ImageWidth);
         TryWrite(ImageHeight);
-        foreach (var b in ImageCompressedData) TryWrite(b);
+        foreach (byte b in ImageCompressedData)
+        {
+            TryWrite(b);
+        }
         return this;
     }
 

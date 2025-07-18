@@ -9,5 +9,6 @@ public interface ICommandManager : IDisposable
     Command _helpCommand { get; }
 
     Result<Void> StartCommandLoop();
+
     void ExecuteCommand(string input);
 }

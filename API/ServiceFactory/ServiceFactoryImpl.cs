@@ -27,9 +27,11 @@ public class ServiceFactoryImpl : IServiceFactory
         if (Providers == null) throw new DisposedException(nameof(ServiceFactoryImpl));
 
         Type? service = null;
-        foreach (var (key, value) in Providers)
+        foreach ((Type key, RegisteredServiceProvider<object> value) in Providers)
+        {
             if (value.Provider == provider)
                 service = key;
+        }
 
         if (service != null) Providers.Remove(service);
     }
@@ -61,8 +63,11 @@ public class ServiceFactoryImpl : IServiceFactory
     {
         if (Providers == null) throw new DisposedException(nameof(ServiceFactoryImpl));
 
-        var result = new Collection<Type>();
-        foreach (var (key, _) in Providers) result.Add(key);
+        Collection<Type> result = new Collection<Type>();
+        foreach ((Type key, RegisteredServiceProvider<object> _) in Providers)
+        {
+            result.Add(key);
+        }
 
         return result;
     }
@@ -78,7 +83,10 @@ public class ServiceFactoryImpl : IServiceFactory
     {
         if (Providers == null) throw new DisposedException(nameof(ServiceFactoryImpl));
 
-        foreach (var registeredServiceProvider in Providers) registeredServiceProvider.Value.Dispose();
+        foreach (KeyValuePair<Type, RegisteredServiceProvider<object>> registeredServiceProvider in Providers)
+        {
+            registeredServiceProvider.Value.Dispose();
+        }
 
         Providers = null;
     }

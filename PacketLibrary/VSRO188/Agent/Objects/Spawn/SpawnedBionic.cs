@@ -25,7 +25,7 @@ public class SpawnedBionic : SpawnedEntity
     {
         packet.TryRead(out UniqueId);
 
-        var movement = Movement.FromPacket(packet);
+        Movement movement = Movement.FromPacket(packet);
         State.Deserialize(packet);
     }
 }

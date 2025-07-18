@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using API.Session;
 using Database.VSRO188;
+using Database.VSRO188.SRO_VT_SHARD;
 using PacketLibrary.VSRO188.Agent.Objects;
 using Serilog;
 using SilkroadSecurityAPI.Message;
@@ -11,8 +12,8 @@ namespace DuckSoup.Library.Session;
 // ReSharper disable UnusedVariable
 public class CharInfo : ICharInfo
 {
-    private Packet? _packet = new(0x3013);
-    private bool _debug = false;
+    private readonly bool _debug = false;
+    private Packet? _packet = new Packet(0x3013);
 
     public void Initialize()
     {
@@ -33,7 +34,7 @@ public class CharInfo : ICharInfo
             watch = Stopwatch.StartNew();
         }
 
-        for (var i = 0; i < packet.GetBytes().Length; i++)
+        for (int i = 0; i < packet.GetBytes().Length; i++)
         {
             packet.TryRead(out byte b);
             _packet.TryWrite(b);
@@ -43,9 +44,9 @@ public class CharInfo : ICharInfo
         {
             watch.Stop();
             double ticks = watch.ElapsedTicks;
-            var seconds = ticks / Stopwatch.Frequency;
-            var milliseconds = ticks / Stopwatch.Frequency * 1000;
-            var nanoseconds = ticks / Stopwatch.Frequency * 1000000000;
+            double seconds = ticks / Stopwatch.Frequency;
+            double milliseconds = ticks / Stopwatch.Frequency * 1000;
+            double nanoseconds = ticks / Stopwatch.Frequency * 1000000000;
             Log.Information("CharInfo Append: {0}ms", milliseconds);
         }
     }
@@ -95,7 +96,7 @@ public class CharInfo : ICharInfo
 
         _packet.TryRead(out byte inventorySize); // 1   byte    Inventory.Size
         _packet.TryRead(out byte inventoryItemCount); // 1   byte    Inventory.ItemCount
-        for (var i = 0; i < inventoryItemCount; i++) // for (int i = 0; i < Inventory.ItemCount; i++)
+        for (int i = 0; i < inventoryItemCount; i++) // for (int i = 0; i < Inventory.ItemCount; i++)
         {
             _packet.TryRead(out byte itemSlot); //     1   byte    item.Slot
             _packet.TryRead(out uint itemRentType); //     4   uint    item.RentType
@@ -127,7 +128,7 @@ public class CharInfo : ICharInfo
             }
 
             _packet.TryRead(out uint itemRefItemId); //     4   uint    item.RefItemID
-            var item = await Cache.GetRefObjCommonAsync((int)itemRefItemId);
+            _RefObjCommon? item = await Cache.GetRefObjCommonAsync((int)itemRefItemId);
             if (item == null) continue;
 
             if (item.TypeID1 == 3)
@@ -142,7 +143,7 @@ public class CharInfo : ICharInfo
                     _packet.TryRead(out ulong itemVariance); // 8   ulong   item.Variance
                     _packet.TryRead(out uint itemData); // 4   uint    item.Data       //Durability
                     _packet.TryRead(out byte itemMagParamNum); // 1   byte    item.MagParamNum
-                    for (var paramIndex = 0; paramIndex < itemMagParamNum; paramIndex++)
+                    for (int paramIndex = 0; paramIndex < itemMagParamNum; paramIndex++)
                     {
                         _packet.TryRead(out uint magParamType); // 4   uint    magParam.Type
                         _packet.TryRead(out uint magParamValue); // 4   uint    magParam.Value                
@@ -150,7 +151,7 @@ public class CharInfo : ICharInfo
 
                     _packet.TryRead(out byte bindingOptionType); // 1   byte    bindingOptionType   //1 = Socket
                     _packet.TryRead(out byte bindingOptionCount); // 1   byte    bindingOptionCount
-                    for (var bindingOptionIndex = 0; bindingOptionIndex < bindingOptionCount; bindingOptionIndex++)
+                    for (int bindingOptionIndex = 0; bindingOptionIndex < bindingOptionCount; bindingOptionIndex++)
                     {
                         _packet.TryRead(out byte bindingOptionSlot); // 1   byte bindingOption.Slot
                         _packet.TryRead(out uint bindingOptionId); // 4   uint bindingOption.ID
@@ -160,7 +161,7 @@ public class CharInfo : ICharInfo
                     _packet.TryRead(
                         out byte bindingOptionType2); // 1   byte    bindingOptionType   //2 = Advanced elixir
                     _packet.TryRead(out byte bindingOptionCount2); // 1   byte    bindingOptionCount2
-                    for (var bindingOptionIndex = 0; bindingOptionIndex < bindingOptionCount2; bindingOptionIndex++)
+                    for (int bindingOptionIndex = 0; bindingOptionIndex < bindingOptionCount2; bindingOptionIndex++)
                     {
                         _packet.TryRead(out byte bindingOptionSlot); // 1   byte bindingOption.Slot
                         _packet.TryRead(out uint bindingOptionId); // 4   uint bindingOption.ID
@@ -176,7 +177,7 @@ public class CharInfo : ICharInfo
                         if (cosState == 2 || cosState == 3 || cosState == 4)
                         {
                             _packet.TryRead(out uint cosRefObjId); // 4 uint RefObjID
-                            _packet.TryRead(out var cosName); // 2 ushort Name.Length //     * string Name
+                            _packet.TryRead(out string cosName); // 2 ushort Name.Length //     * string Name
                             if (item.TypeID4 == 2)
                                 //ITEM_COS_P (Ability)
                                 _packet.TryRead(out uint cosSecondsToRentEndTime); // 4 uint SecondsToRentEndTime
@@ -256,7 +257,7 @@ public class CharInfo : ICharInfo
                         //ITEM_MALL_GACHA_CARD_WIN
                         //ITEM_MALL_GACHA_CARD_LOSE
                         _packet.TryRead(out byte magParamNum); // 1   byte    item.MagParamCount
-                        for (var paramIndex = 0; paramIndex < magParamNum; paramIndex++)
+                        for (int paramIndex = 0; paramIndex < magParamNum; paramIndex++)
                         {
                             _packet.TryRead(out uint magParamType); //4   uint magParam.Type
                             _packet.TryRead(out uint magParamValue); //4   uint magParam.Value
@@ -272,7 +273,7 @@ public class CharInfo : ICharInfo
 
         _packet.TryRead(out byte avatarInventorySize); // 1 byte AvatarInventory.Size
         _packet.TryRead(out byte avatarInventoryItemCount); // 1 byte AvatarInventory.ItemCount
-        for (var i = 0; i < avatarInventoryItemCount; i++)
+        for (int i = 0; i < avatarInventoryItemCount; i++)
         {
             _packet.TryRead(out byte itemSlot); // 1 byte item.Slot
             _packet.TryRead(out uint itemRentType); // 4 uint item.RentType
@@ -298,7 +299,7 @@ public class CharInfo : ICharInfo
             }
 
             _packet.TryRead(out uint itemRefItemId); // 4 uint item.RefItemID
-            var item = await Cache.GetRefObjCommonAsync((int)itemRefItemId);
+            _RefObjCommon? item = await Cache.GetRefObjCommonAsync((int)itemRefItemId);
             if (item == null) continue;
 
             if (item.TypeID1 == 3)
@@ -312,7 +313,7 @@ public class CharInfo : ICharInfo
                     _packet.TryRead(out ulong itemVariance); // 8 ulong item.Variance
                     _packet.TryRead(out uint itemData); // 4 uint item.Data //Durability
                     _packet.TryRead(out byte itemMagParamNum); // 1 byte item.MagParamNum
-                    for (var paramIndex = 0; paramIndex < itemMagParamNum; paramIndex++)
+                    for (int paramIndex = 0; paramIndex < itemMagParamNum; paramIndex++)
                     {
                         _packet.TryRead(out uint magParamType); // 4 uint magParam.Type
                         _packet.TryRead(out uint magParamValue); // 4 uint magParam.Value
@@ -320,7 +321,7 @@ public class CharInfo : ICharInfo
 
                     _packet.TryRead(out byte bindingOptionType); // 1 byte bindingOptionType //1 = Socket
                     _packet.TryRead(out byte bindingOptionCount); // 1 byte bindingOptionCount
-                    for (var bindingOptionIndex = 0;
+                    for (int bindingOptionIndex = 0;
                          bindingOptionIndex < bindingOptionCount;
                          bindingOptionIndex++)
                     {
@@ -331,7 +332,7 @@ public class CharInfo : ICharInfo
 
                     _packet.TryRead(out byte bindingOptionType2); // 1 byte bindingOptionType //2 = Advanced elixir
                     _packet.TryRead(out byte bindingOptionCount2); // 1 byte bindingOptionCount
-                    for (var bindingOptionIndex = 0;
+                    for (int bindingOptionIndex = 0;
                          bindingOptionIndex < bindingOptionCount2;
                          bindingOptionIndex++)
                     {
@@ -378,7 +379,7 @@ public class CharInfo : ICharInfo
         #region Quests
 
         _packet.TryRead(out ushort completedQuestCount); // 2   ushort  CompletedQuestCount
-        var completedQuests = new uint[completedQuestCount];
+        uint[] completedQuests = new uint[completedQuestCount];
         for (ushort i = 0; i < completedQuestCount; i++) // *   uint[]  CompletedQuests
         {
             _packet.TryRead(out uint quest);
@@ -386,7 +387,7 @@ public class CharInfo : ICharInfo
         }
 
         _packet.TryRead(out byte activeQuestCount); // 1   byte    ActiveQuestCount
-        for (var activeQuestIndex = 0; activeQuestIndex < activeQuestCount; activeQuestIndex++)
+        for (int activeQuestIndex = 0; activeQuestIndex < activeQuestCount; activeQuestIndex++)
         {
             _packet.TryRead(out uint questRefQuestId); // 4   uint    quest.RefQuestID
             _packet.TryRead(out byte questAchievementCount); // 1   byte    quest.AchievementCount
@@ -399,24 +400,28 @@ public class CharInfo : ICharInfo
             if (questType != 8)
             {
                 _packet.TryRead(out byte questObjectiveCount); // 1   byte    quest.ObjectiveCount
-                for (var objectiveIndex = 0; objectiveIndex < questObjectiveCount; objectiveIndex++)
+                for (int objectiveIndex = 0; objectiveIndex < questObjectiveCount; objectiveIndex++)
                 {
                     _packet.TryRead(out byte questObjectiveId); // 1   byte    objective.ID
                     _packet.TryRead(
                         out byte questObjectiveStatus); // 1   byte    objective.Status        //0 = Done, 1  = On
                     _packet.TryRead(
-                        out var questObjectiveName); // 2   ushort  objective.Name.Length // *   string  objective.Name
+                        out string questObjectiveName); // 2   ushort  objective.Name.Length // *   string  objective.Name
                     _packet.TryRead(out byte objectiveTaskCount); // 1   byte    objective.TaskCount
-                    for (var taskIndex = 0; taskIndex < objectiveTaskCount; taskIndex++)
+                    for (int taskIndex = 0; taskIndex < objectiveTaskCount; taskIndex++)
+                    {
                         _packet.TryRead(out uint questTaskValue); // 4   uint    task.Value
+                    }
                 }
             }
 
             if (questType == 88)
             {
                 _packet.TryRead(out byte refObjCount); // 1   byte    RefObjCount
-                for (var refObjIndex = 0; refObjIndex < refObjCount; refObjIndex++)
+                for (int refObjIndex = 0; refObjIndex < refObjCount; refObjIndex++)
+                {
                     _packet.TryRead(out uint questRefObjId); // 4   uint    RefObjID    //NPCs
+                }
             }
         }
 
@@ -427,7 +432,7 @@ public class CharInfo : ICharInfo
         #region CollectionBook
 
         _packet.TryRead(out uint startedCollectionCount); // 4   uint    CollectionBookStartedThemeCount
-        for (var i = 0; i < startedCollectionCount; i++)
+        for (int i = 0; i < startedCollectionCount; i++)
         {
             _packet.TryRead(out uint themeIndex); // 4   uint    theme.Index
             _packet.TryRead(out uint themeStartedDateTime); // 4   uint    theme.StartedDateTime   //SROTimeStamp
@@ -529,7 +534,7 @@ public class CharInfo : ICharInfo
         _packet.TryRead(
             out byte activationFlag); // 1   byte    ActivationFlag          //ConfigType:0 --> (0 = Not activated, 7 = activated)
         _packet.TryRead(out byte hotkeyCount); // 1   byte    Hotkeys.Count           //ConfigType:1
-        for (var i = 0; i < hotkeyCount; i++)
+        for (int i = 0; i < hotkeyCount; i++)
         {
             _packet.TryRead(out byte hotkeySlotSeq); // 1   byte    hotkey.SlotSeq
             _packet.TryRead(out byte hotkeySlotContentType); // 1   byte    hotkey.SlotContentType
@@ -550,8 +555,10 @@ public class CharInfo : ICharInfo
         #region Whisper
 
         _packet.TryRead(out byte blockedWhisperCount); // 1   byte    blockedWhisperCount
-        for (var i = 0; i < blockedWhisperCount; i++)
-            _packet.TryRead(out var target); // 2   ushort  Target.Length // *   string  Target
+        for (int i = 0; i < blockedWhisperCount; i++)
+        {
+            _packet.TryRead(out string target); // 2   ushort  Target.Length // *   string  Target
+        }
 
         #endregion
 
@@ -561,9 +568,9 @@ public class CharInfo : ICharInfo
         {
             watch.Stop();
             double ticks = watch.ElapsedTicks;
-            var seconds = ticks / Stopwatch.Frequency;
-            var milliseconds = ticks / Stopwatch.Frequency * 1000;
-            var nanoseconds = ticks / Stopwatch.Frequency * 1000000000;
+            double seconds = ticks / Stopwatch.Frequency;
+            double milliseconds = ticks / Stopwatch.Frequency * 1000;
+            double nanoseconds = ticks / Stopwatch.Frequency * 1000000000;
             Log.Information("CharInfo Read: {0}ms", milliseconds);
         }
     }

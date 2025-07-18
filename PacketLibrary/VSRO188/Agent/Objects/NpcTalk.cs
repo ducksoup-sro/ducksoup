@@ -14,8 +14,11 @@ public class NpcTalk
 
         if (Flag == 2)
         {
-            packet.TryRead<byte>(out var count);
-            for (var i = 0; i < count; i++) packet.TryRead(out Options[i]);
+            packet.TryRead<byte>(out byte count);
+            for (int i = 0; i < count; i++)
+            {
+                packet.TryRead(out Options[i]);
+            }
         }
     }
 }

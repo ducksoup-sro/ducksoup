@@ -10,6 +10,7 @@ namespace SilkroadSecurityAPI.Message;
 
 public class Packet
 {
+
     #region Constructors
 
     public Packet(ushort msgId, bool encrypted = false, bool massive = false, byte[]? bytes = null, int offset = 0,
@@ -120,7 +121,7 @@ public class Packet
 
     public T CreateCopy<T>() where T : Packet, new()
     {
-        var copy = new T
+        T copy = new T
         {
             Opcode = Opcode,
             Massive = Massive,
@@ -175,8 +176,8 @@ public class Packet
         // MemoryMarshal.TryRead(_reader.ReadBytes(size), out value);
         // return this;
 
-        var size = (ushort)Unsafe.SizeOf<T>();
-        var availableBytes = ((MemoryStream)_reader.BaseStream).Length - ((MemoryStream)_reader.BaseStream).Position;
+        ushort size = (ushort)Unsafe.SizeOf<T>();
+        long availableBytes = ((MemoryStream)_reader.BaseStream).Length - ((MemoryStream)_reader.BaseStream).Position;
 
         if (size > availableBytes && DebugPacket)
             Log.Debug("Attempting to read {0} bytes, but only {1} bytes available.", size, availableBytes);
@@ -223,7 +224,7 @@ public class Packet
         // value = encoding.GetString(_reader.ReadBytes(length));
         // return this;
 
-        var availableBytes = ((MemoryStream)_reader.BaseStream).Length - ((MemoryStream)_reader.BaseStream).Position;
+        long availableBytes = ((MemoryStream)_reader.BaseStream).Length - ((MemoryStream)_reader.BaseStream).Position;
 
         if (length > availableBytes && DebugPacket)
             Log.Debug("Attempting to read {0} bytes, but only {1} bytes available.", length, availableBytes);
@@ -266,11 +267,12 @@ public class Packet
 
     public Packet TryWrite(string value, Encoding encoding)
     {
-        var bytes = encoding.GetBytes(value);
+        byte[] bytes = encoding.GetBytes(value);
         _writer.Write((ushort)value.Length);
         _writer.Write(bytes);
         return this;
     }
 
     #endregion
+
 }

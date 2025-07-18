@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using API;
+﻿using API;
 using API.Database;
 using API.ServiceFactory;
 using ConcurrentCollections;
@@ -20,13 +19,13 @@ public class SharedObjects : ISharedObjects
 
         ServerName = DatabaseHelper.GetSettingOrDefault("Name", "Filter");
         DebugLevel =
-            (LogEventLevel) int.Parse(
+            (LogEventLevel)int.Parse(
                 DatabaseHelper.GetSettingOrDefault("DebugLevel", ((byte)LogEventLevel.Information).ToString()));
-        
+
         Helper.LoggingLevelSwitch.MinimumLevel = LogEventLevel.Verbose;
-        Log.Information("Log is on {0} ({1}) its recommend to set it to 2 (Information) in the database", (byte) DebugLevel, DebugLevel);
+        Log.Information("Log is on {0} ({1}) its recommend to set it to 2 (Information) in the database", (byte)DebugLevel, DebugLevel);
         Helper.LoggingLevelSwitch.MinimumLevel = DebugLevel;
-        
+
         AgentSessions = new ConcurrentHashSet<ISession>();
         DownloadSessions = new ConcurrentHashSet<ISession>();
         GatewaySessions = new ConcurrentHashSet<ISession>();

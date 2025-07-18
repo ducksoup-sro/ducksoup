@@ -1,4 +1,5 @@
 ﻿using API.Command;
+using API.Database.DuckSoup;
 using API.ServiceFactory;
 using API.Services;
 using Serilog;
@@ -10,7 +11,10 @@ public class AuthDeleteCommand : Command
     private IUserService _service;
 
     public AuthDeleteCommand() : base("delete", "auth delete <username>", "Removes the user from the database.",
-        new[] { "rm" })
+        new[]
+        {
+            "rm"
+        })
     {
     }
 
@@ -24,8 +28,8 @@ public class AuthDeleteCommand : Command
             return;
         }
 
-        var username = args[0];
-        var user = _service.GetUser(username);
+        string username = args[0];
+        User? user = _service.GetUser(username);
 
         if (user == null)
         {

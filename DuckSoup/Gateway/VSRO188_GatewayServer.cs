@@ -45,7 +45,7 @@ public class VSRO188_GatewayServer : FakeServer
         {
             Log.Error("VSRO188_GatewayServer:46 {0}", exception.ToString());
         }
-    } 
+    }
 
     public override void RemoveSession(ISession session)
     {
@@ -56,7 +56,7 @@ public class VSRO188_GatewayServer : FakeServer
             if (!remove)
             {
                 Log.Error("DownloadServer error sessionremoval {0}", session.Guid);
-            }        
+            }
         }
         catch (Exception exception)
         {
@@ -68,7 +68,7 @@ public class VSRO188_GatewayServer : FakeServer
     {
         if (data.Result != 0x01) return data;
 
-        foreach (var agentServer in _serverManager.Servers.Where(agentServer =>
+        foreach (IFakeServer agentServer in _serverManager.Servers.Where(agentServer =>
                      agentServer.Service.RemotePort == data.AgentServer.Port &&
                      agentServer.Service.RemoteMachine_Machine.Address == data.AgentServer.Host))
         {
@@ -76,10 +76,11 @@ public class VSRO188_GatewayServer : FakeServer
             data.AgentServer.Port = (ushort)agentServer.Service.BindPort;
 
             if (agentServer.Service.SpoofMachine_Machine != null &&
-                agentServer.Service.SpoofMachine_Machine.Address != "") {
+                agentServer.Service.SpoofMachine_Machine.Address != "")
+            {
                 data.AgentServer.Host = agentServer.Service.SpoofMachine_Machine.Address;
             }
-            
+
         }
 
         Log.Verbose("{0} - Connecting to {1}:{2}", Service.Name, data.AgentServer.Host, data.AgentServer.Port);
@@ -91,7 +92,7 @@ public class VSRO188_GatewayServer : FakeServer
     {
         if (data.Result == 0x01) return data;
 
-        foreach (var download in _serverManager.Servers.Where(download =>
+        foreach (IFakeServer download in _serverManager.Servers.Where(download =>
                      download.Service.RemotePort == data.DownloadServer.Port &&
                      download.Service.RemoteMachine_Machine.Address == data.DownloadServer.Host))
         {

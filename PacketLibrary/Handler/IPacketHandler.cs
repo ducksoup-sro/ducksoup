@@ -16,7 +16,7 @@ public class _PacketHandler<T> : IBasePacketHandler where T : Packet, new()
     {
         if (packet.GetType() != typeof(T))
         {
-            var x = packet.CreateCopy<T>();
+            T x = packet.CreateCopy<T>();
             await x.Read();
             return await _handlerAction(x, session);
         }
@@ -38,6 +38,7 @@ public class _PacketHandler<T> : IBasePacketHandler where T : Packet, new()
 public interface IBasePacketHandler
 {
     Task<Packet> Handle(Packet packet, ISession session);
+
     bool IsEqual<T>(Func<T, ISession, Task<Packet>> otherHandler);
 }
 
@@ -66,16 +67,25 @@ public interface IPacketHandler : IDisposable
     _PacketHandler<Packet> _blockHandler { get; set; }
     _PacketHandler<Packet> _defaultHandler { get; set; }
     _PacketHandler<Packet> _disconnectHandler { get; set; }
+
     void AddBlacklist(ushort msgId);
+
     void RemoveBlacklist(ushort msgId);
+
     void AddWhitelist(ushort msgId);
+
     void RemoveWhitelist(ushort msgId);
 
     void SetDefaultHandler(Func<Packet, ISession, Task<Packet>> handler);
+
     Task<Packet> HandleDefault(Packet packet, ISession session);
+
     void SetBlockHandler(Func<Packet, ISession, Task<Packet>> handler);
+
     Task<Packet> HandleDisconnect(Packet packet, ISession session);
+
     void SetDisconnectHandler(Func<Packet, ISession, Task<Packet>> handler);
+
     Task<Packet> HandleBlock(Packet packet, ISession session);
 
     void RegisterModuleHandler<T>(Func<T, ISession, Task<Packet>> handler)
@@ -104,5 +114,6 @@ public interface IPacketHandler : IDisposable
 
 
     Task<Packet> HandleClient(Packet packet, ISession session);
+
     Task<Packet> HandleServer(Packet packet, ISession session);
 }

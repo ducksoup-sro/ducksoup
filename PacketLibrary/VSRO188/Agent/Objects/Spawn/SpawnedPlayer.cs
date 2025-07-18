@@ -44,17 +44,17 @@ public sealed class SpawnedPlayer : SpawnedBionic
         packet.TryRead(out AutoInverstExp);
         packet.TryRead(out InventorySize);
 
-        packet.TryRead<byte>(out var itemCount);
+        packet.TryRead<byte>(out byte itemCount);
         Inventory = new ConcurrentDictionary<_RefObjCommon, byte>();
 
-        for (var i = 0; i < itemCount; i++)
+        for (int i = 0; i < itemCount; i++)
         {
-            packet.TryRead<uint>(out var itemId);
-            var itemObj = Cache.GetRefObjCommonAsync(c => c.ID == itemId).Result;
+            packet.TryRead<uint>(out uint itemId);
+            _RefObjCommon? itemObj = Cache.GetRefObjCommonAsync(c => c.ID == itemId).Result;
 
             if (itemObj == null)
             {
-                packet.TryRead<byte>(out var unk0);
+                packet.TryRead<byte>(out byte unk0);
                 continue;
             }
 
@@ -64,7 +64,7 @@ public sealed class SpawnedPlayer : SpawnedBionic
 
             if (itemObj.TypeID2 == 1)
             {
-                packet.TryRead<byte>(out var optLevel);
+                packet.TryRead<byte>(out byte optLevel);
                 Inventory.TryAdd(itemObj, optLevel); //Item object and the "+" value as value
             }
         }
@@ -74,34 +74,37 @@ public sealed class SpawnedPlayer : SpawnedBionic
         packet.TryRead(out AvatarInventorySize);
         packet.TryRead(out itemCount);
 
-        for (var i = 0; i < itemCount; i++)
+        for (int i = 0; i < itemCount; i++)
         {
-            packet.TryRead<uint>(out var itemId);
-            var itemObj = Cache.GetRefObjCommonAsync(c => c.ID == itemId).Result;
+            packet.TryRead<uint>(out uint itemId);
+            _RefObjCommon? itemObj = Cache.GetRefObjCommonAsync(c => c.ID == itemId).Result;
             if (itemObj == null)
             {
-                packet.TryRead<byte>(out var unk2);
+                packet.TryRead<byte>(out byte unk2);
                 continue;
             }
 
-            packet.TryRead<byte>(out var optLevel);
+            packet.TryRead<byte>(out byte optLevel);
             Avatars.TryAdd(itemObj, optLevel); //Item object and the "+" value as value
         }
 
 
-        packet.TryRead<bool>(out var hasMask);
+        packet.TryRead<bool>(out bool hasMask);
         if (hasMask)
         {
-            packet.TryRead<uint>(out var maskId);
-            var maskObj = Cache.GetRefObjCommonAsync(c => c.ID == maskId).Result;
+            packet.TryRead<uint>(out uint maskId);
+            _RefObjCommon? maskObj = Cache.GetRefObjCommonAsync(c => c.ID == maskId).Result;
             if (maskObj == null) return;
 
             if (maskObj.TypeID1 == RefObjCommon.TypeID1 || maskObj.TypeID2 == RefObjCommon.TypeID2)
             {
                 //duplicated player!
-                packet.TryRead<byte>(out var scale);
+                packet.TryRead<byte>(out byte scale);
                 packet.TryRead(out itemCount);
-                for (var i = 0; i < itemCount; i++) packet.TryRead<uint>(out var itemId);
+                for (int i = 0; i < itemCount; i++)
+                {
+                    packet.TryRead<uint>(out uint itemId);
+                }
             }
         }
 
@@ -119,9 +122,9 @@ public sealed class SpawnedPlayer : SpawnedBionic
         packet.TryRead(out ScrollMode);
         packet.TryRead(out InteractMode);
 
-        packet.TryRead<byte>(out var unkByte4); //unkByte4
+        packet.TryRead<byte>(out byte unkByte4); //unkByte4
 
-        packet.TryRead(out var guildName);
+        packet.TryRead(out string guildName);
 
         //Check if the player is wearing job suite, if not the GUILD object has to be parsed!
         if (!WearsJobSuite)
@@ -131,12 +134,15 @@ public sealed class SpawnedPlayer : SpawnedBionic
         }
         else
         {
-            Guild = new SpawnedPlayerGuild { Name = guildName };
+            Guild = new SpawnedPlayerGuild
+            {
+                Name = guildName
+            };
         }
 
         if (InteractMode == InteractMode.P2N_TALK) Stall = SpawnedPlayerStall.FromPacket(packet);
 
-        packet.TryRead<byte>(out var equipmentCooldown); //Equipment Cooldown
+        packet.TryRead<byte>(out byte equipmentCooldown); //Equipment Cooldown
         packet.TryRead(out PKFlag); //PKFlag
     }
 }

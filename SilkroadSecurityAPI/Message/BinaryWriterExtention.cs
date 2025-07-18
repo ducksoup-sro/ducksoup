@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 
@@ -8,7 +9,7 @@ public static class BinaryWriterExtensions
 {
     public static void Write<T>(this BinaryWriter writer, T value) where T : unmanaged
     {
-        var byteSpan = MemoryMarshal.AsBytes(MemoryMarshal.CreateReadOnlySpan(ref value, 1));
+        ReadOnlySpan<byte> byteSpan = MemoryMarshal.AsBytes(MemoryMarshal.CreateReadOnlySpan(ref value, 1));
         writer.Write(byteSpan);
     }
 
@@ -16,7 +17,10 @@ public static class BinaryWriterExtensions
     {
         if (obj == null) return string.Empty;
 
-        var options = new JsonSerializerOptions { WriteIndented = true };
+        JsonSerializerOptions options = new JsonSerializerOptions
+        {
+            WriteIndented = true
+        };
         return JsonSerializer.Serialize(obj, options);
     }
 }

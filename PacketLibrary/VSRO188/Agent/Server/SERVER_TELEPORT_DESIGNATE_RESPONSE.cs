@@ -4,9 +4,9 @@ namespace PacketLibrary.VSRO188.Agent.Server;
 
 public class SERVER_TELEPORT_DESIGNATE_RESPONSE : Packet
 {
-    public byte Result;
     public ushort ErrorCode;
-    
+    public byte Result;
+
     public SERVER_TELEPORT_DESIGNATE_RESPONSE() : base(0xB059)
     {
     }
@@ -19,7 +19,8 @@ public class SERVER_TELEPORT_DESIGNATE_RESPONSE : Packet
     public override async Task Read()
     {
         TryRead(out Result);
-        if(Result == 0x02) {
+        if (Result == 0x02)
+        {
             TryRead(out ErrorCode);
         }
     }
@@ -28,7 +29,8 @@ public class SERVER_TELEPORT_DESIGNATE_RESPONSE : Packet
     {
         Reset();
         TryWrite(Result);
-        if(Result == 0x02) {
+        if (Result == 0x02)
+        {
             TryWrite(ErrorCode);
         }
         return this;

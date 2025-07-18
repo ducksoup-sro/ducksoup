@@ -11,7 +11,10 @@ public class AuthRegisterCommand : Command
     private IUserService _service;
 
     public AuthRegisterCommand() : base("register", "auth register <username> <password>", "Registers a new user.",
-        new[] { "reg" })
+        new[]
+        {
+            "reg"
+        })
     {
     }
 
@@ -25,8 +28,8 @@ public class AuthRegisterCommand : Command
             return;
         }
 
-        var username = args[0];
-        _service.CreatePassword(args[1], out var passwordHash, out var passwordSalt);
+        string username = args[0];
+        _service.CreatePassword(args[1], out byte[] passwordHash, out byte[] passwordSalt);
 
         if (_service.GetUser(username) != null)
         {
@@ -34,7 +37,7 @@ public class AuthRegisterCommand : Command
             return;
         }
 
-        var user = new User
+        User? user = new User
         {
             username = username,
             passwordHash = passwordHash,

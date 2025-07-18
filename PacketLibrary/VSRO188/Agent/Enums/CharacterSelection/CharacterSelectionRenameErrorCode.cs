@@ -2,6 +2,7 @@
 
 public enum CharacterSelectionRenameErrorCode : ushort
 {
+
     #region CharacterRename
 
     /// <summary>
@@ -38,4 +39,5 @@ public enum CharacterSelectionRenameErrorCode : ushort
     //UIIT_MSG_PARTYERR_UNKNOWN_ERROR = 2, 3, 4, 5,
 
     #endregion GuildRename
+
 }

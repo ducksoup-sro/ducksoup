@@ -7,7 +7,7 @@ namespace PacketLibrary.VSRO188.Gateway.Server;
 public class SERVER_GATEWAY_NOTICE_RESPONSE : Packet
 {
     public byte Count;
-    public List<Notice> Notices = new();
+    public List<Notice> Notices = new List<Notice>();
 
     public SERVER_GATEWAY_NOTICE_RESPONSE() : base(0xA104)
     {
@@ -19,14 +19,20 @@ public class SERVER_GATEWAY_NOTICE_RESPONSE : Packet
     public override async Task Read()
     {
         TryRead(out Count);
-        for (var i = 0; i < Count; i++) Notices.Add(new Notice(this));
+        for (int i = 0; i < Count; i++)
+        {
+            Notices.Add(new Notice(this));
+        }
     }
 
     public override async Task<Packet> Build()
     {
         Reset();
         TryWrite(Count);
-        foreach (var notice in Notices) notice.Build(this);
+        foreach (Notice notice in Notices)
+        {
+            notice.Build(this);
+        }
         return this;
     }
 
@@ -44,7 +50,10 @@ public class SERVER_GATEWAY_NOTICE_RESPONSE : Packet
         return new SERVER_GATEWAY_NOTICE_RESPONSE
         {
             Count = 1,
-            Notices = new List<Notice> { notice }
+            Notices = new List<Notice>
+            {
+                notice
+            }
         };
     }
 }

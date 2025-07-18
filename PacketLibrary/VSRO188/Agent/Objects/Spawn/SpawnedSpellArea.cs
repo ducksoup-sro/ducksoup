@@ -12,11 +12,11 @@ public class SpawnedSpellArea : SpawnedEntity
 
     internal static SpawnedSpellArea FromPacket(Packet packet)
     {
-        packet.TryRead<ushort>(out var unk0)
-            .TryRead<uint>(out var skillId)
-            .TryRead<uint>(out var uniqueId);
+        packet.TryRead<ushort>(out ushort unk0)
+            .TryRead<uint>(out uint skillId)
+            .TryRead<uint>(out uint uniqueId);
 
-        var spellArea = new SpawnedSpellArea
+        SpawnedSpellArea spellArea = new SpawnedSpellArea
         {
             SkillId = skillId,
             UniqueId = uniqueId

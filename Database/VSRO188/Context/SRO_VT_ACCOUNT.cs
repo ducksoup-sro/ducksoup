@@ -399,7 +399,11 @@ public partial class SRO_VT_ACCOUNT : DuckContext
 
         modelBuilder.Entity<SR_CharName>(entity =>
         {
-            entity.HasKey(e => new { e.UserJID, e.ShardID });
+            entity.HasKey(e => new
+            {
+                e.UserJID,
+                e.ShardID
+            });
 
             entity.Property(e => e.CharID_1)
                 .HasMaxLength(17)
@@ -689,7 +693,11 @@ public partial class SRO_VT_ACCOUNT : DuckContext
 
         modelBuilder.Entity<_BlockedUser>(entity =>
         {
-            entity.HasKey(e => new { e.UserJID, e.Type }).HasName("PK__BlockedUser__1");
+            entity.HasKey(e => new
+            {
+                e.UserJID,
+                e.Type
+            }).HasName("PK__BlockedUser__1");
 
             entity.ToTable("_BlockedUser");
 
@@ -1075,7 +1083,11 @@ public partial class SRO_VT_ACCOUNT : DuckContext
 
         modelBuilder.Entity<__SiegeFortressStatus__>(entity =>
         {
-            entity.HasKey(e => new { e.ShardID, e.FortressName });
+            entity.HasKey(e => new
+            {
+                e.ShardID,
+                e.FortressName
+            });
 
             entity.ToTable("__SiegeFortressStatus__");
 
@@ -1127,7 +1139,13 @@ public partial class SRO_VT_ACCOUNT : DuckContext
 
         modelBuilder.Entity<__TrijobRanking__>(entity =>
         {
-            entity.HasKey(e => new { e.ShardID, e.TrijobType, e.RankType, e.Rank });
+            entity.HasKey(e => new
+            {
+                e.ShardID,
+                e.TrijobType,
+                e.RankType,
+                e.Rank
+            });
 
             entity.ToTable("__TrijobRanking__");
 

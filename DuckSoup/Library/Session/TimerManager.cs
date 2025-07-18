@@ -74,7 +74,7 @@ public class TimerManager : ITimerManager
         _timer.Start();
         _started = DateTime.Now;
 
-        var packet = CreateStartPacket();
+        Packet? packet = CreateStartPacket();
         if (packet == null) return;
 
         if (!broadcast)
@@ -97,7 +97,7 @@ public class TimerManager : ITimerManager
         _stopOnMove = true;
         _stopOnVehicleMoveMove = true;
 
-        var packet = CreateStopPacket();
+        Packet? packet = CreateStopPacket();
         if (packet == null) return;
 
         if (!_broadcast)
@@ -111,7 +111,7 @@ public class TimerManager : ITimerManager
 
     public void Send(ISession session)
     {
-        var packet = CreateStartPacket();
+        Packet? packet = CreateStartPacket();
         if (packet == null) return;
 
         session.SendToClient(packet);
@@ -156,9 +156,9 @@ public class TimerManager : ITimerManager
         _session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
         if (charInfo == null) return null;
 
-        var packetTime = (int)_started.GetValueOrDefault().AddMilliseconds(_timerInterval).Subtract(DateTime.Now)
+        int packetTime = (int)_started.GetValueOrDefault().AddMilliseconds(_timerInterval).Subtract(DateTime.Now)
             .TotalSeconds;
-        var response = new Packet(0x3041);
+        Packet response = new Packet(0x3041);
         response.TryWrite(charInfo.UniqueCharId)
             .TryWrite<byte>(0x02)
             .TryWrite<byte>(0x02)
@@ -172,7 +172,7 @@ public class TimerManager : ITimerManager
         _session.GetData(Data.CharInfo, out ICharInfo? charInfo, null);
         if (charInfo == null) return null;
 
-        var response = new Packet(0x3042);
+        Packet response = new Packet(0x3042);
         response.TryWrite(charInfo.UniqueCharId)
             .TryWrite<byte>(0x01);
         return response;

@@ -7,7 +7,7 @@ public class CLIENT_ALCHEMY_DISMANTLE_REQUEST : Packet
 {
     public byte SlotCount;
     public byte[] Slots;
-    
+
     public CLIENT_ALCHEMY_DISMANTLE_REQUEST() : base(0x7157)
     {
     }
@@ -20,7 +20,7 @@ public class CLIENT_ALCHEMY_DISMANTLE_REQUEST : Packet
     public override async Task Read()
     {
         TryRead(out SlotCount);
-        for (var i = 0; i < SlotCount; i++)
+        for (int i = 0; i < SlotCount; i++)
         {
             TryRead(out Slots[i]);
         }
@@ -30,7 +30,7 @@ public class CLIENT_ALCHEMY_DISMANTLE_REQUEST : Packet
     {
         Reset();
         TryWrite(SlotCount);
-        for (var i = 0; i < SlotCount; i++)
+        for (int i = 0; i < SlotCount; i++)
         {
             TryWrite(Slots[i]);
         }

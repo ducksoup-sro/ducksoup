@@ -43,7 +43,7 @@ public class ISRO_R_GatewayServer : FakeServer
     {
         if (data.Result != 0x01) return data;
 
-        foreach (var agentServer in _serverManager.Servers.Where(agentServer =>
+        foreach (IFakeServer agentServer in _serverManager.Servers.Where(agentServer =>
                      agentServer.Service.RemotePort == data.Port &&
                      agentServer.Service.RemoteMachine_Machine.Address == data.Host))
         {

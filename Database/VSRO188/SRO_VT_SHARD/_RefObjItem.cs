@@ -261,10 +261,10 @@ public class _RefObjItem
     public bool IsRepairKit => IsPotion && GetRefObjCommon.TypeID4 == 10;
 
     public bool IsArmor =>
-        (IsEquip && GetRefObjCommon.TypeID3 == 1) || GetRefObjCommon.TypeID3 is 2 or 3 or 9 or 10 or 11;
+        IsEquip && GetRefObjCommon.TypeID3 == 1 || GetRefObjCommon.TypeID3 is 2 or 3 or 9 or 10 or 11;
 
     public bool IsShield => IsEquip && GetRefObjCommon.TypeID3 == 4;
-    public bool IsAccessory => (IsEquip && GetRefObjCommon.TypeID3 == 5) || GetRefObjCommon.TypeID3 == 12;
+    public bool IsAccessory => IsEquip && GetRefObjCommon.TypeID3 == 5 || GetRefObjCommon.TypeID3 == 12;
     public bool IsWeapon => IsEquip && GetRefObjCommon.TypeID3 == 6;
     public int Degree => (ItemClass - 1) / 3 + 1;
     public int DegreeOffset => ItemClass - 3 * ((ItemClass - 1) / 3) - 1; //sro_client.sub_8BA6E0

@@ -20,7 +20,7 @@ public class EventManager : IEventManager
         ServiceFactory.Register<IEventManager>(typeof(IEventManager), this);
         _schedulerFactory = new StdSchedulerFactory();
 
-        var scheduler = _schedulerFactory.GetScheduler().Result;
+        IScheduler scheduler = _schedulerFactory.GetScheduler().Result;
         scheduler.Start();
 
         Loaders = new Dictionary<PluginLoader, IEvent>();
@@ -34,9 +34,11 @@ public class EventManager : IEventManager
 
     public bool IsLoaded(string name)
     {
-        foreach (var (_, value) in Loaders)
+        foreach ((PluginLoader _, IEvent value) in Loaders)
+        {
             if (value.Name.ToLower().Equals(name.ToLower()))
                 return true;
+        }
 
         return false;
     }
@@ -54,11 +56,11 @@ public class EventManager : IEventManager
 
     public IEvent StartEvent(PluginLoader pluginLoader)
     {
-        using var context = new API.Database.Context.DuckSoup();
-        var eventTable = context.Events.ToList();
+        using API.Database.Context.DuckSoup context = new API.Database.Context.DuckSoup();
+        List<API.Database.DuckSoup.Event> eventTable = context.Events.ToList();
 
         IEvent eEvent = null;
-        foreach (var pluginType in pluginLoader
+        foreach (Type pluginType in pluginLoader
                      .LoadDefaultAssembly()
                      .GetTypes()
                      .Where(t => typeof(IEvent).IsAssignableFrom(t) && !t.IsAbstract))
@@ -66,7 +68,7 @@ public class EventManager : IEventManager
             // This assumes the implementation of IPlugin has a parameterless constructor
             eEvent = (IEvent)Activator.CreateInstance(pluginType)!;
             eEvent.OnEnable();
-            var tableList = eventTable.Where(s => s.Eventname.Equals(eEvent.Name)).ToList();
+            List<API.Database.DuckSoup.Event> tableList = eventTable.Where(s => s.Eventname.Equals(eEvent.Name)).ToList();
             if (tableList.Count == 0)
             {
                 Log.Information(
@@ -78,7 +80,10 @@ public class EventManager : IEventManager
                 Log.Information("Event {0} ({1}) by [{2}] has {3} cronjob entry/s.", eEvent.Name,
                     eEvent.Version, eEvent.Author, tableList.Count);
 
-                for (var i = 0; i < tableList.Count; i++) StartScheduler(eEvent, i, tableList[i].Crontime);
+                for (int i = 0; i < tableList.Count; i++)
+                {
+                    StartScheduler(eEvent, i, tableList[i].Crontime);
+                }
             }
 
             Loaders.Add(pluginLoader, eEvent);
@@ -89,30 +94,35 @@ public class EventManager : IEventManager
 
     public bool UnloadEvent(string name)
     {
-        var removeEvents = new Dictionary<PluginLoader, IEvent>();
+        Dictionary<PluginLoader, IEvent> removeEvents = new Dictionary<PluginLoader, IEvent>();
 
-        foreach (var (key, value) in Loaders)
+        foreach ((PluginLoader key, IEvent value) in Loaders)
+        {
             if (value.Name.ToLower().Equals(name.ToLower()))
                 removeEvents.Add(key, value);
+        }
 
-        foreach (var (_, value) in removeEvents) return UnloadEvent(value);
+        foreach ((PluginLoader _, IEvent value) in removeEvents)
+        {
+            return UnloadEvent(value);
+        }
 
         return false;
     }
 
     public bool UnloadEvent(IEvent eEvent)
     {
-        var triggerList = new List<string>();
-        foreach (var (key, value) in Loaders)
+        List<string> triggerList = new List<string>();
+        foreach ((PluginLoader key, IEvent value) in Loaders)
         {
             if (!value.Name.ToLower().Equals(eEvent.Name.ToLower())) continue;
 
             triggerList.AddRange(from keyValuePair in Triggers
                 where keyValuePair.Key.StartsWith($"{eEvent.Name}Job")
                 select keyValuePair.Key);
-            foreach (var s in triggerList)
+            foreach (string s in triggerList)
             {
-                var trigger = Triggers[s];
+                TriggerKey? trigger = Triggers[s];
                 if (trigger == null) continue;
                 _schedulerFactory.GetScheduler().Result.UnscheduleJob(trigger);
                 Triggers.Remove(s);
@@ -130,7 +140,7 @@ public class EventManager : IEventManager
     {
         pluginLoader.Dispose();
         Loaders.Remove(pluginLoader);
-        var check = !Loaders.ContainsKey(pluginLoader);
+        bool check = !Loaders.ContainsKey(pluginLoader);
         return check;
     }
 
@@ -138,13 +148,13 @@ public class EventManager : IEventManager
     {
         if (!Directory.Exists(directory)) return null;
 
-        foreach (var file in Directory.GetFiles(directory))
+        foreach (string file in Directory.GetFiles(directory))
         {
             if (!file.EndsWith(".dll")) continue;
 
-            var replace = file.ToLower().Replace("event.", "").Replace(".dll", "").Replace(directory, "")
+            string replace = file.ToLower().Replace("event.", "").Replace(".dll", "").Replace(directory, "")
                 .Replace("\\", "");
-            var searchName = eventName.Replace("event.", "").Replace(".dll", "");
+            string searchName = eventName.Replace("event.", "").Replace(".dll", "");
 
             if (replace.ToLower().Equals(searchName.ToLower())) return file;
         }
@@ -154,20 +164,23 @@ public class EventManager : IEventManager
 
     public void Dispose()
     {
-        foreach (var (_, value) in Loaders) value.Dispose();
+        foreach ((PluginLoader _, IEvent value) in Loaders)
+        {
+            value.Dispose();
+        }
 
         Loaders = null;
     }
 
     private async void StartScheduler(IEvent eEvent, int index, string crontime)
     {
-        var scheduler = await _schedulerFactory.GetScheduler();
-        var job = JobBuilder.Create<EventJob>()
+        IScheduler scheduler = await _schedulerFactory.GetScheduler();
+        IJobDetail job = JobBuilder.Create<EventJob>()
             .WithIdentity($"{eEvent.Name}Job{index}", "events")
             .Build();
         job.JobDataMap["event"] = eEvent;
 
-        var trigger = TriggerBuilder.Create()
+        ITrigger trigger = TriggerBuilder.Create()
             .WithIdentity($"{eEvent.Name}Trigger", "events")
             .WithCronSchedule(crontime)
             .StartNow()
@@ -187,20 +200,20 @@ public class EventManager : IEventManager
             Directory.CreateDirectory("events");
             return;
         }
-        
-        var pluginFiles = Directory.GetFiles("events").Where(file => file.EndsWith(".dll")).ToList();
 
-        var temp = new List<PluginLoader>();
-        foreach (var file in pluginFiles)
+        List<string> pluginFiles = Directory.GetFiles("events").Where(file => file.EndsWith(".dll")).ToList();
+
+        List<PluginLoader> temp = new List<PluginLoader>();
+        foreach (string file in pluginFiles)
         {
             temp.Add(LoadEvent(file));
             Log.Information("Plugin: {0} loaded.", file.Replace("\\events", ""));
         }
 
         Log.Information("Starting events..");
-        foreach (var pluginLoader in temp)
+        foreach (PluginLoader pluginLoader in temp)
         {
-            var eEvent = StartEvent(pluginLoader);
+            IEvent eEvent = StartEvent(pluginLoader);
             Log.Information("Event: {0} ({1}) by [{2}] started.", eEvent.Name, eEvent.Version, eEvent.Author);
         }
     }

@@ -26,7 +26,10 @@ public abstract class Command : IDisposable
     {
         if (SubCommands == null) throw new DisposedException(nameof(Command));
 
-        foreach (var subCommand in SubCommands) subCommand.Dispose();
+        foreach (Command subCommand in SubCommands)
+        {
+            subCommand.Dispose();
+        }
 
         SubCommands = null;
         Name = null;
@@ -73,8 +76,10 @@ public abstract class Command : IDisposable
     {
         if (SubCommands == null) return new Result<Void>(new DisposedException(nameof(Command)));
 
-        foreach (var subCommand in SubCommands.Where(subCommand => subCommand.GetName()!.ToLower().Equals("help")))
+        foreach (Command subCommand in SubCommands.Where(subCommand => subCommand.GetName()!.ToLower().Equals("help")))
+        {
             subCommand.Execute(null);
+        }
 
         return new Result<Void>();
     }
