@@ -5,6 +5,8 @@ public static class EventFactoryNames
     // Session Stuff
     public const string OnSessionStart = "OnSessionStart"; // ISession
     public const string OnSessionEnd = "OnSessionEnd"; // ISession
+    
+    public const string OnSessionDisconnect = "OnSessionDisconnect"; // CharId -1 equals no char found
 
     public const string OnClientReceivePacket = "OnClientReceivePacket"; // DateTime, FakeServer.Service.ServerType, ISession, Packet
     public const string OnClientTransferPacket = "OnClientTransferPacket"; // DateTime, FakeServer.Service.ServerType, ISession, Packet

@@ -164,6 +164,7 @@ public class FakeSession : TcpSession
             Log.Error("FakeSession Recv | {0}", exception.InnerException);
             Log.Error("FakeSession Recv | {0}", exception.Data);
             Session.Disconnect();
+            EventFactory.Publish(EventFactoryNames.OnSessionDisconnect, charId);
         }
     }
 
