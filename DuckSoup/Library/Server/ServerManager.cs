@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API;
 using API.Database.DuckSoup;
+using API.Plugin;
 using API.Server;
 using API.ServiceFactory;
 using LanguageExt.Common;
@@ -90,9 +91,17 @@ public class ServerManager : IServerManager
 
     public void Start(Service service, bool firstStart)
     {
+        var tempPluginManager = ServiceFactory.Load<IPluginManager>(typeof(IPluginManager));
         foreach (IFakeServer asyncServer in Servers.Where(asyncServer => asyncServer.Service.Equals(service))
                      .Where(asyncServer => firstStart && asyncServer.Service.AutoStart || !firstStart))
         {
+            foreach (var keyValuePair in tempPluginManager.Loaders)
+            {
+                if (keyValuePair.Value.ServerType == service.ServerType)
+                {
+                    keyValuePair.Value.OnServerStart(asyncServer);
+                }
+            }
             asyncServer.Start();
         }
     }

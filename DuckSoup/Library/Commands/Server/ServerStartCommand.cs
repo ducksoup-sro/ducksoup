@@ -37,19 +37,6 @@ public class ServerStartCommand : Command
             return;
         }
 
-        IAsyncServer server = null;
-        // foreach (var asyncServer in _serverManager.Servers.Where(asyncServer => asyncServer.Service.ServiceId == id))
-        // {
-        //     server = asyncServer;
-        // }
-        //
-        // if (server != null)
-        // {
-        //     server.Start();
-        //     Log.Information("Server with the ID {0} started", id);
-        //     return;
-        // }
-
         using API.Database.Context.DuckSoup service = new API.Database.Context.DuckSoup();
         List<Service> services = service.Services.Where(s => s.ServiceId == id).Include(b => b.LocalMachine_Machine)
             .Include(b => b.RemoteMachine_Machine).Include(b => b.SpoofMachine_Machine).ToList();

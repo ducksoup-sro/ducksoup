@@ -1,9 +1,5 @@
 ﻿#region
 
-#endregion
-
-#region
-
 using API.Server;
 
 #endregion
@@ -19,7 +15,7 @@ public interface IPlugin : IDisposable
 
     public void OnEnable();
 
-    public void OnServerStart(IAsyncServer server);
+    public void OnServerStart(IFakeServer server);
 
     public List<Command.Command> RegisterCommands();
 }
