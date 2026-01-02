@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.Database;
 using API.Database.DuckSoup;
 using API.Enums;
+using API.Plugin;
 using API.ServiceFactory;
 using API.Services;
 using API.Webserver;
@@ -18,6 +19,7 @@ public class WebserverManager : IWebserverManager
     private readonly IAuthService _authService;
     private readonly IUserService _userService;
     private Dictionary<string, List<UserRole>> _protectedRoutes;
+    private readonly Dictionary<IPlugin, List<IWebserverPluginRoute>> _registeredPlugins = new Dictionary<IPlugin, List<IWebserverPluginRoute>>();
     private WatsonWebserver.Webserver _server;
 
     public WebserverManager()
@@ -100,6 +102,27 @@ public class WebserverManager : IWebserverManager
         removeParameterRoute(HttpMethod.GET, path);
     }
 
+    public void RegisterPlugin(IPlugin plugin, List<IWebserverPluginRoute> routes)
+    {
+        if (plugin == null || routes == null || routes.Count == 0)
+            return;
+
+        _registeredPlugins[plugin] = routes;
+    }
+
+    public Dictionary<IPlugin, List<IWebserverPluginRoute>> GetRegisteredPlugins()
+    {
+        return new Dictionary<IPlugin, List<IWebserverPluginRoute>>(_registeredPlugins);
+    }
+
+    public void UnregisterPlugin(IPlugin plugin)
+    {
+        if (plugin == null)
+            return;
+
+        _registeredPlugins.Remove(plugin);
+    }
+
     private Task PreRoutingHandler(HttpContextBase ctx)
     {
         if (_protectedRoutes == null)
@@ -167,4 +190,6 @@ public class WebserverManager : IWebserverManager
         ctx.Response.StatusCode = 200;
         await ctx.Response.Send("It works!");
     }
+    
+    
 }

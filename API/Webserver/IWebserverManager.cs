@@ -1,4 +1,5 @@
 ﻿using API.Enums;
+using API.Plugin;
 using WatsonWebserver.Core;
 using HttpMethod = WatsonWebserver.Core.HttpMethod;
 
@@ -29,4 +30,8 @@ public interface IWebserverManager
     void removeParameterRoute(HttpMethod method, string path);
 
     void removeParameterRoute(string path);
+    
+    void RegisterPlugin(IPlugin plugin, List<IWebserverPluginRoute> routes);
+    Dictionary<IPlugin, List<IWebserverPluginRoute>> GetRegisteredPlugins();
+    void UnregisterPlugin(IPlugin plugin);
 }

@@ -21,8 +21,8 @@ public class SERVER_CHARACTER_SELECTION_ACTION_RESPONSE : Packet
 
     public override async Task Read()
     {
-        TryRead(out Action);
-        TryRead(out Result);
+        TryRead<CharacterSelectionAction>(out Action);
+        TryRead<byte>(out Result);
         switch (Result)
         {
             case 0x01 when Action == CharacterSelectionAction.List:
@@ -36,7 +36,7 @@ public class SERVER_CHARACTER_SELECTION_ACTION_RESPONSE : Packet
                 break;
             }
             case 0x02:
-                TryRead(out ErrorCode);
+                TryRead<CharacterSelectionErrorCode>(out ErrorCode);
                 break;
         }
     }
@@ -44,13 +44,13 @@ public class SERVER_CHARACTER_SELECTION_ACTION_RESPONSE : Packet
     public override async Task<Packet> Build()
     {
         Reset();
-        TryWrite(Action);
-        TryWrite(Result);
+        TryWrite<byte>((byte)Action);
+        TryWrite<byte>(Result);
         switch (Result)
         {
             case 0x01 when Action == CharacterSelectionAction.List:
             {
-                TryWrite(Characters.Count);
+                TryWrite<byte>((byte)Characters.Count);
                 foreach (SelectionCharacter selectionCharacter in Characters)
                 {
                     await selectionCharacter.Build(this);
@@ -58,7 +58,7 @@ public class SERVER_CHARACTER_SELECTION_ACTION_RESPONSE : Packet
                 break;
             }
             case 0x02:
-                TryWrite(ErrorCode);
+                TryWrite<ushort>((ushort)ErrorCode);
                 break;
         }
 
