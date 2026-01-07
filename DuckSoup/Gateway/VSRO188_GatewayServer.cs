@@ -7,6 +7,7 @@ using API.Server;
 using API.ServiceFactory;
 using DuckSoup.Library.Server;
 using PacketLibrary.Handler;
+using PacketLibrary.VSRO188.Gateway.Enums;
 using PacketLibrary.VSRO188.Gateway.Server;
 using Serilog;
 using SilkroadSecurityAPI.Message;
@@ -92,15 +93,18 @@ public class VSRO188_GatewayServer : FakeServer
     {
         if (data.Result == 0x01) return data;
 
-        foreach (IFakeServer download in _serverManager.Servers.Where(download =>
-                     download.Service.RemotePort == data.DownloadServer.Port &&
-                     download.Service.RemoteMachine_Machine.Address == data.DownloadServer.Host))
+        if (data.ErrorCode == PatchErrorCode.Update)
         {
-            data.DownloadServer.Host = download.Service.LocalMachine_Machine.Address;
-            data.DownloadServer.Port = (ushort)download.Service.BindPort;
+            foreach (IFakeServer download in _serverManager.Servers.Where(download =>
+                        download.Service.RemotePort == data.DownloadServer.Port &&
+                        download.Service.RemoteMachine_Machine.Address == data.DownloadServer.Host))
+            {
+                data.DownloadServer.Host = download.Service.LocalMachine_Machine.Address;
+                data.DownloadServer.Port = (ushort)download.Service.BindPort;
 
-            if (download.Service.SpoofMachine_Machine != null && download.Service.SpoofMachine_Machine.Address != "")
-                data.DownloadServer.Host = download.Service.SpoofMachine_Machine.Address;
+                if (download.Service.SpoofMachine_Machine != null && download.Service.SpoofMachine_Machine.Address != "")
+                    data.DownloadServer.Host = download.Service.SpoofMachine_Machine.Address;
+            }
         }
 
         return data;
