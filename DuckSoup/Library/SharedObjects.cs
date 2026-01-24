@@ -11,13 +11,11 @@ namespace DuckSoup.Library;
 public class SharedObjects : ISharedObjects
 {
     public static LogEventLevel DebugLevel;
-    public static string ServerName;
 
     public SharedObjects()
     {
         ServiceFactory.Register<ISharedObjects>(typeof(ISharedObjects), this);
 
-        ServerName = DatabaseHelper.GetSettingOrDefault("Name", "Filter");
         DebugLevel =
             (LogEventLevel)int.Parse(
                 DatabaseHelper.GetSettingOrDefault("DebugLevel", ((byte)LogEventLevel.Information).ToString()));
