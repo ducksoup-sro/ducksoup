@@ -40,6 +40,7 @@ public class WebserverManager : IWebserverManager
             Hostname = hostname,
             Port = port
         }, DefaultRoute);
+        _server.Routes.Preflight = PreflightRoute;
         _server.Routes.PreRouting = PreRoutingHandler;
         _server?.Start();
         Log.Information("Webserver on http://{0}:{1} started", hostname, port);
@@ -125,6 +126,16 @@ public class WebserverManager : IWebserverManager
 
     private Task PreRoutingHandler(HttpContextBase ctx)
     {
+        
+        ApplyCors(ctx);
+
+        if (ctx.Request.Method == HttpMethod.OPTIONS)
+        {
+            ctx.Response.StatusCode = 204;
+            return ctx.Response.Send();
+        }
+
+        
         if (_protectedRoutes == null)
             // block access because we cannot verify if the route is legit or not
             return Task.FromResult(true);
@@ -191,5 +202,33 @@ public class WebserverManager : IWebserverManager
         await ctx.Response.Send("It works!");
     }
     
+    private static readonly HashSet<string> AllowedOrigins = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "http://localhost:3000"
+    };
+    
+    private static void ApplyCors(HttpContextBase ctx)
+    {
+        string origin = ctx.Request.Headers.AllKeys.Contains("Origin")
+            ? ctx.Request.Headers["Origin"]
+            : null;
+
+        if (origin != null && AllowedOrigins.Contains(origin))
+        {
+            ctx.Response.Headers["Access-Control-Allow-Origin"] = origin;
+            ctx.Response.Headers["Access-Control-Allow-Credentials"] = "true";
+            ctx.Response.Headers["Vary"] = "Origin";
+        }
+
+        ctx.Response.Headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS";
+        ctx.Response.Headers["Access-Control-Allow-Headers"] = "Authorization,Content-Type";
+    }
+
+    private Task PreflightRoute(HttpContextBase ctx)
+    {
+        ApplyCors(ctx);
+        ctx.Response.StatusCode = 204;
+        return ctx.Response.Send();
+    }
     
 }

@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.Database.DuckSoup;
 using API.Enums;
@@ -26,6 +27,7 @@ public class AuthRoutes
         webserverManager.addStaticRoute(HttpMethod.GET, "/api/v1/auth/invalidate", InvalidateRoute);
         webserverManager.addStaticRoute(HttpMethod.GET, "/api/v1/auth/refresh", RefreshRoute);
         webserverManager.addStaticRoute(HttpMethod.GET, "/api/v1/auth/me", UserInfoRoute);
+        webserverManager.addStaticRoute(HttpMethod.GET, "/api/v1/plugins/routes", PluginRoutesRoute);
 
         webserverManager.addProtectedPrefix("/api/v1/auth/login", new[]
         {
@@ -44,6 +46,10 @@ public class AuthRoutes
             UserRole.Anyone
         });
         webserverManager.addProtectedPrefix("/api/v1/auth/me", new[]
+        {
+            UserRole.Authenticated
+        });
+        webserverManager.addProtectedPrefix("/api/v1/plugins/routes", new[]
         {
             UserRole.Authenticated
         });
@@ -208,6 +214,61 @@ public class AuthRoutes
         ctx.Response.Headers["Set-Cookie"] = $"refresh_token={refreshToken}; HttpOnly";
         ctx.Response.StatusCode = 200;
         await ctx.Response.Send("{ \"access_token\": \"" + accessToken + "\"}");
+    }
+
+    private async Task PluginRoutesRoute(HttpContextBase ctx)
+    {
+        ctx.Response.ContentType = "application/json";
+
+        if (ctx.Metadata is not User user)
+        {
+            ctx.Response.StatusCode = 401;
+            await ctx.Response.Send();
+            return;
+        }
+
+        var webserverManager = ServiceFactory.Load<IWebserverManager>(typeof(IWebserverManager));
+        if (webserverManager == null)
+        {
+            ctx.Response.StatusCode = 500;
+            await ctx.Response.Send();
+            return;
+        }
+
+        var allPluginRoutes = webserverManager.GetRegisteredPlugins();
+        var accessibleRoutes = new List<IWebserverPluginRoute>();
+
+        foreach (var pluginRoutes in allPluginRoutes.Values)
+        {
+            foreach (var route in pluginRoutes)
+            {
+                if (!route.ShowInMenu) continue;
+
+                // Check if user has required role
+                bool hasAccess = false;
+                if (route.RequiredRole == UserRole.Anyone || route.RequiredRole == UserRole.Anonymous)
+                {
+                    hasAccess = true;
+                }
+                else if (route.RequiredRole == UserRole.Authenticated)
+                {
+                    hasAccess = user != null;
+                }
+                else
+                {
+                    // Check if user role matches or is higher
+                    hasAccess = user.Role >= route.RequiredRole;
+                }
+
+                if (hasAccess)
+                {
+                    accessibleRoutes.Add(route);
+                }
+            }
+        }
+
+        ctx.Response.StatusCode = 200;
+        await ctx.Response.Send(JsonSerializer.Serialize(accessibleRoutes));
     }
 }
 
