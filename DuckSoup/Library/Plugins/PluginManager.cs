@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using API.Command;
 using API.Plugin;
 using API.ServiceFactory;
@@ -15,6 +16,8 @@ namespace DuckSoup.Library.Plugins;
 
 public class PluginManager : IPluginManager
 {
+    private readonly Dictionary<string, string> _folderByPluginName = new(StringComparer.OrdinalIgnoreCase);
+
     public PluginManager()
     {
         ServiceFactory.Register<IPluginManager>(typeof(IPluginManager), this);
@@ -43,6 +46,11 @@ public class PluginManager : IPluginManager
 
     public IPlugin StartPlugin(PluginLoader pluginLoader)
     {
+        return StartPlugin(pluginLoader, null);
+    }
+
+    public IPlugin StartPlugin(PluginLoader pluginLoader, string? folderName)
+    {
         ICommandManager commandManager = ServiceFactory.Load<ICommandManager>(typeof(ICommandManager));
 
         IPlugin plugin = null;
@@ -58,6 +66,8 @@ public class PluginManager : IPluginManager
             tempPlugin.AddCommands(plugin.RegisterCommands());
             commandManager._commands.Add(tempPlugin);
             Loaders.Add(pluginLoader, plugin);
+            if (!string.IsNullOrEmpty(folderName))
+                _folderByPluginName[plugin.Name] = folderName;
         }
 
         return plugin;
@@ -77,6 +87,7 @@ public class PluginManager : IPluginManager
 
         foreach ((PluginLoader _, IPlugin value) in removePlugins)
         {
+            _folderByPluginName.Remove(value.Name);
             removeCommands.AddRange(commandManager._commands.Where(commandManagerCommand =>
                 commandManagerCommand.GetName().Equals(value.Name)));
             foreach (Command removeCommand in removeCommands)
@@ -95,6 +106,7 @@ public class PluginManager : IPluginManager
         {
             if (!value.Name.ToLower().Equals(plugin.Name.ToLower())) continue;
 
+            _folderByPluginName.Remove(value.Name);
             plugin.Dispose();
             key.Dispose();
             return UnloadPlugin(key);
@@ -129,6 +141,43 @@ public class PluginManager : IPluginManager
         }
 
         return null;
+    }
+
+    public IReadOnlyList<LoadedPluginInfo> GetLoadedPluginInfos()
+    {
+        var list = new List<LoadedPluginInfo>();
+        var pluginsDir = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "plugins"));
+        foreach (var (loader, plugin) in Loaders)
+        {
+            var folder = _folderByPluginName.TryGetValue(plugin.Name, out var stored) ? stored : GetFolderNameFromLoader(loader, pluginsDir);
+            list.Add(new LoadedPluginInfo
+            {
+                Name = plugin.Name,
+                Version = plugin.Version,
+                Author = plugin.Author,
+                Folder = folder
+            });
+        }
+        return list;
+    }
+
+    private static string? GetFolderNameFromLoader(PluginLoader loader, string pluginsDir)
+    {
+        try
+        {
+            var asm = loader.LoadDefaultAssembly();
+            var loc = asm?.Location;
+            if (string.IsNullOrEmpty(loc)) return null;
+            var fullPath = Path.GetFullPath(loc);
+            if (!fullPath.StartsWith(pluginsDir, StringComparison.OrdinalIgnoreCase)) return null;
+            var relative = fullPath.Substring(pluginsDir.Length).TrimStart(Path.DirectorySeparatorChar, '/', '\\');
+            var segment = relative.Split(Path.DirectorySeparatorChar, '/', '\\');
+            return segment.Length > 0 ? segment[0] : null;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     public void Dispose()
@@ -186,19 +235,20 @@ public class PluginManager : IPluginManager
         }
 
         string[] pluginFolders = Directory.GetDirectories("plugins");
-        List<PluginLoader> temp = new List<PluginLoader>();
+        var temp = new List<(PluginLoader Loader, string FolderName)>();
         foreach (string folder in pluginFolders)
         {
-            PluginLoader? tempPlugin = LoadPlugin(folder, true);
-            if (tempPlugin == null) continue;
-            temp.Add(tempPlugin);
-            Log.Information("Plugin from folder: {0} loaded.", folder.Replace(Path.DirectorySeparatorChar + "plugins", ""));
+            PluginLoader? loader = LoadPlugin(folder, true);
+            if (loader == null) continue;
+            var folderName = Path.GetFileName(folder);
+            temp.Add((loader, folderName ?? ""));
+            Log.Information("Plugin from folder: {0} loaded.", folderName ?? folder);
         }
 
         Log.Information("Starting plugins..");
-        foreach (PluginLoader pluginLoader in temp)
+        foreach (var (loader, folderName) in temp)
         {
-            IPlugin plugin = StartPlugin(pluginLoader);
+            IPlugin plugin = StartPlugin(loader, folderName);
             Log.Information("Plugin: {0} ({1}) by [{2}] started.", plugin.Name, plugin.Version, plugin.Author);
         }
     }
