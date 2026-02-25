@@ -1,4 +1,4 @@
-﻿using API.Database.DuckSoup;
+using API.Database.DuckSoup;
 using Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +15,8 @@ public partial class DuckSoup : DuckContext
     public virtual DbSet<Service> Services { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+
+    public virtual DbSet<CorsOrigin> CorsOrigins { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -73,6 +75,14 @@ public partial class DuckSoup : DuckContext
             entity.HasKey(e => e.userId).HasName("PK_dbo.User");
 
             entity.ToTable("User");
+        });
+
+        modelBuilder.Entity<CorsOrigin>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_dbo.CorsOrigin");
+            entity.ToTable("CorsOrigin");
+            entity.Property(e => e.Origin).IsRequired().HasMaxLength(512);
+            entity.HasIndex(e => e.Origin).IsUnique();
         });
 
         OnModelCreatingPartial(modelBuilder);

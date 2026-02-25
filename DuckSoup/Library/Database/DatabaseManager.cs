@@ -1,4 +1,6 @@
-﻿using System;
+using System;
+using System.Linq;
+using API.Database.DuckSoup;
 using API.ServiceFactory;
 using API.Settings;
 using Database;
@@ -30,6 +32,14 @@ public class DatabaseManager
             using API.Database.Context.DuckSoup context = new API.Database.Context.DuckSoup();
             context.Database.Migrate();
 
+            if (!context.CorsOrigins.Any())
+            {
+                foreach (var origin in new[] { "http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:5173", "http://127.0.0.1:5173", "http://localhost", "http://127.0.0.1" })
+                    context.CorsOrigins.Add(new CorsOrigin { Origin = origin });
+                context.SaveChanges();
+                Log.Information("Seeded default CORS origins");
+            }
+                
             // Cache.FillCache();
         }
         catch (Exception ex)

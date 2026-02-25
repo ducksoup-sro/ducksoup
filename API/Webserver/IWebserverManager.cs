@@ -1,4 +1,4 @@
-﻿using API.Enums;
+using API.Enums;
 using API.Plugin;
 using WatsonWebserver.Core;
 using HttpMethod = WatsonWebserver.Core.HttpMethod;
@@ -34,4 +34,16 @@ public interface IWebserverManager
     void RegisterPlugin(IPlugin plugin, List<IWebserverPluginRoute> routes);
     Dictionary<IPlugin, List<IWebserverPluginRoute>> GetRegisteredPlugins();
     void UnregisterPlugin(IPlugin plugin);
+
+    /// <summary>Add an origin to the CORS allow list (e.g. for plugin-provided or external frontends).</summary>
+    void AddAllowedOrigin(string origin);
+
+    /// <summary>Remove an origin from the plugin-managed CORS list (default origins cannot be removed).</summary>
+    void RemoveAllowedOrigin(string origin);
+
+    /// <summary>Returns all allowed CORS origins (default + plugin-added).</summary>
+    IReadOnlyList<string> GetAllowedOrigins();
+
+    /// <summary>Returns only the origins that were added via AddAllowedOrigin (plugin/custom). These can be removed.</summary>
+    IReadOnlyList<string> GetPluginAllowedOrigins();
 }

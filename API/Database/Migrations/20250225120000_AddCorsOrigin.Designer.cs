@@ -4,6 +4,7 @@ using API.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Database.Migrations
 {
     [DbContext(typeof(Context.DuckSoup))]
-    partial class DuckSoupModelSnapshot : ModelSnapshot
+    [Migration("20250225120000_AddCorsOrigin")]
+    partial class AddCorsOrigin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,29 @@ namespace API.Database.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("API.Database.DuckSoup.CorsOrigin", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Origin")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.HasKey("Id")
+                        .HasName("PK_dbo.CorsOrigin");
+
+                    b.HasIndex("Origin")
+                        .IsUnique()
+                        .HasDatabaseName("IX_CorsOrigin_Origin");
+
+                    b.ToTable("CorsOrigin", (string)null);
+                });
 
             modelBuilder.Entity("API.Database.DuckSoup.Event", b =>
                 {
@@ -205,29 +231,6 @@ namespace API.Database.Migrations
                     b.Navigation("ServiceRemoteMachine_Machines");
 
                     b.Navigation("ServiceSpoofMachine_Machines");
-                });
-
-            modelBuilder.Entity("API.Database.DuckSoup.CorsOrigin", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Origin")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
-
-                    b.HasKey("Id")
-                        .HasName("PK_dbo.CorsOrigin");
-
-                    b.HasIndex("Origin")
-                        .IsUnique()
-                        .HasDatabaseName("IX_CorsOrigin_Origin");
-
-                    b.ToTable("CorsOrigin", (string)null);
                 });
 #pragma warning restore 612, 618
         }

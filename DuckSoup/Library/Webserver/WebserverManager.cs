@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,7 +44,7 @@ public class WebserverManager : IWebserverManager
         _server.Routes.PreRouting = PreRoutingHandler;
         _server?.Start();
         Log.Information("Webserver on http://{0}:{1} started", hostname, port);
-        AuthRoutes authRoutes = new AuthRoutes(this);
+        new AuthRoutes(this);
     }
 
     public void Stop()
@@ -55,12 +55,14 @@ public class WebserverManager : IWebserverManager
 
     public void addProtectedPrefix(string path, List<UserRole> roles)
     {
-        _protectedRoutes?.Add(path, roles);
+        if (_protectedRoutes == null) return;
+        _protectedRoutes[path] = roles;
     }
 
     public void addProtectedPrefix(string path, UserRole[] roles)
     {
-        _protectedRoutes?.Add(path, roles.ToList());
+        if (_protectedRoutes == null) return;
+        _protectedRoutes[path] = roles.ToList();
     }
 
     public void addStaticRoute(HttpMethod method, string path, Func<HttpContextBase, Task> handler)
@@ -122,6 +124,40 @@ public class WebserverManager : IWebserverManager
             return;
 
         _registeredPlugins.Remove(plugin);
+    }
+
+    public void AddAllowedOrigin(string origin)
+    {
+        if (string.IsNullOrWhiteSpace(origin)) return;
+        lock (PluginAllowedOriginsLock)
+        {
+            PluginAllowedOrigins.Add(origin.Trim());
+        }
+    }
+
+    public void RemoveAllowedOrigin(string origin)
+    {
+        if (string.IsNullOrWhiteSpace(origin)) return;
+        lock (PluginAllowedOriginsLock)
+        {
+            PluginAllowedOrigins.Remove(origin.Trim());
+        }
+    }
+
+    public IReadOnlyList<string> GetAllowedOrigins()
+    {
+        lock (PluginAllowedOriginsLock)
+        {
+            return DefaultAllowedOrigins.Concat(PluginAllowedOrigins).ToList();
+        }
+    }
+
+    public IReadOnlyList<string> GetPluginAllowedOrigins()
+    {
+        lock (PluginAllowedOriginsLock)
+        {
+            return PluginAllowedOrigins.ToList();
+        }
     }
 
     private Task PreRoutingHandler(HttpContextBase ctx)
@@ -202,25 +238,35 @@ public class WebserverManager : IWebserverManager
         await ctx.Response.Send("It works!");
     }
     
-    private static readonly HashSet<string> AllowedOrigins = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly HashSet<string> DefaultAllowedOrigins = new(StringComparer.OrdinalIgnoreCase)
     {
         "http://localhost:3000"
     };
-    
+
+    private static readonly object PluginAllowedOriginsLock = new();
+    private static readonly HashSet<string> PluginAllowedOrigins = new(StringComparer.OrdinalIgnoreCase);
+
     private static void ApplyCors(HttpContextBase ctx)
     {
         string origin = ctx.Request.Headers.AllKeys.Contains("Origin")
             ? ctx.Request.Headers["Origin"]
             : null;
 
-        if (origin != null && AllowedOrigins.Contains(origin))
+        bool allowed = false;
+        if (origin != null)
+        {
+            if (DefaultAllowedOrigins.Contains(origin)) allowed = true;
+            else lock (PluginAllowedOriginsLock) { allowed = PluginAllowedOrigins.Contains(origin); }
+        }
+
+        if (origin != null && allowed)
         {
             ctx.Response.Headers["Access-Control-Allow-Origin"] = origin;
             ctx.Response.Headers["Access-Control-Allow-Credentials"] = "true";
             ctx.Response.Headers["Vary"] = "Origin";
         }
 
-        ctx.Response.Headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS";
+        ctx.Response.Headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,PATCH,DELETE,OPTIONS";
         ctx.Response.Headers["Access-Control-Allow-Headers"] = "Authorization,Content-Type";
     }
 
