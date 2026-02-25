@@ -1,4 +1,4 @@
-﻿namespace API.Event;
+namespace API.Event;
 
 public abstract class IEvent : IDisposable
 {
@@ -8,6 +8,18 @@ public abstract class IEvent : IDisposable
 
     protected IEventState[]? EventStates { get; set; }
     protected IEventState? CurrentEventState { get; set; }
+
+    /// <summary>Returns the current state enum by matching CurrentEventState to the EventStates array.</summary>
+    public EventStateEnum? GetCurrentState()
+    {
+        if (CurrentEventState == null || EventStates == null) return null;
+        for (var i = 0; i < EventStates.Length; i++)
+        {
+            if (EventStates[i] == CurrentEventState)
+                return (EventStateEnum)i;
+        }
+        return null;
+    }
 
     public abstract void Dispose();
 
