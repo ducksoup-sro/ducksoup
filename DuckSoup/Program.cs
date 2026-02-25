@@ -1,4 +1,4 @@
-﻿#region
+#region
 
 using System;
 using System.Diagnostics;
@@ -16,8 +16,11 @@ using DuckSoup.Library.Party;
 using DuckSoup.Library.Plugins;
 using DuckSoup.Library.Server;
 using DuckSoup.Library.Services;
+using DuckSoup.Library.Logging;
 using DuckSoup.Library.Settings;
 using DuckSoup.Library.Webserver;
+using API.Logging;
+using API.Services;
 using Serilog;
 using Serilog.Events;
 
@@ -33,11 +36,15 @@ public static class Program
 
         Helper.LoggingLevelSwitch.MinimumLevel = LogEventLevel.Debug;
 
+        var logCapture = new LogCapture(2000);
+        ServiceFactory.Register<ILogCapture>(typeof(ILogCapture), logCapture);
+
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.ControlledBy(Helper.LoggingLevelSwitch)
             .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}")
             .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day,
                 outputTemplate: "{Timestamp:HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}")
+            .WriteTo.Sink(new LogCaptureSink(logCapture))
             .CreateLogger();
 
         Log.Debug("Testing: Debug");

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using API.Command;
@@ -45,6 +45,8 @@ public class CommandManager : ICommandManager
             if (_commands == null) return new Result<Void>(new DisposedException(nameof(CommandManager)));
 
             string? consoleInput = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(consoleInput))
+                Log.ForContext("Source", "Console").Information("Console: {Input}", consoleInput);
             ExecuteCommand(consoleInput);
         }
 
