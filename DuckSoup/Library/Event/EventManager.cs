@@ -260,6 +260,22 @@ public class EventManager : IEventManager
 
     private async void StartScheduler(IEvent eEvent, int index, string crontime)
     {
+        if (string.IsNullOrWhiteSpace(crontime))
+        {
+            Log.Warning("Event {0} cron index {1}: empty expression, skipping.", eEvent.Name, index);
+            return;
+        }
+
+        try
+        {
+            CronExpression.ValidateExpression(crontime);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Event {0} cron index {1}: invalid expression \"{2}\", skipping.", eEvent.Name, index, crontime);
+            return;
+        }
+
         IScheduler scheduler = await _schedulerFactory.GetScheduler();
         IJobDetail job = JobBuilder.Create<EventJob>()
             .WithIdentity($"{eEvent.Name}Job{index}", "events")
