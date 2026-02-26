@@ -1,4 +1,4 @@
-﻿using McMaster.NETCore.Plugins;
+using McMaster.NETCore.Plugins;
 
 namespace API.Event;
 
@@ -19,4 +19,7 @@ public interface IEventManager : IDisposable
     bool UnloadEvent(PluginLoader pluginLoader);
 
     string? SearchEvent(string directory, string eventName);
+
+    /// <summary>Unloads the event by name and loads it again (e.g. after adding/removing cron entries).</summary>
+    bool ReloadEvent(string name);
 }

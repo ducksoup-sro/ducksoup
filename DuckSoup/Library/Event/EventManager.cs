@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -162,6 +162,18 @@ public class EventManager : IEventManager
         return null;
     }
 
+    public bool ReloadEvent(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return false;
+        UnloadEvent(name);
+        var eventsDir = "events";
+        var file = SearchEvent(eventsDir, name);
+        if (string.IsNullOrEmpty(file)) return false;
+        var loader = LoadEvent(file);
+        StartEvent(loader);
+        return true;
+    }
+
     public void Dispose()
     {
         foreach ((PluginLoader _, IEvent value) in Loaders)
@@ -181,7 +193,7 @@ public class EventManager : IEventManager
         job.JobDataMap["event"] = eEvent;
 
         ITrigger trigger = TriggerBuilder.Create()
-            .WithIdentity($"{eEvent.Name}Trigger", "events")
+            .WithIdentity($"{eEvent.Name}Trigger{index}", "events")
             .WithCronSchedule(crontime)
             .StartNow()
             .Build();
