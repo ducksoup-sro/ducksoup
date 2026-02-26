@@ -5,6 +5,7 @@ using System.Linq;
 using API.Event;
 using API.ServiceFactory;
 using McMaster.NETCore.Plugins;
+using Newtonsoft.Json;
 using Quartz;
 using Quartz.Impl;
 using Serilog;
@@ -13,7 +14,10 @@ namespace DuckSoup.Library.Event;
 
 public class EventManager : IEventManager
 {
+    private const string EventConfigFileName = "event.json";
+    private const string EventsDirectory = "events";
     private readonly StdSchedulerFactory _schedulerFactory;
+    private readonly Dictionary<string, string> _folderByEventName = new(StringComparer.OrdinalIgnoreCase);
 
     public EventManager()
     {
@@ -43,9 +47,46 @@ public class EventManager : IEventManager
         return false;
     }
 
-    public PluginLoader LoadEvent(string file)
+    public PluginLoader? LoadEvent(string path)
     {
-        return PluginLoader.CreateFromAssemblyFile(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + file,
+        if (string.IsNullOrWhiteSpace(path)) return null;
+        var fullPath = Path.IsPathRooted(path) ? path : Path.Combine(Directory.GetCurrentDirectory(), path);
+        if (Directory.Exists(fullPath))
+            return LoadEventFromFolder(fullPath);
+        return PluginLoader.CreateFromAssemblyFile(fullPath,
+            config =>
+            {
+                config.IsUnloadable = true;
+                config.LoadInMemory = true;
+                config.PreferSharedTypes = true;
+            });
+    }
+
+    private PluginLoader? LoadEventFromFolder(string folderPath)
+    {
+        var configFile = Path.Combine(folderPath, EventConfigFileName);
+        if (!File.Exists(configFile))
+        {
+            Log.Warning("No {0} found in: {1}", EventConfigFileName, folderPath);
+            return null;
+        }
+
+        var configJson = File.ReadAllText(configFile);
+        var config = JsonConvert.DeserializeObject<EventConfig>(configJson);
+        if (config == null || string.IsNullOrWhiteSpace(config.MainLibrary))
+        {
+            Log.Warning("{0} was faulty in: {1}", EventConfigFileName, folderPath);
+            return null;
+        }
+
+        var absoluteDllPath = Path.Combine(folderPath, config.MainLibrary);
+        if (!File.Exists(absoluteDllPath))
+        {
+            Log.Warning("Event DLL not found: {0}", absoluteDllPath);
+            return null;
+        }
+
+        return PluginLoader.CreateFromAssemblyFile(absoluteDllPath,
             config =>
             {
                 config.IsUnloadable = true;
@@ -56,6 +97,11 @@ public class EventManager : IEventManager
 
     public IEvent StartEvent(PluginLoader pluginLoader)
     {
+        return StartEvent(pluginLoader, null);
+    }
+
+    public IEvent StartEvent(PluginLoader pluginLoader, string? folderName)
+    {
         using API.Database.Context.DuckSoup context = new API.Database.Context.DuckSoup();
         List<API.Database.DuckSoup.Event> eventTable = context.Events.ToList();
 
@@ -65,7 +111,6 @@ public class EventManager : IEventManager
                      .GetTypes()
                      .Where(t => typeof(IEvent).IsAssignableFrom(t) && !t.IsAbstract))
         {
-            // This assumes the implementation of IPlugin has a parameterless constructor
             eEvent = (IEvent)Activator.CreateInstance(pluginType)!;
             eEvent.OnEnable();
             List<API.Database.DuckSoup.Event> tableList = eventTable.Where(s => s.Eventname.Equals(eEvent.Name)).ToList();
@@ -86,10 +131,32 @@ public class EventManager : IEventManager
                 }
             }
 
+            if (!string.IsNullOrEmpty(folderName))
+                _folderByEventName[eEvent.Name] = folderName;
+
             Loaders.Add(pluginLoader, eEvent);
         }
 
         return eEvent;
+    }
+
+    /// <summary>Returns folder names (subdirs of events/ with event.json) that are not currently loaded. Event name comes from IEvent.Name when loaded.</summary>
+    public IReadOnlyList<string> GetAvailableEventFolderNames()
+    {
+        var loadedFolderNames = new HashSet<string>(_folderByEventName.Values, StringComparer.OrdinalIgnoreCase);
+        var eventsPath = Path.Combine(Directory.GetCurrentDirectory(), EventsDirectory);
+        if (!Directory.Exists(eventsPath)) return Array.Empty<string>();
+        var list = new List<string>();
+        foreach (var dir in Directory.GetDirectories(eventsPath))
+        {
+            var configFile = Path.Combine(dir, EventConfigFileName);
+            if (!File.Exists(configFile)) continue;
+            var folderName = Path.GetFileName(dir);
+            if (string.IsNullOrEmpty(folderName)) continue;
+            if (loadedFolderNames.Contains(folderName)) continue;
+            list.Add(folderName);
+        }
+        return list;
     }
 
     public bool UnloadEvent(string name)
@@ -104,6 +171,7 @@ public class EventManager : IEventManager
 
         foreach ((PluginLoader _, IEvent value) in removeEvents)
         {
+            _folderByEventName.Remove(value.Name);
             return UnloadEvent(value);
         }
 
@@ -128,6 +196,7 @@ public class EventManager : IEventManager
                 Triggers.Remove(s);
             }
 
+            _folderByEventName.Remove(value.Name);
             eEvent.Dispose();
             key.Dispose();
             return UnloadEvent(key);
@@ -144,19 +213,22 @@ public class EventManager : IEventManager
         return check;
     }
 
-    public string SearchEvent(string directory, string eventName)
+    /// <summary>Searches for an event by name: finds subfolder with event.json whose folder name matches (convention: folder name = IEvent.Name). Returns folder path or null.</summary>
+    public string? SearchEvent(string directory, string eventName)
     {
-        if (!Directory.Exists(directory)) return null;
+        if (string.IsNullOrWhiteSpace(directory) || string.IsNullOrWhiteSpace(eventName)) return null;
+        var eventsPath = Path.IsPathRooted(directory) ? directory : Path.Combine(Directory.GetCurrentDirectory(), directory);
+        if (!Directory.Exists(eventsPath)) return null;
 
-        foreach (string file in Directory.GetFiles(directory))
+        var searchName = eventName.Trim();
+        foreach (var dir in Directory.GetDirectories(eventsPath))
         {
-            if (!file.EndsWith(".dll")) continue;
-
-            string replace = file.ToLower().Replace("event.", "").Replace(".dll", "").Replace(directory, "")
-                .Replace("\\", "");
-            string searchName = eventName.Replace("event.", "").Replace(".dll", "");
-
-            if (replace.ToLower().Equals(searchName.ToLower())) return file;
+            var configFile = Path.Combine(dir, EventConfigFileName);
+            if (!File.Exists(configFile)) continue;
+            var folderName = Path.GetFileName(dir);
+            if (string.IsNullOrEmpty(folderName)) continue;
+            if (!folderName.Equals(searchName, StringComparison.OrdinalIgnoreCase)) continue;
+            return dir;
         }
 
         return null;
@@ -165,12 +237,14 @@ public class EventManager : IEventManager
     public bool ReloadEvent(string name)
     {
         if (string.IsNullOrWhiteSpace(name)) return false;
+        var eventsPath = Path.Combine(Directory.GetCurrentDirectory(), EventsDirectory);
+        var folderPath = SearchEvent(eventsPath, name);
+        if (string.IsNullOrEmpty(folderPath)) return false;
         UnloadEvent(name);
-        var eventsDir = "events";
-        var file = SearchEvent(eventsDir, name);
-        if (string.IsNullOrEmpty(file)) return false;
-        var loader = LoadEvent(file);
-        StartEvent(loader);
+        var loader = LoadEventFromFolder(folderPath);
+        if (loader == null) return false;
+        var folderName = Path.GetFileName(folderPath);
+        StartEvent(loader, folderName);
         return true;
     }
 
@@ -206,30 +280,42 @@ public class EventManager : IEventManager
     private void Setup()
     {
         Log.Information("Loading events..");
-        if (!Directory.Exists("events"))
+        var eventsPath = Path.Combine(Directory.GetCurrentDirectory(), EventsDirectory);
+        if (!Directory.Exists(eventsPath))
         {
-            Log.Information("No eventfolder found. Creating one..");
-            Directory.CreateDirectory("events");
+            Log.Information("No event folder found. Creating one..");
+            Directory.CreateDirectory(eventsPath);
             return;
         }
 
-        List<string> pluginFiles = Directory.GetFiles("events").Where(file => file.EndsWith(".dll")).ToList();
-
-        List<PluginLoader> temp = new List<PluginLoader>();
-        foreach (string file in pluginFiles)
+        var temp = new List<(PluginLoader? Loader, string FolderName)>();
+        foreach (var dir in Directory.GetDirectories(eventsPath))
         {
-            temp.Add(LoadEvent(file));
-            Log.Information("Plugin: {0} loaded.", file.Replace("\\events", ""));
+            var configFile = Path.Combine(dir, EventConfigFileName);
+            if (!File.Exists(configFile)) continue;
+            var configJson = File.ReadAllText(configFile);
+            var config = JsonConvert.DeserializeObject<EventConfig>(configJson);
+            if (config == null || !config.AutoStart)
+            {
+                Log.Information("Event folder {0} has AutoStart=false or invalid event.json, skipping.", Path.GetFileName(dir));
+                continue;
+            }
+            var loader = LoadEventFromFolder(dir);
+            if (loader == null) continue;
+            var folderName = Path.GetFileName(dir) ?? "";
+            temp.Add((loader, folderName));
+            Log.Information("Event from folder: {0} loaded.", folderName);
         }
 
         Log.Information("Starting events..");
-        foreach (PluginLoader pluginLoader in temp)
+        foreach (var (loader, folderName) in temp)
         {
-            IEvent eEvent = StartEvent(pluginLoader);
+            if (loader == null) continue;
+            var eEvent = StartEvent(loader, folderName);
             if (eEvent == null)
             {
                 Log.Warning("Event DLL did not contain an IEvent implementation. Skipping.");
-                pluginLoader.Dispose();
+                loader.Dispose();
                 continue;
             }
             Log.Information("Event: {0} ({1}) by [{2}] started.", eEvent.Name, eEvent.Version, eEvent.Author);
