@@ -226,6 +226,12 @@ public class EventManager : IEventManager
         foreach (PluginLoader pluginLoader in temp)
         {
             IEvent eEvent = StartEvent(pluginLoader);
+            if (eEvent == null)
+            {
+                Log.Warning("Event DLL did not contain an IEvent implementation. Skipping.");
+                pluginLoader.Dispose();
+                continue;
+            }
             Log.Information("Event: {0} ({1}) by [{2}] started.", eEvent.Name, eEvent.Version, eEvent.Author);
         }
     }
