@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.Database;
 using API.Database.DuckSoup;
 using API.Enums;
+using API.Event;
 using API.Plugin;
 using API.ServiceFactory;
 using API.Services;
@@ -20,6 +21,7 @@ public class WebserverManager : IWebserverManager
     private readonly IUserService _userService;
     private Dictionary<string, List<UserRole>> _protectedRoutes;
     private readonly Dictionary<IPlugin, List<IWebserverPluginRoute>> _registeredPlugins = new Dictionary<IPlugin, List<IWebserverPluginRoute>>();
+    private readonly Dictionary<IEvent, List<IWebserverPluginRoute>> _registeredEvents = new Dictionary<IEvent, List<IWebserverPluginRoute>>();
     private WatsonWebserver.Webserver _server;
 
     public WebserverManager()
@@ -124,6 +126,27 @@ public class WebserverManager : IWebserverManager
             return;
 
         _registeredPlugins.Remove(plugin);
+    }
+
+    public void RegisterEvent(IEvent evt, List<IWebserverPluginRoute> routes)
+    {
+        if (evt == null || routes == null || routes.Count == 0)
+            return;
+
+        _registeredEvents[evt] = routes;
+    }
+
+    public Dictionary<IEvent, List<IWebserverPluginRoute>> GetRegisteredEvents()
+    {
+        return new Dictionary<IEvent, List<IWebserverPluginRoute>>(_registeredEvents);
+    }
+
+    public void UnregisterEvent(IEvent evt)
+    {
+        if (evt == null)
+            return;
+
+        _registeredEvents.Remove(evt);
     }
 
     public void AddAllowedOrigin(string origin)

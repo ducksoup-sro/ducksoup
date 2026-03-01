@@ -1,3 +1,5 @@
+using API.Webserver;
+
 namespace API.Event;
 
 public abstract class IEvent : IDisposable
@@ -54,4 +56,7 @@ public abstract class IEvent : IDisposable
 
     /// <summary>Called when the dashboard triggers "reload settings". Override in event to re-read config.</summary>
     public virtual void InitSettings() { }
+
+    /// <summary>Menu routes for this event (shown under Events in the dashboard). Same type as plugin routes for unified webserver handling.</summary>
+    public virtual IReadOnlyList<IWebserverPluginRoute> GetMenuRoutes() => Array.Empty<IWebserverPluginRoute>();
 }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using API.Event;
 using API.ServiceFactory;
+using API.Webserver;
 using McMaster.NETCore.Plugins;
 using Newtonsoft.Json;
 using Quartz;
@@ -135,6 +136,13 @@ public class EventManager : IEventManager
                 _folderByEventName[eEvent.Name] = folderName;
 
             Loaders.Add(pluginLoader, eEvent);
+
+            var routes = eEvent.GetMenuRoutes();
+            if (routes != null && routes.Count > 0)
+            {
+                var webserverManager = ServiceFactory.Load<IWebserverManager>(typeof(IWebserverManager));
+                webserverManager?.RegisterEvent(eEvent, routes.ToList());
+            }
         }
 
         return eEvent;
@@ -195,6 +203,9 @@ public class EventManager : IEventManager
                 _schedulerFactory.GetScheduler().Result.UnscheduleJob(trigger);
                 Triggers.Remove(s);
             }
+
+            var webserverManager = ServiceFactory.Load<IWebserverManager>(typeof(IWebserverManager));
+            webserverManager?.UnregisterEvent(value);
 
             _folderByEventName.Remove(value.Name);
             eEvent.Dispose();
