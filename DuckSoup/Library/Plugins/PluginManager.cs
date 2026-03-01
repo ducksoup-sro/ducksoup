@@ -143,6 +143,29 @@ public class PluginManager : IPluginManager
         return null;
     }
 
+    /// <summary>
+    /// Calls InitSettings() on the plugin. Used by the dashboard "reload settings" flow.
+    /// </summary>
+    public bool TriggerInitSettings(string pluginName)
+    {
+        if (string.IsNullOrWhiteSpace(pluginName)) return false;
+        foreach (var (_, plugin) in Loaders)
+        {
+            if (!plugin.Name.Equals(pluginName, StringComparison.OrdinalIgnoreCase)) continue;
+            try
+            {
+                plugin.InitSettings();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "Plugin {PluginName} InitSettings failed", pluginName);
+                return false;
+            }
+        }
+        return false;
+    }
+
     public IReadOnlyList<LoadedPluginInfo> GetLoadedPluginInfos()
     {
         var list = new List<LoadedPluginInfo>();

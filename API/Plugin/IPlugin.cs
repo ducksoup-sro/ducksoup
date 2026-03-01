@@ -1,4 +1,4 @@
-﻿#region
+#region
 
 using API.Server;
 
@@ -18,4 +18,7 @@ public interface IPlugin : IDisposable
     public void OnServerStart(IFakeServer server);
 
     public List<Command.Command> RegisterCommands();
+
+    /// <summary>Called when the dashboard triggers "reload settings". Override in plugin to re-read config.</summary>
+    public void InitSettings() { }
 }

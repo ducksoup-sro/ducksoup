@@ -27,4 +27,7 @@ public interface IPluginManager : IDisposable
 
     /// <summary>Returns loaded plugins with their folder name (when known). Used to match loaded vs available by folder.</summary>
     IReadOnlyList<LoadedPluginInfo> GetLoadedPluginInfos();
+
+    /// <summary>Calls InitSettings() on the plugin if it implements IHasInitSettings. Used by dashboard reload settings.</summary>
+    bool TriggerInitSettings(string pluginName);
 }

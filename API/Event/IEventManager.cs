@@ -29,4 +29,7 @@ public interface IEventManager : IDisposable
 
     /// <summary>Unloads the event by name and loads it again (e.g. after adding/removing cron entries).</summary>
     bool ReloadEvent(string name);
+
+    /// <summary>Calls InitSettings() on the event if it implements IEventHasInitSettings. Used by dashboard reload settings.</summary>
+    bool TriggerInitSettings(string eventName);
 }

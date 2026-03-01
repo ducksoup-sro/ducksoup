@@ -234,6 +234,29 @@ public class EventManager : IEventManager
         return null;
     }
 
+    /// <summary>
+    /// Calls InitSettings() on the event. Used by the dashboard "reload settings" flow.
+    /// </summary>
+    public bool TriggerInitSettings(string eventName)
+    {
+        if (string.IsNullOrWhiteSpace(eventName)) return false;
+        foreach (var (_, eEvent) in Loaders)
+        {
+            if (eEvent == null || !eEvent.Name.Equals(eventName, StringComparison.OrdinalIgnoreCase)) continue;
+            try
+            {
+                eEvent.InitSettings();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "Event {EventName} InitSettings failed", eventName);
+                return false;
+            }
+        }
+        return false;
+    }
+
     public bool ReloadEvent(string name)
     {
         if (string.IsNullOrWhiteSpace(name)) return false;

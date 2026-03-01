@@ -51,4 +51,7 @@ public abstract class IEvent : IDisposable
         CurrentEventState?.Stop();
         CurrentEventState = null;
     }
+
+    /// <summary>Called when the dashboard triggers "reload settings". Override in event to re-read config.</summary>
+    public virtual void InitSettings() { }
 }
