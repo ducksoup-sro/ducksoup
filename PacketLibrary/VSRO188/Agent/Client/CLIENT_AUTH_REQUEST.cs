@@ -13,6 +13,7 @@ public class CLIENT_AUTH_REQUEST : Packet
 
     public CLIENT_AUTH_REQUEST() : base(0x6103, true)
     {
+        MacAddress = new byte[6];
     }
 
     public override PacketDirection FromDirection => PacketDirection.Client;
