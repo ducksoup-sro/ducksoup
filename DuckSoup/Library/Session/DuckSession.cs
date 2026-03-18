@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
@@ -31,7 +31,7 @@ public class DuckSession : ISession
 
     [JsonIgnore] private FakeSession Client { get; }
 
-    [JsonIgnore] private FakeClient Server { get; }
+    [JsonIgnore] public FakeClient Server { get; set; }
 
     [JsonIgnore] public IPEndPoint? RemoteEndPoint => (IPEndPoint?)Client?.Socket?.RemoteEndPoint;
 
@@ -83,6 +83,11 @@ public class DuckSession : ISession
     {
         Server.Transfer();
         return Task.CompletedTask;
+    }
+
+    public Task<bool> EnsureServerRoute(string host, ushort port)
+    {
+        return Client.EnsureServerRoute(host, port);
     }
 
     public Task Disconnect()

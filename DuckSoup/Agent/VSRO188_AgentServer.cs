@@ -1,11 +1,15 @@
-﻿using System;
+using System;
+using System.Threading.Tasks;
 using API;
 using API.Database.DuckSoup;
 using API.ServiceFactory;
 using DuckSoup.Agent.Vsro;
 using DuckSoup.Library.Server;
+using DuckSoup.Library.Session;
 using PacketLibrary.Handler;
+using PacketLibrary.VSRO188.Agent.Client;
 using Serilog;
+using SilkroadSecurityAPI.Message;
 
 namespace DuckSoup.Agent;
 
@@ -16,10 +20,46 @@ public class VSRO188_AgentServer : FakeServer
     public VSRO188_AgentServer(Service service) : base(service)
     {
         _sharedObjects = ServiceFactory.Load<ISharedObjects>(typeof(ISharedObjects));
+        PacketHandler.RegisterClientHandler<CLIENT_AUTH_REQUEST>(0, CLIENT_AUTH_REQUEST);
         DataHandler dataHandlers = new DataHandler(PacketHandler);
         EntityParsingHandler entityParsingHandlers = new EntityParsingHandler(PacketHandler);
         ExploitHandler exploitHandlers = new ExploitHandler(PacketHandler);
         PartyManagerHandlers partyManagerHandlers = new PartyManagerHandlers(PacketHandler);
+    }
+
+    private async Task<Packet> CLIENT_AUTH_REQUEST(CLIENT_AUTH_REQUEST data, ISession session)
+    {
+        if (!Service.AutoPort)
+        {
+            return data;
+        }
+
+        if (!_sharedObjects.TryTakeTokenRoute(data.Token, out SinglePortTokenRoute route))
+        {
+            Log.Warning("{0} - SinglePort token miss {1} from {2}", Service.Name, data.Token,
+                session.RemoteEndPoint?.Address.ToString());
+            data.ResultType = PacketResultType.Disconnect;
+            return data;
+        }
+
+        if (session is not DuckSession duckSession)
+        {
+            Log.Warning("{0} - Session type mismatch in SinglePort token route handling", Service.Name);
+            data.ResultType = PacketResultType.Disconnect;
+            return data;
+        }
+
+        bool rebindSuccess = await duckSession.EnsureServerRoute(route.Host, route.Port);
+        if (!rebindSuccess)
+        {
+            Log.Warning("{0} - Could not connect SinglePort token {1} to {2}:{3}", Service.Name, data.Token,
+                route.Host, route.Port);
+            data.ResultType = PacketResultType.Disconnect;
+            return data;
+        }
+
+        Log.Verbose("{0} - SinglePort token {1} routed to {2}:{3}", Service.Name, data.Token, route.Host, route.Port);
+        return data;
     }
 
     /*

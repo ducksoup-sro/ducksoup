@@ -1,4 +1,4 @@
-﻿using SilkroadSecurityAPI;
+using SilkroadSecurityAPI;
 
 namespace API.Database.DuckSoup;
 
@@ -16,6 +16,8 @@ public class Service
     public int BindPort { get; set; }
 
     public int ByteLimitation { get; set; }
+
+    public bool AutoPort { get; set; }
 
     public bool AutoStart { get; set; }
 

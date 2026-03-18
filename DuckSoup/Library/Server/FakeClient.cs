@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using API.Database.DuckSoup;
@@ -17,12 +17,16 @@ namespace DuckSoup.Library.Server;
 /// </summary>
 public class FakeClient : TcpClient
 {
-    public FakeClient(FakeServer fakeServer, Service service) : base(service.RemoteMachine_Machine.Address,
-        service.RemotePort)
+    private bool _suppressNextSessionDisconnect;
+
+    public FakeClient(FakeServer fakeServer, SecurityType securityType, string remoteHost, int remotePort) : base(
+        remoteHost, remotePort)
     {
         try
         {
-            ServerSecurity = Utility.GetSecurity(service.SecurityType);
+            TargetHost = remoteHost;
+            TargetPort = remotePort;
+            ServerSecurity = Utility.GetSecurity(securityType);
             FakeServer = fakeServer;
         }
         catch (Exception exception)
@@ -38,7 +42,15 @@ public class FakeClient : TcpClient
 
     public ISession? Session { get; internal set; }
     internal ISecurity ServerSecurity { get; }
+    public string TargetHost { get; }
+    public int TargetPort { get; }
     private FakeServer FakeServer { get; }
+
+    public void DisconnectForRouteSwitch()
+    {
+        _suppressNextSessionDisconnect = true;
+        Disconnect();
+    }
 
     protected override void OnConnected()
     {
@@ -49,6 +61,13 @@ public class FakeClient : TcpClient
     {
         if (Session == null)
         {
+            return;
+        }
+
+        if (_suppressNextSessionDisconnect)
+        {
+            _suppressNextSessionDisconnect = false;
+            Log.Debug($"FakeRemoteClient disconnected for route switch with Id {Id}");
             return;
         }
 
